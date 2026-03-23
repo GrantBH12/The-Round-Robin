@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-23T19:45:53.033275+00:00",
+    "scrapedAt": "2026-03-23T20:26:11.798560+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -6743,8 +6743,86 @@
       "q4": "8-1",
       "avgNetWins": 159,
       "avgNetLosses": 78,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Saint Louis",
+          "oppNet": 31,
+          "score": "70-69",
+          "site": "N",
+          "date": "03-14"
+        },
+        {
+          "opp": "Saint Louis",
+          "oppNet": 31,
+          "score": "77-62",
+          "site": "H",
+          "date": "02-24"
+        },
+        {
+          "opp": "Florida State",
+          "oppNet": 62,
+          "score": "97-69",
+          "site": "H",
+          "date": "12-16"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "84-79",
+          "site": "N",
+          "date": "11-27"
+        },
+        {
+          "opp": "George Washington",
+          "oppNet": 91,
+          "score": "68-66",
+          "site": "A",
+          "date": "02-27"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "La Salle",
+          "oppNet": 245,
+          "score": "64-67",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "Rhode Island",
+          "oppNet": 152,
+          "score": "76-81",
+          "site": "H",
+          "date": "01-27"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "74-81",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "Liberty",
+          "oppNet": 106,
+          "score": "61-64",
+          "site": "H",
+          "date": "12-20"
+        },
+        {
+          "opp": "Cincinnati",
+          "oppNet": 49,
+          "score": "62-74",
+          "site": "A",
+          "date": "11-11"
+        }
+      ],
+      "kpi": 44,
+      "sor": 61,
+      "wab": 68,
+      "bpi": 64,
+      "pom": 78,
+      "tRank": 82
     },
     {
       "id": "t70",
@@ -6765,8 +6843,86 @@
       "q4": "5-2",
       "avgNetWins": 145,
       "avgNetLosses": 81,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Utah State",
+          "oppNet": 26,
+          "score": "80-77",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "New Mexico",
+          "oppNet": 46,
+          "score": "67-60",
+          "site": "H",
+          "date": "02-24"
+        },
+        {
+          "opp": "Boise State",
+          "oppNet": 60,
+          "score": "81-66",
+          "site": "H",
+          "date": "12-20"
+        },
+        {
+          "opp": "Grand Canyon",
+          "oppNet": 71,
+          "score": "84-80",
+          "site": "N",
+          "date": "03-12"
+        },
+        {
+          "opp": "Grand Canyon",
+          "oppNet": 71,
+          "score": "66-60",
+          "site": "H",
+          "date": "01-27"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "San Jose State",
+          "oppNet": 244,
+          "score": "71-87",
+          "site": "A",
+          "date": "02-17"
+        },
+        {
+          "opp": "UC Davis",
+          "oppNet": 178,
+          "score": "71-75",
+          "site": "H",
+          "date": "11-18"
+        },
+        {
+          "opp": "UNLV",
+          "oppNet": 111,
+          "score": "83-85",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Wyoming",
+          "oppNet": 99,
+          "score": "73-83",
+          "site": "A",
+          "date": "03-03"
+        },
+        {
+          "opp": "Boise State",
+          "oppNet": 60,
+          "score": "87-91",
+          "site": "A",
+          "date": "02-03"
+        }
+      ],
+      "kpi": 62,
+      "sor": 76,
+      "wab": 73,
+      "bpi": 83,
+      "pom": 75,
+      "tRank": 79
     },
     {
       "id": "t71",
@@ -6787,8 +6943,86 @@
       "q4": "10-1",
       "avgNetWins": 191,
       "avgNetLosses": 75,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Utah State",
+          "oppNet": 26,
+          "score": "84-74",
+          "site": "H",
+          "date": "01-17"
+        },
+        {
+          "opp": "San Diego State",
+          "oppNet": 47,
+          "score": "73-63",
+          "site": "A",
+          "date": "02-17"
+        },
+        {
+          "opp": "San Diego State",
+          "oppNet": 47,
+          "score": "70-69",
+          "site": "H",
+          "date": "01-21"
+        },
+        {
+          "opp": "Boise State",
+          "oppNet": 60,
+          "score": "75-58",
+          "site": "A",
+          "date": "01-07"
+        },
+        {
+          "opp": "Boise State",
+          "oppNet": 60,
+          "score": "86-69",
+          "site": "H",
+          "date": "01-30"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Youngstown State",
+          "oppNet": 219,
+          "score": "81-90",
+          "site": "H",
+          "date": "11-07"
+        },
+        {
+          "opp": "UNLV",
+          "oppNet": 111,
+          "score": "78-80",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Wyoming",
+          "oppNet": 99,
+          "score": "65-70",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Colorado State",
+          "oppNet": 87,
+          "score": "60-70",
+          "site": "H",
+          "date": "01-03"
+        },
+        {
+          "opp": "Oklahoma State",
+          "oppNet": 74,
+          "score": "78-84",
+          "site": "N",
+          "date": "12-06"
+        }
+      ],
+      "kpi": 75,
+      "sor": 84,
+      "wab": 78,
+      "bpi": 72,
+      "pom": 61,
+      "tRank": 55
     },
     {
       "id": "t72",
@@ -6809,8 +7043,86 @@
       "q4": "11-0",
       "avgNetWins": 188,
       "avgNetLosses": 84,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Illinois State",
+          "oppNet": 95,
+          "score": "74-52",
+          "site": "N",
+          "date": "03-06"
+        },
+        {
+          "opp": "Murray State",
+          "oppNet": 105,
+          "score": "89-60",
+          "site": "A",
+          "date": "02-09"
+        },
+        {
+          "opp": "Murray State",
+          "oppNet": 105,
+          "score": "81-76",
+          "site": "H",
+          "date": "01-24"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "60-54",
+          "site": "A",
+          "date": "12-17"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "84-69",
+          "site": "N",
+          "date": "03-08"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Valparaiso",
+          "oppNet": 156,
+          "score": "44-54",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Southern Illinois",
+          "oppNet": 120,
+          "score": "50-65",
+          "site": "A",
+          "date": "01-28"
+        },
+        {
+          "opp": "Southern Illinois",
+          "oppNet": 120,
+          "score": "57-59",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Bradley",
+          "oppNet": 113,
+          "score": "69-75",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "61-69",
+          "site": "H",
+          "date": "01-13"
+        }
+      ],
+      "kpi": 77,
+      "sor": 105,
+      "wab": 101,
+      "bpi": 82,
+      "pom": 72,
+      "tRank": 70
     },
     {
       "id": "t73",
@@ -6831,8 +7143,86 @@
       "q4": "4-1",
       "avgNetWins": 119,
       "avgNetLosses": 42,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Texas Tech",
+          "oppNet": 19,
+          "score": "72-67",
+          "site": "H",
+          "date": "02-17"
+        },
+        {
+          "opp": "Kansas",
+          "oppNet": 21,
+          "score": "70-60",
+          "site": "H",
+          "date": "03-03"
+        },
+        {
+          "opp": "Santa Clara",
+          "oppNet": 40,
+          "score": "82-79",
+          "site": "N",
+          "date": "12-13"
+        },
+        {
+          "opp": "Texas",
+          "oppNet": 42,
+          "score": "87-86",
+          "site": "N",
+          "date": "11-24"
+        },
+        {
+          "opp": "Oklahoma",
+          "oppNet": 48,
+          "score": "86-70",
+          "site": "N",
+          "date": "12-06"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Oregon State",
+          "oppNet": 170,
+          "score": "75-78",
+          "site": "H",
+          "date": "12-21"
+        },
+        {
+          "opp": "USC",
+          "oppNet": 79,
+          "score": "75-88",
+          "site": "N",
+          "date": "11-26"
+        },
+        {
+          "opp": "Colorado",
+          "oppNet": 76,
+          "score": "70-78",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Colorado",
+          "oppNet": 76,
+          "score": "89-95",
+          "site": "H",
+          "date": "01-03"
+        },
+        {
+          "opp": "West Virginia",
+          "oppNet": 59,
+          "score": "63-75",
+          "site": "H",
+          "date": "01-21"
+        }
+      ],
+      "kpi": 59,
+      "sor": 57,
+      "wab": 56,
+      "bpi": 90,
+      "pom": 67,
+      "tRank": 61
     },
     {
       "id": "t74",
@@ -6853,8 +7243,86 @@
       "q4": "7-0",
       "avgNetWins": 139,
       "avgNetLosses": 36,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "BYU",
+          "oppNet": 23,
+          "score": "99-92",
+          "site": "H",
+          "date": "02-04"
+        },
+        {
+          "opp": "Texas A&M",
+          "oppNet": 44,
+          "score": "87-63",
+          "site": "H",
+          "date": "11-09"
+        },
+        {
+          "opp": "South Florida",
+          "oppNet": 45,
+          "score": "103-95",
+          "site": "H",
+          "date": "11-19"
+        },
+        {
+          "opp": "UCF",
+          "oppNet": 51,
+          "score": "111-104",
+          "site": "A",
+          "date": "03-03"
+        },
+        {
+          "opp": "UCF",
+          "oppNet": 51,
+          "score": "87-76",
+          "site": "H",
+          "date": "01-06"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Wichita State",
+          "oppNet": 78,
+          "score": "70-96",
+          "site": "H",
+          "date": "03-22"
+        },
+        {
+          "opp": "Colorado",
+          "oppNet": 76,
+          "score": "69-83",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Arizona State",
+          "oppNet": 73,
+          "score": "76-85",
+          "site": "A",
+          "date": "02-10"
+        },
+        {
+          "opp": "Baylor",
+          "oppNet": 50,
+          "score": "79-94",
+          "site": "H",
+          "date": "01-13"
+        },
+        {
+          "opp": "Cincinnati",
+          "oppNet": 49,
+          "score": "68-91",
+          "site": "A",
+          "date": "02-28"
+        }
+      ],
+      "kpi": 47,
+      "sor": 53,
+      "wab": 52,
+      "bpi": 74,
+      "pom": 66,
+      "tRank": 75
     },
     {
       "id": "t75",
@@ -6875,8 +7343,86 @@
       "q4": "22-0",
       "avgNetWins": 253,
       "avgNetLosses": 115,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Wisconsin",
+          "oppNet": 25,
+          "score": "83-82",
+          "site": "N",
+          "date": "03-19"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "90-80",
+          "site": "N",
+          "date": "11-20"
+        },
+        {
+          "opp": "Winthrop",
+          "oppNet": 131,
+          "score": "89-87",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Winthrop",
+          "oppNet": 131,
+          "score": "91-76",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Furman",
+          "oppNet": 186,
+          "score": "97-71",
+          "site": "N",
+          "date": "11-03"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Appalachian State",
+          "oppNet": 192,
+          "score": "78-86",
+          "site": "N",
+          "date": "12-14"
+        },
+        {
+          "opp": "Winthrop",
+          "oppNet": 131,
+          "score": "75-92",
+          "site": "A",
+          "date": "01-14"
+        },
+        {
+          "opp": "Southern Illinois",
+          "oppNet": 120,
+          "score": "84-86",
+          "site": "H",
+          "date": "12-03"
+        },
+        {
+          "opp": "UAB",
+          "oppNet": 118,
+          "score": "74-91",
+          "site": "A",
+          "date": "11-14"
+        },
+        {
+          "opp": "Arkansas",
+          "oppNet": 15,
+          "score": "88-94",
+          "site": "N",
+          "date": "03-21"
+        }
+      ],
+      "kpi": 96,
+      "sor": 66,
+      "wab": 69,
+      "bpi": 63,
+      "pom": 92,
+      "tRank": 93
     },
     {
       "id": "t76",
@@ -6897,8 +7443,86 @@
       "q4": "4-0",
       "avgNetWins": 135,
       "avgNetLosses": 45,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "TCU",
+          "oppNet": 39,
+          "score": "87-61",
+          "site": "H",
+          "date": "02-01"
+        },
+        {
+          "opp": "Washington",
+          "oppNet": 57,
+          "score": "81-68",
+          "site": "N",
+          "date": "11-28"
+        },
+        {
+          "opp": "Arizona State",
+          "oppNet": 73,
+          "score": "95-89",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Arizona State",
+          "oppNet": 73,
+          "score": "78-70",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "Oklahoma State",
+          "oppNet": 74,
+          "score": "83-69",
+          "site": "H",
+          "date": "02-21"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Northern Colorado",
+          "oppNet": 149,
+          "score": "81-86",
+          "site": "H",
+          "date": "12-28"
+        },
+        {
+          "opp": "Colorado State",
+          "oppNet": 87,
+          "score": "86-91",
+          "site": "A",
+          "date": "12-06"
+        },
+        {
+          "opp": "Oklahoma State",
+          "oppNet": 74,
+          "score": "83-92",
+          "site": "N",
+          "date": "03-10"
+        },
+        {
+          "opp": "Stanford",
+          "oppNet": 61,
+          "score": "68-77",
+          "site": "N",
+          "date": "12-20"
+        },
+        {
+          "opp": "West Virginia",
+          "oppNet": 59,
+          "score": "61-72",
+          "site": "A",
+          "date": "01-17"
+        }
+      ],
+      "kpi": 71,
+      "sor": 73,
+      "wab": 74,
+      "bpi": 91,
+      "pom": 70,
+      "tRank": 77
     },
     {
       "id": "t77",
@@ -6919,8 +7543,86 @@
       "q4": "8-0",
       "avgNetWins": 186,
       "avgNetLosses": 37,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "SMU",
+          "oppNet": 37,
+          "score": "89-77",
+          "site": "N",
+          "date": "12-13"
+        },
+        {
+          "opp": "Missouri",
+          "oppNet": 58,
+          "score": "78-70",
+          "site": "H",
+          "date": "01-17"
+        },
+        {
+          "opp": "Ole Miss",
+          "oppNet": 82,
+          "score": "106-99",
+          "site": "A",
+          "date": "02-25"
+        },
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "96-63",
+          "site": "N",
+          "date": "11-29"
+        },
+        {
+          "opp": "South Carolina",
+          "oppNet": 108,
+          "score": "92-87",
+          "site": "A",
+          "date": "01-31"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Mississippi State",
+          "oppNet": 112,
+          "score": "66-80",
+          "site": "H",
+          "date": "01-28"
+        },
+        {
+          "opp": "South Carolina",
+          "oppNet": 108,
+          "score": "68-78",
+          "site": "H",
+          "date": "01-06"
+        },
+        {
+          "opp": "Oklahoma",
+          "oppNet": 48,
+          "score": "67-83",
+          "site": "H",
+          "date": "02-28"
+        },
+        {
+          "opp": "Texas A&M",
+          "oppNet": 44,
+          "score": "72-75",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Texas A&M",
+          "oppNet": 44,
+          "score": "91-94",
+          "site": "H",
+          "date": "03-07"
+        }
+      ],
+      "kpi": 115,
+      "sor": 81,
+      "wab": 90,
+      "bpi": 53,
+      "pom": 60,
+      "tRank": 69
     },
     {
       "id": "t78",
@@ -6941,8 +7643,86 @@
       "q4": "11-1",
       "avgNetWins": 177,
       "avgNetLosses": 101,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "South Florida",
+          "oppNet": 45,
+          "score": "86-85",
+          "site": "A",
+          "date": "01-18"
+        },
+        {
+          "opp": "Tulsa",
+          "oppNet": 52,
+          "score": "81-77",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "Tulsa",
+          "oppNet": 52,
+          "score": "81-68",
+          "site": "N",
+          "date": "03-14"
+        },
+        {
+          "opp": "Northern Iowa",
+          "oppNet": 72,
+          "score": "74-69",
+          "site": "A",
+          "date": "12-06"
+        },
+        {
+          "opp": "Oklahoma State",
+          "oppNet": 74,
+          "score": "96-70",
+          "site": "A",
+          "date": "03-22"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Rice",
+          "oppNet": 243,
+          "score": "64-66",
+          "site": "H",
+          "date": "01-07"
+        },
+        {
+          "opp": "Charlotte",
+          "oppNet": 173,
+          "score": "100-104",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Western Kentucky",
+          "oppNet": 160,
+          "score": "70-75",
+          "site": "N",
+          "date": "11-28"
+        },
+        {
+          "opp": "FAU",
+          "oppNet": 123,
+          "score": "67-85",
+          "site": "A",
+          "date": "01-15"
+        },
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "58-61",
+          "site": "H",
+          "date": "12-13"
+        }
+      ],
+      "kpi": 74,
+      "sor": 86,
+      "wab": 84,
+      "bpi": 84,
+      "pom": 82,
+      "tRank": 84
     },
     {
       "id": "t79",
@@ -6963,8 +7743,86 @@
       "q4": "3-0",
       "avgNetWins": 138,
       "avgNetLosses": 36,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Wisconsin",
+          "oppNet": 25,
+          "score": "73-71",
+          "site": "A",
+          "date": "01-25"
+        },
+        {
+          "opp": "Indiana",
+          "oppNet": 41,
+          "score": "81-75",
+          "site": "H",
+          "date": "02-03"
+        },
+        {
+          "opp": "Seton Hall",
+          "oppNet": 53,
+          "score": "83-81",
+          "site": "N",
+          "date": "11-25"
+        },
+        {
+          "opp": "Boise State",
+          "oppNet": 60,
+          "score": "70-67",
+          "site": "N",
+          "date": "11-24"
+        },
+        {
+          "opp": "Arizona State",
+          "oppNet": 73,
+          "score": "88-75",
+          "site": "N",
+          "date": "11-26"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Oregon",
+          "oppNet": 109,
+          "score": "70-71",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Northwestern",
+          "oppNet": 65,
+          "score": "68-74",
+          "site": "H",
+          "date": "01-21"
+        },
+        {
+          "opp": "Washington",
+          "oppNet": 57,
+          "score": "72-91",
+          "site": "A",
+          "date": "03-04"
+        },
+        {
+          "opp": "Washington",
+          "oppNet": 57,
+          "score": "79-83",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Washington",
+          "oppNet": 57,
+          "score": "76-84",
+          "site": "H",
+          "date": "12-06"
+        }
+      ],
+      "kpi": 70,
+      "sor": 58,
+      "wab": 61,
+      "bpi": 67,
+      "pom": 80,
+      "tRank": 66
     },
     {
       "id": "t80",
@@ -6985,8 +7843,86 @@
       "q4": "4-0",
       "avgNetWins": 159,
       "avgNetLosses": 51,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Saint John's",
+          "oppNet": 16,
+          "score": "77-71",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "79-76",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "93-88",
+          "site": "H",
+          "date": "01-16"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "91-81",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "97-87",
+          "site": "H",
+          "date": "02-04"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "84-97",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "104-105",
+          "site": "A",
+          "date": "01-19"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "56-78",
+          "site": "H",
+          "date": "03-04"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "79-80",
+          "site": "A",
+          "date": "03-07"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "78-81",
+          "site": "H",
+          "date": "01-24"
+        }
+      ],
+      "kpi": 97,
+      "sor": 94,
+      "wab": 100,
+      "bpi": 59,
+      "pom": 71,
+      "tRank": 74
     },
     {
       "id": "t81",
@@ -7007,8 +7943,86 @@
       "q4": "7-0",
       "avgNetWins": 173,
       "avgNetLosses": 57,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Michigan State",
+          "oppNet": 11,
+          "score": "76-73",
+          "site": "H",
+          "date": "02-04"
+        },
+        {
+          "opp": "Iowa",
+          "oppNet": 27,
+          "score": "70-67",
+          "site": "H",
+          "date": "01-06"
+        },
+        {
+          "opp": "UCLA",
+          "oppNet": 30,
+          "score": "78-73",
+          "site": "H",
+          "date": "02-28"
+        },
+        {
+          "opp": "Indiana",
+          "oppNet": 41,
+          "score": "73-64",
+          "site": "H",
+          "date": "12-03"
+        },
+        {
+          "opp": "Northwestern",
+          "oppNet": 65,
+          "score": "84-78",
+          "site": "A",
+          "date": "01-03"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Penn State",
+          "oppNet": 142,
+          "score": "75-77",
+          "site": "A",
+          "date": "02-01"
+        },
+        {
+          "opp": "Maryland",
+          "oppNet": 138,
+          "score": "62-67",
+          "site": "H",
+          "date": "02-08"
+        },
+        {
+          "opp": "Rutgers",
+          "oppNet": 134,
+          "score": "67-72",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "San Francisco",
+          "oppNet": 119,
+          "score": "65-77",
+          "site": "N",
+          "date": "11-22"
+        },
+        {
+          "opp": "USC",
+          "oppNet": 79,
+          "score": "69-70",
+          "site": "H",
+          "date": "01-09"
+        }
+      ],
+      "kpi": 98,
+      "sor": 88,
+      "wab": 87,
+      "bpi": 70,
+      "pom": 77,
+      "tRank": 58
     },
     {
       "id": "t82",
@@ -7029,8 +8043,86 @@
       "q4": "7-0",
       "avgNetWins": 165,
       "avgNetLosses": 41,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Alabama",
+          "oppNet": 18,
+          "score": "80-79",
+          "site": "N",
+          "date": "03-13"
+        },
+        {
+          "opp": "Georgia",
+          "oppNet": 33,
+          "score": "97-95",
+          "site": "A",
+          "date": "01-14"
+        },
+        {
+          "opp": "Georgia",
+          "oppNet": 33,
+          "score": "76-72",
+          "site": "N",
+          "date": "03-12"
+        },
+        {
+          "opp": "Auburn",
+          "oppNet": 38,
+          "score": "85-79",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Texas",
+          "oppNet": 42,
+          "score": "76-66",
+          "site": "N",
+          "date": "03-11"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Utah",
+          "oppNet": 132,
+          "score": "74-75",
+          "site": "N",
+          "date": "11-26"
+        },
+        {
+          "opp": "Mississippi State",
+          "oppNet": 112,
+          "score": "78-90",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "South Carolina",
+          "oppNet": 108,
+          "score": "61-64",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "LSU",
+          "oppNet": 77,
+          "score": "99-106",
+          "site": "H",
+          "date": "02-25"
+        },
+        {
+          "opp": "Oklahoma",
+          "oppNet": 48,
+          "score": "70-86",
+          "site": "A",
+          "date": "01-03"
+        }
+      ],
+      "kpi": 94,
+      "sor": 78,
+      "wab": 85,
+      "bpi": 52,
+      "pom": 65,
+      "tRank": 64
     },
     {
       "id": "t83",
@@ -7051,8 +8143,86 @@
       "q4": "5-0",
       "avgNetWins": 138,
       "avgNetLosses": 53,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Connecticut",
+          "oppNet": 10,
+          "score": "91-84",
+          "site": "A",
+          "date": "02-18"
+        },
+        {
+          "opp": "Villanova",
+          "oppNet": 35,
+          "score": "76-72",
+          "site": "A",
+          "date": "01-07"
+        },
+        {
+          "opp": "Seton Hall",
+          "oppNet": 53,
+          "score": "69-68",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "76-59",
+          "site": "A",
+          "date": "03-04"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "89-85",
+          "site": "H",
+          "date": "12-30"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "71-72",
+          "site": "A",
+          "date": "02-11"
+        },
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "71-72",
+          "site": "H",
+          "date": "02-25"
+        },
+        {
+          "opp": "Kansas State",
+          "oppNet": 100,
+          "score": "76-83",
+          "site": "H",
+          "date": "12-13"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "62-86",
+          "site": "A",
+          "date": "01-27"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "68-76",
+          "site": "A",
+          "date": "02-04"
+        }
+      ],
+      "kpi": 85,
+      "sor": 79,
+      "wab": 89,
+      "bpi": 62,
+      "pom": 76,
+      "tRank": 85
     },
     {
       "id": "t84",
@@ -7073,8 +8243,86 @@
       "q4": "5-0",
       "avgNetWins": 156,
       "avgNetLosses": 54,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Virginia",
+          "oppNet": 12,
+          "score": "80-73",
+          "site": "N",
+          "date": "11-23"
+        },
+        {
+          "opp": "Seton Hall",
+          "oppNet": 53,
+          "score": "77-66",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Northwestern",
+          "oppNet": 65,
+          "score": "61-58",
+          "site": "N",
+          "date": "12-20"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "113-110",
+          "site": "H",
+          "date": "12-13"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "93-89",
+          "site": "A",
+          "date": "02-18"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "75-89",
+          "site": "A",
+          "date": "01-14"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "55-70",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "64-77",
+          "site": "H",
+          "date": "01-31"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "85-89",
+          "site": "A",
+          "date": "12-30"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "59-76",
+          "site": "H",
+          "date": "03-04"
+        }
+      ],
+      "kpi": 90,
+      "sor": 82,
+      "wab": 92,
+      "bpi": 65,
+      "pom": 86,
+      "tRank": 72
     },
     {
       "id": "t85",
@@ -7095,8 +8343,86 @@
       "q4": "12-2",
       "avgNetWins": 191,
       "avgNetLosses": 138,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "California Baptist",
+          "oppNet": 98,
+          "score": "73-66",
+          "site": "H",
+          "date": "12-29"
+        },
+        {
+          "opp": "California Baptist",
+          "oppNet": 98,
+          "score": "65-46",
+          "site": "H",
+          "date": "02-19"
+        },
+        {
+          "opp": "UC Irvine",
+          "oppNet": 117,
+          "score": "79-72",
+          "site": "H",
+          "date": "11-19"
+        },
+        {
+          "opp": "UC Santa Barbara",
+          "oppNet": 143,
+          "score": "68-53",
+          "site": "N",
+          "date": "12-13"
+        },
+        {
+          "opp": "Bowling Green",
+          "oppNet": 157,
+          "score": "82-71",
+          "site": "A",
+          "date": "12-06"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Southern Utah",
+          "oppNet": 272,
+          "score": "70-84",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "Abilene Christian",
+          "oppNet": 248,
+          "score": "68-85",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Utah Tech",
+          "oppNet": 176,
+          "score": "77-81",
+          "site": "A",
+          "date": "02-12"
+        },
+        {
+          "opp": "Fresno State",
+          "oppNet": 153,
+          "score": "74-75",
+          "site": "A",
+          "date": "11-15"
+        },
+        {
+          "opp": "California Baptist",
+          "oppNet": 98,
+          "score": "71-78",
+          "site": "A",
+          "date": "01-24"
+        }
+      ],
+      "kpi": 78,
+      "sor": 96,
+      "wab": 81,
+      "bpi": 113,
+      "pom": 90,
+      "tRank": 87
     },
     {
       "id": "t86",
@@ -7117,8 +8443,86 @@
       "q4": "7-0",
       "avgNetWins": 178,
       "avgNetLosses": 42,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Tennessee",
+          "oppNet": 20,
+          "score": "62-60",
+          "site": "H",
+          "date": "12-02"
+        },
+        {
+          "opp": "SMU",
+          "oppNet": 37,
+          "score": "79-78",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "Florida State",
+          "oppNet": 62,
+          "score": "94-86",
+          "site": "H",
+          "date": "01-13"
+        },
+        {
+          "opp": "California",
+          "oppNet": 67,
+          "score": "107-100",
+          "site": "H",
+          "date": "02-11"
+        },
+        {
+          "opp": "Notre Dame",
+          "oppNet": 94,
+          "score": "86-72",
+          "site": "H",
+          "date": "01-31"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Boston College",
+          "oppNet": 158,
+          "score": "73-81",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Pittsburgh",
+          "oppNet": 104,
+          "score": "69-71",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "Hofstra",
+          "oppNet": 88,
+          "score": "69-70",
+          "site": "H",
+          "date": "12-13"
+        },
+        {
+          "opp": "Wake Forest",
+          "oppNet": 66,
+          "score": "83-88",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Virginia Tech",
+          "oppNet": 55,
+          "score": "74-76",
+          "site": "H",
+          "date": "01-21"
+        }
+      ],
+      "kpi": 88,
+      "sor": 93,
+      "wab": 86,
+      "bpi": 78,
+      "pom": 83,
+      "tRank": 81
     },
     {
       "id": "t87",
@@ -7139,8 +8543,86 @@
       "q4": "9-1",
       "avgNetWins": 174,
       "avgNetLosses": 80,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "South Florida",
+          "oppNet": 45,
+          "score": "83-68",
+          "site": "N",
+          "date": "11-28"
+        },
+        {
+          "opp": "New Mexico",
+          "oppNet": 46,
+          "score": "82-74",
+          "site": "A",
+          "date": "03-04"
+        },
+        {
+          "opp": "San Diego State",
+          "oppNet": 47,
+          "score": "83-74",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Grand Canyon",
+          "oppNet": 71,
+          "score": "70-60",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Colorado",
+          "oppNet": 76,
+          "score": "91-86",
+          "site": "H",
+          "date": "12-06"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Denver",
+          "oppNet": 241,
+          "score": "81-83",
+          "site": "H",
+          "date": "11-21"
+        },
+        {
+          "opp": "Fresno State",
+          "oppNet": 153,
+          "score": "69-79",
+          "site": "A",
+          "date": "01-13"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "64-69",
+          "site": "H",
+          "date": "03-18"
+        },
+        {
+          "opp": "Wyoming",
+          "oppNet": 99,
+          "score": "57-68",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "Nevada",
+          "oppNet": 70,
+          "score": "62-75",
+          "site": "H",
+          "date": "12-30"
+        }
+      ],
+      "kpi": 73,
+      "sor": 89,
+      "wab": 79,
+      "bpi": 86,
+      "pom": 88,
+      "tRank": 88
     },
     {
       "id": "t88",
@@ -7161,8 +8643,86 @@
       "q4": "10-3",
       "avgNetWins": 193,
       "avgNetLosses": 161,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Syracuse",
+          "oppNet": 86,
+          "score": "70-69",
+          "site": "A",
+          "date": "12-13"
+        },
+        {
+          "opp": "Pittsburgh",
+          "oppNet": 104,
+          "score": "80-73",
+          "site": "A",
+          "date": "12-07"
+        },
+        {
+          "opp": "William & Mary",
+          "oppNet": 129,
+          "score": "92-61",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Penn",
+          "oppNet": 139,
+          "score": "77-60",
+          "site": "A",
+          "date": "11-30"
+        },
+        {
+          "opp": "Towson",
+          "oppNet": 159,
+          "score": "78-67",
+          "site": "A",
+          "date": "01-08"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "North Carolina A&T",
+          "oppNet": 276,
+          "score": "78-79",
+          "site": "A",
+          "date": "01-22"
+        },
+        {
+          "opp": "Iona",
+          "oppNet": 237,
+          "score": "73-81",
+          "site": "A",
+          "date": "11-07"
+        },
+        {
+          "opp": "Stony Brook",
+          "oppNet": 232,
+          "score": "71-76",
+          "site": "A",
+          "date": "01-15"
+        },
+        {
+          "opp": "Elon",
+          "oppNet": 223,
+          "score": "85-89",
+          "site": "H",
+          "date": "01-17"
+        },
+        {
+          "opp": "Columbia",
+          "oppNet": 185,
+          "score": "70-72",
+          "site": "A",
+          "date": "12-03"
+        }
+      ],
+      "kpi": 79,
+      "sor": 102,
+      "wab": 98,
+      "bpi": 102,
+      "pom": 87,
+      "tRank": 91
     },
     {
       "id": "t89",
@@ -7183,8 +8743,86 @@
       "q4": "19-1",
       "avgNetWins": 243,
       "avgNetLosses": 115,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "McNeese",
+          "oppNet": 56,
+          "score": "67-60",
+          "site": "H",
+          "date": "02-02"
+        },
+        {
+          "opp": "UTRGV",
+          "oppNet": 126,
+          "score": "66-57",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "UTRGV",
+          "oppNet": 126,
+          "score": "73-60",
+          "site": "H",
+          "date": "12-03"
+        },
+        {
+          "opp": "Arkansas State",
+          "oppNet": 154,
+          "score": "90-65",
+          "site": "H",
+          "date": "11-07"
+        },
+        {
+          "opp": "Texas A&M-Corpus Christi",
+          "oppNet": 191,
+          "score": "78-68",
+          "site": "A",
+          "date": "02-16"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "New Orleans",
+          "oppNet": 215,
+          "score": "73-77",
+          "site": "H",
+          "date": "02-23"
+        },
+        {
+          "opp": "UTA",
+          "oppNet": 161,
+          "score": "61-66",
+          "site": "A",
+          "date": "11-29"
+        },
+        {
+          "opp": "Fresno State",
+          "oppNet": 153,
+          "score": "78-80",
+          "site": "A",
+          "date": "11-18"
+        },
+        {
+          "opp": "McNeese",
+          "oppNet": 56,
+          "score": "64-66",
+          "site": "A",
+          "date": "01-05"
+        },
+        {
+          "opp": "McNeese",
+          "oppNet": 56,
+          "score": "59-76",
+          "site": "N",
+          "date": "03-11"
+        }
+      ],
+      "kpi": 105,
+      "sor": 64,
+      "wab": 65,
+      "bpi": 114,
+      "pom": 91,
+      "tRank": 89
     },
     {
       "id": "t90",
@@ -7205,8 +8843,86 @@
       "q4": "6-0",
       "avgNetWins": 164,
       "avgNetLosses": 51,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Clemson",
+          "oppNet": 34,
+          "score": "79-74",
+          "site": "H",
+          "date": "11-15"
+        },
+        {
+          "opp": "Villanova",
+          "oppNet": 35,
+          "score": "78-64",
+          "site": "N",
+          "date": "03-12"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "81-78",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "80-79",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "76-68",
+          "site": "H",
+          "date": "02-04"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "50-56",
+          "site": "A",
+          "date": "01-06"
+        },
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "84-91",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "77-80",
+          "site": "H",
+          "date": "12-20"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "60-76",
+          "site": "H",
+          "date": "02-24"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "89-93",
+          "site": "H",
+          "date": "02-18"
+        }
+      ],
+      "kpi": 92,
+      "sor": 90,
+      "wab": 96,
+      "bpi": 71,
+      "pom": 79,
+      "tRank": 78
     },
     {
       "id": "t91",
@@ -7227,8 +8943,86 @@
       "q4": "9-3",
       "avgNetWins": 192,
       "avgNetLosses": 103,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "South Florida",
+          "oppNet": 45,
+          "score": "99-95",
+          "site": "N",
+          "date": "11-08"
+        },
+        {
+          "opp": "Utah Valley",
+          "oppNet": 85,
+          "score": "79-78",
+          "site": "A",
+          "date": "03-18"
+        },
+        {
+          "opp": "George Mason",
+          "oppNet": 92,
+          "score": "72-53",
+          "site": "H",
+          "date": "02-13"
+        },
+        {
+          "opp": "William & Mary",
+          "oppNet": 129,
+          "score": "99-86",
+          "site": "H",
+          "date": "12-06"
+        },
+        {
+          "opp": "Saint Bonaventure",
+          "oppNet": 144,
+          "score": "91-82",
+          "site": "H",
+          "date": "03-04"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Delaware",
+          "oppNet": 287,
+          "score": "58-70",
+          "site": "H",
+          "date": "12-10"
+        },
+        {
+          "opp": "Loyola-Chicago",
+          "oppNet": 279,
+          "score": "62-68",
+          "site": "A",
+          "date": "03-07"
+        },
+        {
+          "opp": "Fordham",
+          "oppNet": 174,
+          "score": "65-79",
+          "site": "H",
+          "date": "01-31"
+        },
+        {
+          "opp": "Duquesne",
+          "oppNet": 133,
+          "score": "86-88",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "73-76",
+          "site": "A",
+          "date": "02-04"
+        }
+      ],
+      "kpi": 117,
+      "sor": 130,
+      "wab": 143,
+      "bpi": 73,
+      "pom": 85,
+      "tRank": 83
     },
     {
       "id": "t92",
@@ -7249,8 +9043,86 @@
       "q4": "9-0",
       "avgNetWins": 181,
       "avgNetLosses": 107,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Saint Louis",
+          "oppNet": 31,
+          "score": "86-57",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "VCU",
+          "oppNet": 43,
+          "score": "86-80",
+          "site": "H",
+          "date": "01-10"
+        },
+        {
+          "opp": "George Washington",
+          "oppNet": 91,
+          "score": "69-64",
+          "site": "H",
+          "date": "01-19"
+        },
+        {
+          "opp": "Davidson",
+          "oppNet": 115,
+          "score": "60-52",
+          "site": "H",
+          "date": "01-28"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "60-52",
+          "site": "H",
+          "date": "02-07"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Richmond",
+          "oppNet": 165,
+          "score": "70-82",
+          "site": "A",
+          "date": "02-10"
+        },
+        {
+          "opp": "Rhode Island",
+          "oppNet": 152,
+          "score": "65-74",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "Saint Bonaventure",
+          "oppNet": 144,
+          "score": "57-63",
+          "site": "N",
+          "date": "03-12"
+        },
+        {
+          "opp": "Duquesne",
+          "oppNet": 133,
+          "score": "65-71",
+          "site": "H",
+          "date": "02-04"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "63-81",
+          "site": "A",
+          "date": "02-25"
+        }
+      ],
+      "kpi": 58,
+      "sor": 75,
+      "wab": 80,
+      "bpi": 85,
+      "pom": 96,
+      "tRank": 118
     },
     {
       "id": "t93",
@@ -7271,8 +9143,86 @@
       "q4": "4-0",
       "avgNetWins": 156,
       "avgNetLosses": 60,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Connecticut",
+          "oppNet": 10,
+          "score": "68-62",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "78-56",
+          "site": "A",
+          "date": "03-04"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "105-104",
+          "site": "H",
+          "date": "01-19"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "86-62",
+          "site": "H",
+          "date": "01-27"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "70-55",
+          "site": "H",
+          "date": "02-07"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Maryland",
+          "oppNet": 138,
+          "score": "82-89",
+          "site": "H",
+          "date": "11-15"
+        },
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "75-80",
+          "site": "A",
+          "date": "01-16"
+        },
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "51-62",
+          "site": "H",
+          "date": "03-01"
+        },
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "88-96",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "87-89",
+          "site": "N",
+          "date": "03-11"
+        }
+      ],
+      "kpi": 124,
+      "sor": 116,
+      "wab": 144,
+      "bpi": 76,
+      "pom": 84,
+      "tRank": 76
     },
     {
       "id": "t94",
@@ -7293,8 +9243,86 @@
       "q4": "6-1",
       "avgNetWins": 163,
       "avgNetLosses": 58,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "North Carolina State",
+          "oppNet": 36,
+          "score": "96-90",
+          "site": "H",
+          "date": "02-28"
+        },
+        {
+          "opp": "TCU",
+          "oppNet": 39,
+          "score": "87-85",
+          "site": "A",
+          "date": "12-05"
+        },
+        {
+          "opp": "Missouri",
+          "oppNet": 58,
+          "score": "76-71",
+          "site": "H",
+          "date": "12-02"
+        },
+        {
+          "opp": "Stanford",
+          "oppNet": 61,
+          "score": "47-40",
+          "site": "A",
+          "date": "12-30"
+        },
+        {
+          "opp": "Rutgers",
+          "oppNet": 134,
+          "score": "68-63",
+          "site": "N",
+          "date": "11-25"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Purdue Fort Wayne",
+          "oppNet": 254,
+          "score": "69-72",
+          "site": "H",
+          "date": "12-21"
+        },
+        {
+          "opp": "Boston College",
+          "oppNet": 158,
+          "score": "69-77",
+          "site": "A",
+          "date": "03-07"
+        },
+        {
+          "opp": "Pittsburgh",
+          "oppNet": 104,
+          "score": "68-73",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Syracuse",
+          "oppNet": 86,
+          "score": "72-86",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "California",
+          "oppNet": 67,
+          "score": "71-72",
+          "site": "A",
+          "date": "01-02"
+        }
+      ],
+      "kpi": 100,
+      "sor": 106,
+      "wab": 103,
+      "bpi": 88,
+      "pom": 89,
+      "tRank": 97
     },
     {
       "id": "t95",
@@ -7315,8 +9343,86 @@
       "q4": "7-1",
       "avgNetWins": 169,
       "avgNetLosses": 133,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Belmont",
+          "oppNet": 63,
+          "score": "81-74",
+          "site": "H",
+          "date": "03-01"
+        },
+        {
+          "opp": "Wake Forest",
+          "oppNet": 66,
+          "score": "78-75",
+          "site": "A",
+          "date": "03-22"
+        },
+        {
+          "opp": "Northern Iowa",
+          "oppNet": 72,
+          "score": "71-69",
+          "site": "A",
+          "date": "02-25"
+        },
+        {
+          "opp": "Northern Iowa",
+          "oppNet": 72,
+          "score": "59-54",
+          "site": "H",
+          "date": "01-21"
+        },
+        {
+          "opp": "Murray State",
+          "oppNet": 105,
+          "score": "70-65",
+          "site": "A",
+          "date": "01-28"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Evansville",
+          "oppNet": 306,
+          "score": "80-88",
+          "site": "A",
+          "date": "02-09"
+        },
+        {
+          "opp": "Ohio",
+          "oppNet": 231,
+          "score": "68-72",
+          "site": "A",
+          "date": "11-06"
+        },
+        {
+          "opp": "Indiana State",
+          "oppNet": 213,
+          "score": "89-94",
+          "site": "A",
+          "date": "01-14"
+        },
+        {
+          "opp": "Valparaiso",
+          "oppNet": 156,
+          "score": "71-77",
+          "site": "A",
+          "date": "01-07"
+        },
+        {
+          "opp": "Southern Illinois",
+          "oppNet": 120,
+          "score": "50-54",
+          "site": "H",
+          "date": "02-03"
+        }
+      ],
+      "kpi": 87,
+      "sor": 115,
+      "wab": 116,
+      "bpi": 100,
+      "pom": 103,
+      "tRank": 110
     },
     {
       "id": "t96",
@@ -7337,8 +9443,86 @@
       "q4": "16-2",
       "avgNetWins": 222,
       "avgNetLosses": 147,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Yale",
+          "oppNet": 68,
+          "score": "68-67",
+          "site": "A",
+          "date": "03-17"
+        },
+        {
+          "opp": "Hofstra",
+          "oppNet": 88,
+          "score": "70-66",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "Navy",
+          "oppNet": 137,
+          "score": "87-57",
+          "site": "H",
+          "date": "11-28"
+        },
+        {
+          "opp": "Valparaiso",
+          "oppNet": 156,
+          "score": "73-70",
+          "site": "A",
+          "date": "12-13"
+        },
+        {
+          "opp": "Towson",
+          "oppNet": 159,
+          "score": "82-73",
+          "site": "A",
+          "date": "01-29"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Howard",
+          "oppNet": 203,
+          "score": "66-67",
+          "site": "H",
+          "date": "12-20"
+        },
+        {
+          "opp": "Campbell",
+          "oppNet": 200,
+          "score": "70-85",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Charleston",
+          "oppNet": 162,
+          "score": "76-79",
+          "site": "H",
+          "date": "03-01"
+        },
+        {
+          "opp": "Kent State",
+          "oppNet": 141,
+          "score": "77-86",
+          "site": "A",
+          "date": "11-10"
+        },
+        {
+          "opp": "William & Mary",
+          "oppNet": 129,
+          "score": "70-77",
+          "site": "A",
+          "date": "01-22"
+        }
+      ],
+      "kpi": 80,
+      "sor": 80,
+      "wab": 77,
+      "bpi": 108,
+      "pom": 110,
+      "tRank": 125
     },
     {
       "id": "t97",
@@ -7359,8 +9543,86 @@
       "q4": "6-0",
       "avgNetWins": 147,
       "avgNetLosses": 47,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Cincinnati",
+          "oppNet": 49,
+          "score": "79-74",
+          "site": "H",
+          "date": "12-05"
+        },
+        {
+          "opp": "West Virginia",
+          "oppNet": 59,
+          "score": "78-68",
+          "site": "N",
+          "date": "11-23"
+        },
+        {
+          "opp": "Providence",
+          "oppNet": 80,
+          "score": "97-84",
+          "site": "H",
+          "date": "01-10"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "89-75",
+          "site": "H",
+          "date": "01-14"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "80-77",
+          "site": "A",
+          "date": "12-20"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "DePaul",
+          "oppNet": 102,
+          "score": "77-86",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Marquette",
+          "oppNet": 93,
+          "score": "65-66",
+          "site": "A",
+          "date": "01-07"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "75-80",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "93-94",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "57-98",
+          "site": "H",
+          "date": "12-17"
+        }
+      ],
+      "kpi": 104,
+      "sor": 91,
+      "wab": 97,
+      "bpi": 96,
+      "pom": 97,
+      "tRank": 94
     },
     {
       "id": "t98",
@@ -7381,8 +9643,86 @@
       "q4": "18-0",
       "avgNetWins": 222,
       "avgNetLosses": 109,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Utah Valley",
+          "oppNet": 85,
+          "score": "63-61",
+          "site": "N",
+          "date": "03-14"
+        },
+        {
+          "opp": "Utah Valley",
+          "oppNet": 85,
+          "score": "78-71",
+          "site": "H",
+          "date": "01-24"
+        },
+        {
+          "opp": "UC Irvine",
+          "oppNet": 117,
+          "score": "69-61",
+          "site": "A",
+          "date": "11-07"
+        },
+        {
+          "opp": "UTA",
+          "oppNet": 161,
+          "score": "87-77",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "UTA",
+          "oppNet": 161,
+          "score": "68-56",
+          "site": "H",
+          "date": "02-26"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Tarleton State",
+          "oppNet": 230,
+          "score": "76-81",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Utah Tech",
+          "oppNet": 176,
+          "score": "65-70",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "UTA",
+          "oppNet": 161,
+          "score": "51-63",
+          "site": "A",
+          "date": "01-01"
+        },
+        {
+          "opp": "Utah",
+          "oppNet": 132,
+          "score": "85-91",
+          "site": "A",
+          "date": "12-06"
+        },
+        {
+          "opp": "Utah Valley",
+          "oppNet": 85,
+          "score": "66-73",
+          "site": "A",
+          "date": "12-29"
+        }
+      ],
+      "kpi": 83,
+      "sor": 85,
+      "wab": 76,
+      "bpi": 137,
+      "pom": 106,
+      "tRank": 96
     },
     {
       "id": "t99",
@@ -7403,8 +9743,86 @@
       "q4": "12-0",
       "avgNetWins": 209,
       "avgNetLosses": 67,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Nevada",
+          "oppNet": 70,
+          "score": "83-73",
+          "site": "H",
+          "date": "03-03"
+        },
+        {
+          "opp": "Grand Canyon",
+          "oppNet": 71,
+          "score": "70-65",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Colorado State",
+          "oppNet": 87,
+          "score": "68-57",
+          "site": "H",
+          "date": "01-31"
+        },
+        {
+          "opp": "UNLV",
+          "oppNet": 111,
+          "score": "98-66",
+          "site": "H",
+          "date": "01-06"
+        },
+        {
+          "opp": "Fresno State",
+          "oppNet": 153,
+          "score": "92-82",
+          "site": "H",
+          "date": "02-17"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Fresno State",
+          "oppNet": 153,
+          "score": "60-63",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "UNLV",
+          "oppNet": 111,
+          "score": "70-73",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Sam Houston State",
+          "oppNet": 107,
+          "score": "70-78",
+          "site": "A",
+          "date": "11-19"
+        },
+        {
+          "opp": "Colorado State",
+          "oppNet": 87,
+          "score": "68-79",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "Wichita State",
+          "oppNet": 78,
+          "score": "70-74",
+          "site": "A",
+          "date": "03-17"
+        }
+      ],
+      "kpi": 103,
+      "sor": 114,
+      "wab": 110,
+      "bpi": 118,
+      "pom": 98,
+      "tRank": 95
     },
     {
       "id": "t100",
@@ -7425,8 +9843,86 @@
       "q4": "5-0",
       "avgNetWins": 178,
       "avgNetLosses": 42,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Baylor",
+          "oppNet": 50,
+          "score": "90-74",
+          "site": "H",
+          "date": "02-17"
+        },
+        {
+          "opp": "Tulsa",
+          "oppNet": 52,
+          "score": "84-83",
+          "site": "H",
+          "date": "11-17"
+        },
+        {
+          "opp": "West Virginia",
+          "oppNet": 59,
+          "score": "65-63",
+          "site": "H",
+          "date": "03-03"
+        },
+        {
+          "opp": "California",
+          "oppNet": 67,
+          "score": "99-96",
+          "site": "H",
+          "date": "11-13"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "83-76",
+          "site": "A",
+          "date": "12-13"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Bowling Green",
+          "oppNet": 157,
+          "score": "66-82",
+          "site": "H",
+          "date": "12-01"
+        },
+        {
+          "opp": "Colorado",
+          "oppNet": 76,
+          "score": "70-79",
+          "site": "A",
+          "date": "02-25"
+        },
+        {
+          "opp": "Oklahoma State",
+          "oppNet": 74,
+          "score": "83-84",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Arizona State",
+          "oppNet": 73,
+          "score": "84-87",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "West Virginia",
+          "oppNet": 59,
+          "score": "54-59",
+          "site": "A",
+          "date": "01-27"
+        }
+      ],
+      "kpi": 113,
+      "sor": 107,
+      "wab": 114,
+      "bpi": 87,
+      "pom": 101,
+      "tRank": 103
     },
     {
       "id": "t101",
@@ -7447,8 +9943,86 @@
       "q4": "14-2",
       "avgNetWins": 226,
       "avgNetLosses": 139,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "UC Irvine",
+          "oppNet": 117,
+          "score": "71-64",
+          "site": "N",
+          "date": "03-14"
+        },
+        {
+          "opp": "UC Irvine",
+          "oppNet": 117,
+          "score": "67-66",
+          "site": "H",
+          "date": "01-10"
+        },
+        {
+          "opp": "UC San Diego",
+          "oppNet": 124,
+          "score": "72-67",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "UC Santa Barbara",
+          "oppNet": 143,
+          "score": "78-75",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Utah Tech",
+          "oppNet": 176,
+          "score": "68-62",
+          "site": "H",
+          "date": "11-15"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Long Beach State",
+          "oppNet": 257,
+          "score": "75-84",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "Cal Poly",
+          "oppNet": 225,
+          "score": "75-86",
+          "site": "H",
+          "date": "02-19"
+        },
+        {
+          "opp": "Cal State Northridge",
+          "oppNet": 188,
+          "score": "60-84",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "UC Santa Barbara",
+          "oppNet": 143,
+          "score": "62-77",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "UC San Diego",
+          "oppNet": 124,
+          "score": "73-83",
+          "site": "A",
+          "date": "01-03"
+        }
+      ],
+      "kpi": 108,
+      "sor": 103,
+      "wab": 95,
+      "bpi": 122,
+      "pom": 108,
+      "tRank": 116
     },
     {
       "id": "t102",
@@ -7469,8 +10043,86 @@
       "q4": "6-1",
       "avgNetWins": 175,
       "avgNetLosses": 66,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Seton Hall",
+          "oppNet": 53,
+          "score": "69-57",
+          "site": "A",
+          "date": "02-18"
+        },
+        {
+          "opp": "Seton Hall",
+          "oppNet": 53,
+          "score": "67-60",
+          "site": "H",
+          "date": "01-24"
+        },
+        {
+          "opp": "Wichita State",
+          "oppNet": 78,
+          "score": "61-58",
+          "site": "A",
+          "date": "12-13"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "72-71",
+          "site": "A",
+          "date": "02-25"
+        },
+        {
+          "opp": "Creighton",
+          "oppNet": 83,
+          "score": "72-71",
+          "site": "H",
+          "date": "02-11"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Buffalo",
+          "oppNet": 195,
+          "score": "53-66",
+          "site": "H",
+          "date": "11-11"
+        },
+        {
+          "opp": "Xavier",
+          "oppNet": 97,
+          "score": "66-68",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "61-70",
+          "site": "A",
+          "date": "01-28"
+        },
+        {
+          "opp": "Georgetown",
+          "oppNet": 90,
+          "score": "56-63",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Butler",
+          "oppNet": 84,
+          "score": "80-87",
+          "site": "A",
+          "date": "01-20"
+        }
+      ],
+      "kpi": 111,
+      "sor": 95,
+      "wab": 105,
+      "bpi": 99,
+      "pom": 102,
+      "tRank": 101
     },
     {
       "id": "t103",
@@ -7491,8 +10143,86 @@
       "q4": "15-4",
       "avgNetWins": 251,
       "avgNetLosses": 175,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "North Dakota State",
+          "oppNet": 114,
+          "score": "84-62",
+          "site": "H",
+          "date": "02-26"
+        },
+        {
+          "opp": "Northern Colorado",
+          "oppNet": 149,
+          "score": "73-72",
+          "site": "N",
+          "date": "11-21"
+        },
+        {
+          "opp": "Weber State",
+          "oppNet": 202,
+          "score": "88-65",
+          "site": "H",
+          "date": "12-07"
+        },
+        {
+          "opp": "South Dakota State",
+          "oppNet": 210,
+          "score": "77-62",
+          "site": "A",
+          "date": "02-04"
+        },
+        {
+          "opp": "South Dakota State",
+          "oppNet": 210,
+          "score": "80-67",
+          "site": "N",
+          "date": "03-05"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "North Dakota",
+          "oppNet": 271,
+          "score": "66-67",
+          "site": "N",
+          "date": "03-07"
+        },
+        {
+          "opp": "North Dakota",
+          "oppNet": 271,
+          "score": "80-81",
+          "site": "H",
+          "date": "01-29"
+        },
+        {
+          "opp": "Omaha",
+          "oppNet": 258,
+          "score": "94-98",
+          "site": "A",
+          "date": "02-12"
+        },
+        {
+          "opp": "Denver",
+          "oppNet": 241,
+          "score": "80-82",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Cal State Fullerton",
+          "oppNet": 177,
+          "score": "80-88",
+          "site": "N",
+          "date": "11-22"
+        }
+      ],
+      "kpi": 159,
+      "sor": 127,
+      "wab": 109,
+      "bpi": 131,
+      "pom": 109,
+      "tRank": 112
     },
     {
       "id": "t104",
@@ -7513,8 +10243,86 @@
       "q4": "5-1",
       "avgNetWins": 163,
       "avgNetLosses": 55,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Ohio State",
+          "oppNet": 29,
+          "score": "67-66",
+          "site": "H",
+          "date": "11-28"
+        },
+        {
+          "opp": "Stanford",
+          "oppNet": 61,
+          "score": "64-63",
+          "site": "N",
+          "date": "03-10"
+        },
+        {
+          "opp": "Wake Forest",
+          "oppNet": 66,
+          "score": "80-76",
+          "site": "H",
+          "date": "01-27"
+        },
+        {
+          "opp": "California",
+          "oppNet": 67,
+          "score": "72-56",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Syracuse",
+          "oppNet": 86,
+          "score": "71-69",
+          "site": "A",
+          "date": "03-07"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Quinnipiac",
+          "oppNet": 212,
+          "score": "75-83",
+          "site": "H",
+          "date": "11-23"
+        },
+        {
+          "opp": "Boston College",
+          "oppNet": 158,
+          "score": "62-65",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "Hofstra",
+          "oppNet": 88,
+          "score": "73-80",
+          "site": "H",
+          "date": "12-07"
+        },
+        {
+          "opp": "Syracuse",
+          "oppNet": 86,
+          "score": "72-83",
+          "site": "H",
+          "date": "01-10"
+        },
+        {
+          "opp": "Florida State",
+          "oppNet": 62,
+          "score": "74-75",
+          "site": "H",
+          "date": "03-04"
+        }
+      ],
+      "kpi": 109,
+      "sor": 121,
+      "wab": 128,
+      "bpi": 94,
+      "pom": 94,
+      "tRank": 102
     },
     {
       "id": "t105",
@@ -7535,8 +10343,86 @@
       "q4": "10-0",
       "avgNetWins": 199,
       "avgNetLosses": 92,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Akron",
+          "oppNet": 54,
+          "score": "115-100",
+          "site": "N",
+          "date": "12-13"
+        },
+        {
+          "opp": "George Washington",
+          "oppNet": 91,
+          "score": "96-95",
+          "site": "N",
+          "date": "11-25"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "81-77",
+          "site": "A",
+          "date": "01-01"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "81-74",
+          "site": "H",
+          "date": "02-03"
+        },
+        {
+          "opp": "Bradley",
+          "oppNet": 113,
+          "score": "86-66",
+          "site": "H",
+          "date": "01-04"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Drake",
+          "oppNet": 199,
+          "score": "90-101",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "Middle Tennessee",
+          "oppNet": 163,
+          "score": "87-90",
+          "site": "N",
+          "date": "11-23"
+        },
+        {
+          "opp": "Bradley",
+          "oppNet": 113,
+          "score": "78-87",
+          "site": "A",
+          "date": "03-01"
+        },
+        {
+          "opp": "UIC",
+          "oppNet": 110,
+          "score": "79-92",
+          "site": "N",
+          "date": "03-06"
+        },
+        {
+          "opp": "Illinois State",
+          "oppNet": 95,
+          "score": "61-78",
+          "site": "A",
+          "date": "02-18"
+        }
+      ],
+      "kpi": 93,
+      "sor": 108,
+      "wab": 107,
+      "bpi": 123,
+      "pom": 122,
+      "tRank": 135
     },
     {
       "id": "t106",
@@ -7557,8 +10443,86 @@
       "q4": "11-2",
       "avgNetWins": 193,
       "avgNetLosses": 138,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Dayton",
+          "oppNet": 69,
+          "score": "64-61",
+          "site": "A",
+          "date": "12-20"
+        },
+        {
+          "opp": "George Mason",
+          "oppNet": 92,
+          "score": "77-71",
+          "site": "A",
+          "date": "03-17"
+        },
+        {
+          "opp": "Sam Houston State",
+          "oppNet": 107,
+          "score": "82-74",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "Sam Houston State",
+          "oppNet": 107,
+          "score": "79-72",
+          "site": "H",
+          "date": "03-07"
+        },
+        {
+          "opp": "FAU",
+          "oppNet": 123,
+          "score": "88-68",
+          "site": "H",
+          "date": "11-09"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Louisiana Tech",
+          "oppNet": 209,
+          "score": "71-76",
+          "site": "H",
+          "date": "03-05"
+        },
+        {
+          "opp": "Missouri State",
+          "oppNet": 206,
+          "score": "69-77",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Western Kentucky",
+          "oppNet": 160,
+          "score": "73-94",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Towson",
+          "oppNet": 159,
+          "score": "69-72",
+          "site": "N",
+          "date": "11-25"
+        },
+        {
+          "opp": "Kennesaw State",
+          "oppNet": 155,
+          "score": "65-74",
+          "site": "A",
+          "date": "02-26"
+        }
+      ],
+      "kpi": 72,
+      "sor": 71,
+      "wab": 75,
+      "bpi": 101,
+      "pom": 125,
+      "tRank": 120
     },
     {
       "id": "t114",
@@ -7579,8 +10543,86 @@
       "q4": "19-2",
       "avgNetWins": 255,
       "avgNetLosses": 155,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Saint Thomas",
+          "oppNet": 103,
+          "score": "68-65",
+          "site": "H",
+          "date": "01-17"
+        },
+        {
+          "opp": "Southern Illinois",
+          "oppNet": 120,
+          "score": "92-85",
+          "site": "H",
+          "date": "11-17"
+        },
+        {
+          "opp": "Cal State Northridge",
+          "oppNet": 188,
+          "score": "90-68",
+          "site": "H",
+          "date": "11-11"
+        },
+        {
+          "opp": "Montana",
+          "oppNet": 194,
+          "score": "81-72",
+          "site": "A",
+          "date": "12-03"
+        },
+        {
+          "opp": "Drake",
+          "oppNet": 199,
+          "score": "99-94",
+          "site": "A",
+          "date": "12-13"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "UTEP",
+          "oppNet": 268,
+          "score": "66-76",
+          "site": "A",
+          "date": "12-22"
+        },
+        {
+          "opp": "Denver",
+          "oppNet": 241,
+          "score": "71-78",
+          "site": "H",
+          "date": "02-05"
+        },
+        {
+          "opp": "UC Davis",
+          "oppNet": 178,
+          "score": "68-80",
+          "site": "A",
+          "date": "11-05"
+        },
+        {
+          "opp": "Oregon State",
+          "oppNet": 170,
+          "score": "65-67",
+          "site": "A",
+          "date": "11-03"
+        },
+        {
+          "opp": "Arkansas State",
+          "oppNet": 154,
+          "score": "80-85",
+          "site": "A",
+          "date": "11-28"
+        }
+      ],
+      "kpi": 129,
+      "sor": 98,
+      "wab": 91,
+      "bpi": 133,
+      "pom": 113,
+      "tRank": 114
     },
     {
       "id": "t117",
@@ -7601,8 +10643,86 @@
       "q4": "14-0",
       "avgNetWins": 214,
       "avgNetLosses": 124,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Hawaii",
+          "oppNet": 101,
+          "score": "87-76",
+          "site": "H",
+          "date": "01-29"
+        },
+        {
+          "opp": "North Dakota State",
+          "oppNet": 114,
+          "score": "74-73",
+          "site": "N",
+          "date": "12-21"
+        },
+        {
+          "opp": "UC San Diego",
+          "oppNet": 124,
+          "score": "61-59",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "UC Santa Barbara",
+          "oppNet": 143,
+          "score": "64-60",
+          "site": "H",
+          "date": "02-28"
+        },
+        {
+          "opp": "Cal State Fullerton",
+          "oppNet": 177,
+          "score": "86-64",
+          "site": "A",
+          "date": "01-03"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Cal Poly",
+          "oppNet": 225,
+          "score": "73-79",
+          "site": "A",
+          "date": "02-12"
+        },
+        {
+          "opp": "New Mexico State",
+          "oppNet": 190,
+          "score": "45-57",
+          "site": "N",
+          "date": "11-25"
+        },
+        {
+          "opp": "UC Davis",
+          "oppNet": 178,
+          "score": "72-75",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "UC Santa Barbara",
+          "oppNet": 143,
+          "score": "79-84",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "UC San Diego",
+          "oppNet": 124,
+          "score": "69-71",
+          "site": "H",
+          "date": "02-21"
+        }
+      ],
+      "kpi": 102,
+      "sor": 132,
+      "wab": 126,
+      "bpi": 111,
+      "pom": 104,
+      "tRank": 108
     },
     {
       "id": "t125",
@@ -7623,8 +10743,86 @@
       "q4": "13-3",
       "avgNetWins": 220,
       "avgNetLosses": 173,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "San Diego State",
+          "oppNet": 47,
+          "score": "108-107",
+          "site": "A",
+          "date": "11-18"
+        },
+        {
+          "opp": "Akron",
+          "oppNet": 54,
+          "score": "79-69",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "UAB",
+          "oppNet": 118,
+          "score": "86-85",
+          "site": "A",
+          "date": "12-14"
+        },
+        {
+          "opp": "Kent State",
+          "oppNet": 141,
+          "score": "103-97",
+          "site": "A",
+          "date": "11-03"
+        },
+        {
+          "opp": "Arkansas State",
+          "oppNet": 154,
+          "score": "99-74",
+          "site": "H",
+          "date": "01-17"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "West Georgia",
+          "oppNet": 298,
+          "score": "89-93",
+          "site": "H",
+          "date": "12-01"
+        },
+        {
+          "opp": "Texas State",
+          "oppNet": 235,
+          "score": "62-74",
+          "site": "A",
+          "date": "02-11"
+        },
+        {
+          "opp": "Southern Miss",
+          "oppNet": 214,
+          "score": "65-69",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "James Madison",
+          "oppNet": 208,
+          "score": "64-73",
+          "site": "H",
+          "date": "01-29"
+        },
+        {
+          "opp": "Appalachian State",
+          "oppNet": 192,
+          "score": "44-66",
+          "site": "H",
+          "date": "01-31"
+        }
+      ],
+      "kpi": 86,
+      "sor": 126,
+      "wab": 130,
+      "bpi": 134,
+      "pom": 143,
+      "tRank": 142
     },
     {
       "id": "t127",
@@ -7645,8 +10843,86 @@
       "q4": "16-2",
       "avgNetWins": 242,
       "avgNetLosses": 143,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Oakland",
+          "oppNet": 175,
+          "score": "94-84",
+          "site": "A",
+          "date": "01-11"
+        },
+        {
+          "opp": "Oakland",
+          "oppNet": 175,
+          "score": "88-73",
+          "site": "H",
+          "date": "12-29"
+        },
+        {
+          "opp": "Northern Kentucky",
+          "oppNet": 184,
+          "score": "92-91",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Northern Kentucky",
+          "oppNet": 184,
+          "score": "103-90",
+          "site": "N",
+          "date": "03-09"
+        },
+        {
+          "opp": "Northern Kentucky",
+          "oppNet": 184,
+          "score": "88-80",
+          "site": "H",
+          "date": "01-24"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Cleveland State",
+          "oppNet": 317,
+          "score": "79-85",
+          "site": "H",
+          "date": "01-21"
+        },
+        {
+          "opp": "Detroit",
+          "oppNet": 221,
+          "score": "74-77",
+          "site": "H",
+          "date": "02-12"
+        },
+        {
+          "opp": "Youngstown State",
+          "oppNet": 219,
+          "score": "68-69",
+          "site": "A",
+          "date": "12-03"
+        },
+        {
+          "opp": "Marshall",
+          "oppNet": 171,
+          "score": "74-76",
+          "site": "A",
+          "date": "12-13"
+        },
+        {
+          "opp": "Robert Morris",
+          "oppNet": 148,
+          "score": "66-72",
+          "site": "A",
+          "date": "02-04"
+        }
+      ],
+      "kpi": 144,
+      "sor": 139,
+      "wab": 134,
+      "bpi": 140,
+      "pom": 140,
+      "tRank": 130
     },
     {
       "id": "t137",
@@ -7667,8 +10943,86 @@
       "q4": "23-3",
       "avgNetWins": 310,
       "avgNetLosses": 151,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Colgate",
+          "oppNet": 226,
+          "score": "84-80",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "Colgate",
+          "oppNet": 226,
+          "score": "85-69",
+          "site": "H",
+          "date": "02-28"
+        },
+        {
+          "opp": "American",
+          "oppNet": 256,
+          "score": "82-73",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "Presbyterian College",
+          "oppNet": 260,
+          "score": "76-55",
+          "site": "A",
+          "date": "11-03"
+        },
+        {
+          "opp": "Boston University",
+          "oppNet": 263,
+          "score": "82-77",
+          "site": "H",
+          "date": "12-31"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Southeastern Louisiana",
+          "oppNet": 295,
+          "score": "65-69",
+          "site": "N",
+          "date": "11-29"
+        },
+        {
+          "opp": "Boston University",
+          "oppNet": 263,
+          "score": "72-73",
+          "site": "H",
+          "date": "03-08"
+        },
+        {
+          "opp": "American",
+          "oppNet": 256,
+          "score": "51-65",
+          "site": "A",
+          "date": "01-12"
+        },
+        {
+          "opp": "Penn State",
+          "oppNet": 142,
+          "score": "71-80",
+          "site": "A",
+          "date": "11-11"
+        },
+        {
+          "opp": "UNCW",
+          "oppNet": 96,
+          "score": "57-87",
+          "site": "A",
+          "date": "11-28"
+        }
+      ],
+      "kpi": 190,
+      "sor": 104,
+      "wab": 93,
+      "bpi": 141,
+      "pom": 142,
+      "tRank": 148
     },
     {
       "id": "t139",
@@ -7689,8 +11043,86 @@
       "q4": "10-2",
       "avgNetWins": 213,
       "avgNetLosses": 117,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Yale",
+          "oppNet": 68,
+          "score": "88-84",
+          "site": "N",
+          "date": "03-15"
+        },
+        {
+          "opp": "Saint Joseph's",
+          "oppNet": 121,
+          "score": "83-74",
+          "site": "H",
+          "date": "11-17"
+        },
+        {
+          "opp": "Cornell",
+          "oppNet": 150,
+          "score": "91-81",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "Cornell",
+          "oppNet": 150,
+          "score": "82-76",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "Harvard",
+          "oppNet": 151,
+          "score": "62-60",
+          "site": "N",
+          "date": "03-14"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "American",
+          "oppNet": 256,
+          "score": "78-84",
+          "site": "A",
+          "date": "11-09"
+        },
+        {
+          "opp": "Princeton",
+          "oppNet": 249,
+          "score": "76-78",
+          "site": "A",
+          "date": "01-05"
+        },
+        {
+          "opp": "Columbia",
+          "oppNet": 185,
+          "score": "67-72",
+          "site": "A",
+          "date": "01-30"
+        },
+        {
+          "opp": "Harvard",
+          "oppNet": 151,
+          "score": "63-64",
+          "site": "A",
+          "date": "01-19"
+        },
+        {
+          "opp": "Rutgers",
+          "oppNet": 134,
+          "score": "69-70",
+          "site": "A",
+          "date": "12-20"
+        }
+      ],
+      "kpi": 107,
+      "sor": 117,
+      "wab": 118,
+      "bpi": 158,
+      "pom": 150,
+      "tRank": 147
     },
     {
       "id": "t140",
@@ -7711,8 +11143,86 @@
       "q4": "19-5",
       "avgNetWins": 269,
       "avgNetLosses": 183,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Central Arkansas",
+          "oppNet": 166,
+          "score": "80-57",
+          "site": "H",
+          "date": "11-29"
+        },
+        {
+          "opp": "Mercer",
+          "oppNet": 182,
+          "score": "77-71",
+          "site": "H",
+          "date": "01-03"
+        },
+        {
+          "opp": "Northern Kentucky",
+          "oppNet": 184,
+          "score": "75-63",
+          "site": "H",
+          "date": "11-12"
+        },
+        {
+          "opp": "Furman",
+          "oppNet": 186,
+          "score": "78-69",
+          "site": "A",
+          "date": "02-18"
+        },
+        {
+          "opp": "Furman",
+          "oppNet": 186,
+          "score": "75-71",
+          "site": "H",
+          "date": "02-04"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Presbyterian College",
+          "oppNet": 260,
+          "score": "64-68",
+          "site": "A",
+          "date": "11-08"
+        },
+        {
+          "opp": "Wofford",
+          "oppNet": 246,
+          "score": "69-72",
+          "site": "H",
+          "date": "02-25"
+        },
+        {
+          "opp": "Western Carolina",
+          "oppNet": 228,
+          "score": "68-72",
+          "site": "A",
+          "date": "01-14"
+        },
+        {
+          "opp": "Western Carolina",
+          "oppNet": 228,
+          "score": "88-90",
+          "site": "H",
+          "date": "01-29"
+        },
+        {
+          "opp": "Samford",
+          "oppNet": 217,
+          "score": "72-82",
+          "site": "H",
+          "date": "02-14"
+        }
+      ],
+      "kpi": 148,
+      "sor": 144,
+      "wab": 145,
+      "bpi": 143,
+      "pom": 167,
+      "tRank": 197
     },
     {
       "id": "t145",
@@ -7733,8 +11243,86 @@
       "q4": "9-3",
       "avgNetWins": 220,
       "avgNetLosses": 162,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Montana State",
+          "oppNet": 128,
+          "score": "92-89",
+          "site": "H",
+          "date": "01-10"
+        },
+        {
+          "opp": "Montana State",
+          "oppNet": 128,
+          "score": "78-74",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Washington State",
+          "oppNet": 146,
+          "score": "83-81",
+          "site": "A",
+          "date": "11-03"
+        },
+        {
+          "opp": "Cal State Northridge",
+          "oppNet": 188,
+          "score": "78-64",
+          "site": "N",
+          "date": "11-26"
+        },
+        {
+          "opp": "Montana",
+          "oppNet": 194,
+          "score": "77-66",
+          "site": "N",
+          "date": "03-11"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Cal State Bakersfield",
+          "oppNet": 330,
+          "score": "63-64",
+          "site": "A",
+          "date": "12-23"
+        },
+        {
+          "opp": "Idaho State",
+          "oppNet": 236,
+          "score": "68-76",
+          "site": "A",
+          "date": "01-15"
+        },
+        {
+          "opp": "San Diego",
+          "oppNet": 234,
+          "score": "74-78",
+          "site": "A",
+          "date": "11-12"
+        },
+        {
+          "opp": "Weber State",
+          "oppNet": 202,
+          "score": "72-83",
+          "site": "H",
+          "date": "02-12"
+        },
+        {
+          "opp": "Montana",
+          "oppNet": 194,
+          "score": "68-73",
+          "site": "A",
+          "date": "02-07"
+        }
+      ],
+      "kpi": 231,
+      "sor": 203,
+      "wab": 198,
+      "bpi": 172,
+      "pom": 145,
+      "tRank": 136
     },
     {
       "id": "t147",
@@ -7755,8 +11343,86 @@
       "q4": "9-3",
       "avgNetWins": 225,
       "avgNetLosses": 162,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Montana State",
+          "oppNet": 128,
+          "score": "63-54",
+          "site": "H",
+          "date": "01-31"
+        },
+        {
+          "opp": "Idaho",
+          "oppNet": 145,
+          "score": "69-66",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "Idaho",
+          "oppNet": 145,
+          "score": "77-67",
+          "site": "H",
+          "date": "02-19"
+        },
+        {
+          "opp": "Northern Colorado",
+          "oppNet": 149,
+          "score": "76-73",
+          "site": "H",
+          "date": "01-15"
+        },
+        {
+          "opp": "Utah Tech",
+          "oppNet": 176,
+          "score": "68-63",
+          "site": "A",
+          "date": "11-25"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Omaha",
+          "oppNet": 258,
+          "score": "55-60",
+          "site": "H",
+          "date": "12-06"
+        },
+        {
+          "opp": "Tulane",
+          "oppNet": 207,
+          "score": "61-63",
+          "site": "A",
+          "date": "12-20"
+        },
+        {
+          "opp": "Eastern Washington",
+          "oppNet": 204,
+          "score": "55-67",
+          "site": "H",
+          "date": "02-21"
+        },
+        {
+          "opp": "Montana",
+          "oppNet": 194,
+          "score": "68-74",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Montana",
+          "oppNet": 194,
+          "score": "72-75",
+          "site": "N",
+          "date": "03-10"
+        }
+      ],
+      "kpi": 204,
+      "sor": 149,
+      "wab": 133,
+      "bpi": 192,
+      "pom": 146,
+      "tRank": 158
     },
     {
       "id": "t155",
@@ -7777,8 +11443,86 @@
       "q4": "12-4",
       "avgNetWins": 214,
       "avgNetLosses": 156,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Liberty",
+          "oppNet": 106,
+          "score": "74-65",
+          "site": "H",
+          "date": "02-26"
+        },
+        {
+          "opp": "Sam Houston State",
+          "oppNet": 107,
+          "score": "79-73",
+          "site": "N",
+          "date": "03-13"
+        },
+        {
+          "opp": "Western Kentucky",
+          "oppNet": 160,
+          "score": "81-65",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Western Kentucky",
+          "oppNet": 160,
+          "score": "96-87",
+          "site": "N",
+          "date": "03-12"
+        },
+        {
+          "opp": "Western Kentucky",
+          "oppNet": 160,
+          "score": "72-69",
+          "site": "H",
+          "date": "01-28"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Oral Roberts",
+          "oppNet": 311,
+          "score": "83-91",
+          "site": "N",
+          "date": "11-25"
+        },
+        {
+          "opp": "Delaware",
+          "oppNet": 287,
+          "score": "52-67",
+          "site": "A",
+          "date": "01-04"
+        },
+        {
+          "opp": "UTEP",
+          "oppNet": 268,
+          "score": "71-78",
+          "site": "A",
+          "date": "03-05"
+        },
+        {
+          "opp": "Jacksonville State",
+          "oppNet": 216,
+          "score": "58-77",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Louisiana Tech",
+          "oppNet": 209,
+          "score": "76-82",
+          "site": "A",
+          "date": "01-23"
+        }
+      ],
+      "kpi": 154,
+      "sor": 148,
+      "wab": 159,
+      "bpi": 125,
+      "pom": 163,
+      "tRank": 145
     },
     {
       "id": "t164",
@@ -7799,8 +11543,86 @@
       "q4": "18-2",
       "avgNetWins": 285,
       "avgNetLosses": 148,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "East Tennessee State",
+          "oppNet": 140,
+          "score": "76-75",
+          "site": "H",
+          "date": "12-12"
+        },
+        {
+          "opp": "Queens",
+          "oppNet": 189,
+          "score": "95-87",
+          "site": "A",
+          "date": "02-11"
+        },
+        {
+          "opp": "Lipscomb",
+          "oppNet": 193,
+          "score": "87-76",
+          "site": "H",
+          "date": "02-04"
+        },
+        {
+          "opp": "FGCU",
+          "oppNet": 247,
+          "score": "82-71",
+          "site": "A",
+          "date": "01-08"
+        },
+        {
+          "opp": "FGCU",
+          "oppNet": 247,
+          "score": "83-62",
+          "site": "H",
+          "date": "01-22"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Bellarmine",
+          "oppNet": 285,
+          "score": "97-111",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Lipscomb",
+          "oppNet": 193,
+          "score": "78-82",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Queens",
+          "oppNet": 189,
+          "score": "83-90",
+          "site": "N",
+          "date": "03-07"
+        },
+        {
+          "opp": "Central Arkansas",
+          "oppNet": 166,
+          "score": "88-93",
+          "site": "H",
+          "date": "02-25"
+        },
+        {
+          "opp": "Kent State",
+          "oppNet": 141,
+          "score": "84-96",
+          "site": "A",
+          "date": "12-03"
+        }
+      ],
+      "kpi": 158,
+      "sor": 118,
+      "wab": 111,
+      "bpi": 167,
+      "pom": 173,
+      "tRank": 159
     },
     {
       "id": "t172",
@@ -7821,8 +11643,86 @@
       "q4": "16-6",
       "avgNetWins": 272,
       "avgNetLosses": 193,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "UNLV",
+          "oppNet": 111,
+          "score": "63-60",
+          "site": "A",
+          "date": "12-13"
+        },
+        {
+          "opp": "Tennessee-Martin",
+          "oppNet": 205,
+          "score": "67-42",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Tennessee-Martin",
+          "oppNet": 205,
+          "score": "68-55",
+          "site": "N",
+          "date": "03-06"
+        },
+        {
+          "opp": "Tennessee-Martin",
+          "oppNet": 205,
+          "score": "78-71",
+          "site": "H",
+          "date": "12-18"
+        },
+        {
+          "opp": "Southeast Missouri",
+          "oppNet": 224,
+          "score": "79-71",
+          "site": "A",
+          "date": "02-26"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Eastern Illinois",
+          "oppNet": 319,
+          "score": "70-74",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "Alabama A&M",
+          "oppNet": 310,
+          "score": "53-80",
+          "site": "A",
+          "date": "12-03"
+        },
+        {
+          "opp": "Tennessee Tech",
+          "oppNet": 308,
+          "score": "85-90",
+          "site": "H",
+          "date": "02-02"
+        },
+        {
+          "opp": "Morehead State",
+          "oppNet": 264,
+          "score": "86-94",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "SIUE",
+          "oppNet": 259,
+          "score": "66-74",
+          "site": "A",
+          "date": "01-22"
+        }
+      ],
+      "kpi": 150,
+      "sor": 128,
+      "wab": 112,
+      "bpi": 206,
+      "pom": 187,
+      "tRank": 218
     },
     {
       "id": "t180",
@@ -7843,8 +11743,86 @@
       "q4": "19-2",
       "avgNetWins": 259,
       "avgNetLosses": 175,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Marist",
+          "oppNet": 181,
+          "score": "68-55",
+          "site": "A",
+          "date": "01-19"
+        },
+        {
+          "opp": "Marist",
+          "oppNet": 181,
+          "score": "58-57",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Marist",
+          "oppNet": 181,
+          "score": "81-56",
+          "site": "H",
+          "date": "02-12"
+        },
+        {
+          "opp": "Siena",
+          "oppNet": 183,
+          "score": "63-59",
+          "site": "A",
+          "date": "01-09"
+        },
+        {
+          "opp": "Siena",
+          "oppNet": 183,
+          "score": "79-72",
+          "site": "H",
+          "date": "02-20"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Canisius",
+          "oppNet": 343,
+          "score": "62-67",
+          "site": "A",
+          "date": "02-27"
+        },
+        {
+          "opp": "Iona",
+          "oppNet": 237,
+          "score": "60-61",
+          "site": "A",
+          "date": "01-22"
+        },
+        {
+          "opp": "Saint Peter's",
+          "oppNet": 233,
+          "score": "63-76",
+          "site": "A",
+          "date": "01-11"
+        },
+        {
+          "opp": "Tarleton State",
+          "oppNet": 230,
+          "score": "62-76",
+          "site": "A",
+          "date": "11-11"
+        },
+        {
+          "opp": "Vermont",
+          "oppNet": 227,
+          "score": "59-66",
+          "site": "A",
+          "date": "12-14"
+        }
+      ],
+      "kpi": 112,
+      "sor": 133,
+      "wab": 129,
+      "bpi": 188,
+      "pom": 179,
+      "tRank": 170
     },
     {
       "id": "t183",
@@ -7865,8 +11843,86 @@
       "q4": "21-4",
       "avgNetWins": 288,
       "avgNetLosses": 184,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Merrimack",
+          "oppNet": 180,
+          "score": "64-54",
+          "site": "N",
+          "date": "03-10"
+        },
+        {
+          "opp": "Marist",
+          "oppNet": 181,
+          "score": "67-63",
+          "site": "A",
+          "date": "02-15"
+        },
+        {
+          "opp": "Marist",
+          "oppNet": 181,
+          "score": "69-50",
+          "site": "H",
+          "date": "01-22"
+        },
+        {
+          "opp": "Saint Peter's",
+          "oppNet": 233,
+          "score": "72-63",
+          "site": "H",
+          "date": "02-22"
+        },
+        {
+          "opp": "Iona",
+          "oppNet": 237,
+          "score": "79-72",
+          "site": "H",
+          "date": "02-05"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Sacred Heart",
+          "oppNet": 293,
+          "score": "80-86",
+          "site": "H",
+          "date": "01-14"
+        },
+        {
+          "opp": "Fairfield",
+          "oppNet": 240,
+          "score": "58-72",
+          "site": "A",
+          "date": "02-27"
+        },
+        {
+          "opp": "Iona",
+          "oppNet": 237,
+          "score": "72-75",
+          "site": "A",
+          "date": "01-02"
+        },
+        {
+          "opp": "Saint Peter's",
+          "oppNet": 233,
+          "score": "65-70",
+          "site": "A",
+          "date": "02-07"
+        },
+        {
+          "opp": "Vermont",
+          "oppNet": 227,
+          "score": "69-83",
+          "site": "A",
+          "date": "12-17"
+        }
+      ],
+      "kpi": 140,
+      "sor": 159,
+      "wab": 154,
+      "bpi": 196,
+      "pom": 192,
+      "tRank": 186
     },
     {
       "id": "t186",
@@ -7887,8 +11943,86 @@
       "q4": "14-4",
       "avgNetWins": 249,
       "avgNetLosses": 167,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "East Tennessee State",
+          "oppNet": 140,
+          "score": "76-61",
+          "site": "N",
+          "date": "03-09"
+        },
+        {
+          "opp": "Harvard",
+          "oppNet": 151,
+          "score": "79-69",
+          "site": "H",
+          "date": "12-06"
+        },
+        {
+          "opp": "Richmond",
+          "oppNet": 165,
+          "score": "73-72",
+          "site": "N",
+          "date": "11-27"
+        },
+        {
+          "opp": "Mercer",
+          "oppNet": 182,
+          "score": "74-72",
+          "site": "H",
+          "date": "12-31"
+        },
+        {
+          "opp": "Queens",
+          "oppNet": 189,
+          "score": "90-79",
+          "site": "H",
+          "date": "11-23"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "The Citadel",
+          "oppNet": 346,
+          "score": "75-77",
+          "site": "A",
+          "date": "01-21"
+        },
+        {
+          "opp": "UNCG",
+          "oppNet": 292,
+          "score": "64-67",
+          "site": "H",
+          "date": "02-08"
+        },
+        {
+          "opp": "Wofford",
+          "oppNet": 246,
+          "score": "70-74",
+          "site": "H",
+          "date": "01-17"
+        },
+        {
+          "opp": "Western Carolina",
+          "oppNet": 228,
+          "score": "67-86",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Western Carolina",
+          "oppNet": 228,
+          "score": "77-80",
+          "site": "H",
+          "date": "01-03"
+        }
+      ],
+      "kpi": 167,
+      "sor": 158,
+      "wab": 164,
+      "bpi": 160,
+      "pom": 191,
+      "tRank": 194
     },
     {
       "id": "t189",
@@ -7909,8 +12043,86 @@
       "q4": "18-4",
       "avgNetWins": 289,
       "avgNetLosses": 121,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Austin Peay",
+          "oppNet": 164,
+          "score": "90-83",
+          "site": "N",
+          "date": "03-07"
+        },
+        {
+          "opp": "Central Arkansas",
+          "oppNet": 166,
+          "score": "98-93",
+          "site": "N",
+          "date": "03-08"
+        },
+        {
+          "opp": "Lipscomb",
+          "oppNet": 193,
+          "score": "87-81",
+          "site": "H",
+          "date": "02-14"
+        },
+        {
+          "opp": "FGCU",
+          "oppNet": 247,
+          "score": "85-74",
+          "site": "A",
+          "date": "01-15"
+        },
+        {
+          "opp": "Bellarmine",
+          "oppNet": 285,
+          "score": "98-76",
+          "site": "H",
+          "date": "01-03"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "West Georgia",
+          "oppNet": 298,
+          "score": "66-74",
+          "site": "A",
+          "date": "01-24"
+        },
+        {
+          "opp": "Bellarmine",
+          "oppNet": 285,
+          "score": "75-78",
+          "site": "A",
+          "date": "01-31"
+        },
+        {
+          "opp": "Furman",
+          "oppNet": 186,
+          "score": "79-90",
+          "site": "A",
+          "date": "11-23"
+        },
+        {
+          "opp": "Central Arkansas",
+          "oppNet": 166,
+          "score": "79-84",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Central Arkansas",
+          "oppNet": 166,
+          "score": "90-100",
+          "site": "H",
+          "date": "01-28"
+        }
+      ],
+      "kpi": 172,
+      "sor": 143,
+      "wab": 137,
+      "bpi": 193,
+      "pom": 181,
+      "tRank": 198
     },
     {
       "id": "t196",
@@ -7931,8 +12143,86 @@
       "q4": "22-4",
       "avgNetWins": 328,
       "avgNetLosses": 178,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Vermont",
+          "oppNet": 227,
+          "score": "74-59",
+          "site": "H",
+          "date": "03-14"
+        },
+        {
+          "opp": "Vermont",
+          "oppNet": 227,
+          "score": "75-62",
+          "site": "H",
+          "date": "02-19"
+        },
+        {
+          "opp": "Wagner",
+          "oppNet": 302,
+          "score": "71-70",
+          "site": "H",
+          "date": "11-16"
+        },
+        {
+          "opp": "UMass-Lowell",
+          "oppNet": 321,
+          "score": "91-69",
+          "site": "H",
+          "date": "03-10"
+        },
+        {
+          "opp": "UMass-Lowell",
+          "oppNet": 321,
+          "score": "84-60",
+          "site": "A",
+          "date": "02-28"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Bryant",
+          "oppNet": 354,
+          "score": "74-79",
+          "site": "A",
+          "date": "01-15"
+        },
+        {
+          "opp": "Army",
+          "oppNet": 336,
+          "score": "60-63",
+          "site": "H",
+          "date": "12-12"
+        },
+        {
+          "opp": "Vermont",
+          "oppNet": 227,
+          "score": "55-64",
+          "site": "A",
+          "date": "01-29"
+        },
+        {
+          "opp": "Howard",
+          "oppNet": 203,
+          "score": "83-86",
+          "site": "N",
+          "date": "03-17"
+        },
+        {
+          "opp": "Buffalo",
+          "oppNet": 195,
+          "score": "79-83",
+          "site": "H",
+          "date": "12-09"
+        }
+      ],
+      "kpi": 215,
+      "sor": 123,
+      "wab": 99,
+      "bpi": 180,
+      "pom": 185,
+      "tRank": 185
     },
     {
       "id": "t198",
@@ -7953,8 +12243,86 @@
       "q4": "23-3",
       "avgNetWins": 304,
       "avgNetLosses": 149,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Missouri State",
+          "oppNet": 206,
+          "score": "75-61",
+          "site": "A",
+          "date": "11-24"
+        },
+        {
+          "opp": "James Madison",
+          "oppNet": 208,
+          "score": "88-79",
+          "site": "H",
+          "date": "11-15"
+        },
+        {
+          "opp": "La Salle",
+          "oppNet": 245,
+          "score": "70-60",
+          "site": "H",
+          "date": "12-13"
+        },
+        {
+          "opp": "Lehigh",
+          "oppNet": 275,
+          "score": "87-82",
+          "site": "A",
+          "date": "12-06"
+        },
+        {
+          "opp": "Mercyhurst",
+          "oppNet": 277,
+          "score": "79-70",
+          "site": "H",
+          "date": "03-10"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "New Haven",
+          "oppNet": 325,
+          "score": "52-55",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "Le Moyne",
+          "oppNet": 290,
+          "score": "77-83",
+          "site": "A",
+          "date": "01-19"
+        },
+        {
+          "opp": "Mercyhurst",
+          "oppNet": 277,
+          "score": "83-91",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "FIU",
+          "oppNet": 197,
+          "score": "79-86",
+          "site": "A",
+          "date": "12-20"
+        },
+        {
+          "opp": "Fordham",
+          "oppNet": 174,
+          "score": "53-69",
+          "site": "A",
+          "date": "11-20"
+        }
+      ],
+      "kpi": 205,
+      "sor": 142,
+      "wab": 120,
+      "bpi": 218,
+      "pom": 216,
+      "tRank": 234
     },
     {
       "id": "t203",
@@ -7975,8 +12343,86 @@
       "q4": "17-6",
       "avgNetWins": 313,
       "avgNetLosses": 195,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "UNCW",
+          "oppNet": 96,
+          "score": "67-66",
+          "site": "A",
+          "date": "12-20"
+        },
+        {
+          "opp": "UMBC",
+          "oppNet": 196,
+          "score": "86-83",
+          "site": "N",
+          "date": "03-17"
+        },
+        {
+          "opp": "Drexel",
+          "oppNet": 211,
+          "score": "74-66",
+          "site": "A",
+          "date": "12-16"
+        },
+        {
+          "opp": "Hampton",
+          "oppNet": 270,
+          "score": "61-57",
+          "site": "N",
+          "date": "12-13"
+        },
+        {
+          "opp": "North Carolina A&T",
+          "oppNet": 276,
+          "score": "73-69",
+          "site": "N",
+          "date": "12-09"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "South Carolina State",
+          "oppNet": 356,
+          "score": "57-58",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Morgan State",
+          "oppNet": 352,
+          "score": "77-78",
+          "site": "H",
+          "date": "01-24"
+        },
+        {
+          "opp": "Maryland Eastern Shore",
+          "oppNet": 351,
+          "score": "57-69",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "Stetson",
+          "oppNet": 314,
+          "score": "60-64",
+          "site": "A",
+          "date": "11-19"
+        },
+        {
+          "opp": "Grambling State",
+          "oppNet": 305,
+          "score": "70-73",
+          "site": "H",
+          "date": "11-09"
+        }
+      ],
+      "kpi": 238,
+      "sor": 187,
+      "wab": 131,
+      "bpi": 204,
+      "pom": 207,
+      "tRank": 206
     },
     {
       "id": "t261",
@@ -7997,8 +12443,86 @@
       "q4": "15-7",
       "avgNetWins": 315,
       "avgNetLosses": 164,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Ohio",
+          "oppNet": 231,
+          "score": "76-73",
+          "site": "A",
+          "date": "11-19"
+        },
+        {
+          "opp": "Southern",
+          "oppNet": 278,
+          "score": "82-79",
+          "site": "A",
+          "date": "02-28"
+        },
+        {
+          "opp": "Prairie View A&M",
+          "oppNet": 300,
+          "score": "82-76",
+          "site": "H",
+          "date": "02-07"
+        },
+        {
+          "opp": "Grambling State",
+          "oppNet": 305,
+          "score": "76-71",
+          "site": "A",
+          "date": "02-26"
+        },
+        {
+          "opp": "Grambling State",
+          "oppNet": 305,
+          "score": "74-65",
+          "site": "H",
+          "date": "01-10"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Alcorn State",
+          "oppNet": 349,
+          "score": "55-57",
+          "site": "A",
+          "date": "02-14"
+        },
+        {
+          "opp": "Jackson State",
+          "oppNet": 347,
+          "score": "86-91",
+          "site": "A",
+          "date": "02-16"
+        },
+        {
+          "opp": "Florida A&M",
+          "oppNet": 312,
+          "score": "77-81",
+          "site": "A",
+          "date": "03-05"
+        },
+        {
+          "opp": "Prairie View A&M",
+          "oppNet": 300,
+          "score": "67-71",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Jacksonville",
+          "oppNet": 297,
+          "score": "64-69",
+          "site": "N",
+          "date": "11-24"
+        }
+      ],
+      "kpi": 253,
+      "sor": 264,
+      "wab": 167,
+      "bpi": 246,
+      "pom": 243,
+      "tRank": 224
     },
     {
       "id": "t275",
@@ -8019,8 +12543,86 @@
       "q4": "15-9",
       "avgNetWins": 283,
       "avgNetLosses": 215,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Colgate",
+          "oppNet": 226,
+          "score": "78-77",
+          "site": "A",
+          "date": "01-10"
+        },
+        {
+          "opp": "Colgate",
+          "oppNet": 226,
+          "score": "77-76",
+          "site": "H",
+          "date": "01-31"
+        },
+        {
+          "opp": "Colgate",
+          "oppNet": 226,
+          "score": "76-69",
+          "site": "H",
+          "date": "03-08"
+        },
+        {
+          "opp": "Texas State",
+          "oppNet": 235,
+          "score": "78-74",
+          "site": "N",
+          "date": "11-29"
+        },
+        {
+          "opp": "American",
+          "oppNet": 256,
+          "score": "90-82",
+          "site": "H",
+          "date": "02-11"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Binghamton",
+          "oppNet": 360,
+          "score": "71-80",
+          "site": "A",
+          "date": "12-02"
+        },
+        {
+          "opp": "Army",
+          "oppNet": 336,
+          "score": "78-85",
+          "site": "H",
+          "date": "12-31"
+        },
+        {
+          "opp": "Army",
+          "oppNet": 336,
+          "score": "64-67",
+          "site": "A",
+          "date": "01-28"
+        },
+        {
+          "opp": "Bucknell",
+          "oppNet": 333,
+          "score": "65-72",
+          "site": "A",
+          "date": "01-03"
+        },
+        {
+          "opp": "Holy Cross",
+          "oppNet": 331,
+          "score": "67-76",
+          "site": "A",
+          "date": "02-07"
+        }
+      ],
+      "kpi": 274,
+      "sor": 295,
+      "wab": 243,
+      "bpi": 288,
+      "pom": 284,
+      "tRank": 283
     },
     {
       "id": "t300",
@@ -8041,8 +12643,86 @@
       "q4": "15-11",
       "avgNetWins": 318,
       "avgNetLosses": 209,
-      "keyWins": [],
-      "keyLosses": []
+      "keyWins": [
+        {
+          "opp": "Bethune-Cookman",
+          "oppNet": 261,
+          "score": "71-67",
+          "site": "N",
+          "date": "03-11"
+        },
+        {
+          "opp": "Lehigh",
+          "oppNet": 275,
+          "score": "67-55",
+          "site": "N",
+          "date": "03-18"
+        },
+        {
+          "opp": "Southern",
+          "oppNet": 278,
+          "score": "89-85",
+          "site": "A",
+          "date": "01-05"
+        },
+        {
+          "opp": "Southern",
+          "oppNet": 278,
+          "score": "72-66",
+          "site": "N",
+          "date": "03-14"
+        },
+        {
+          "opp": "Grambling State",
+          "oppNet": 305,
+          "score": "68-63",
+          "site": "H",
+          "date": "02-16"
+        }
+      ],
+      "keyLosses": [
+        {
+          "opp": "Alcorn State",
+          "oppNet": 349,
+          "score": "75-76",
+          "site": "A",
+          "date": "01-19"
+        },
+        {
+          "opp": "Jackson State",
+          "oppNet": 347,
+          "score": "78-82",
+          "site": "A",
+          "date": "01-17"
+        },
+        {
+          "opp": "Alabama State",
+          "oppNet": 324,
+          "score": "80-95",
+          "site": "H",
+          "date": "01-24"
+        },
+        {
+          "opp": "Arkansas-Pine Bluff",
+          "oppNet": 316,
+          "score": "82-84",
+          "site": "A",
+          "date": "02-21"
+        },
+        {
+          "opp": "Florida A&M",
+          "oppNet": 312,
+          "score": "96-100",
+          "site": "A",
+          "date": "02-09"
+        }
+      ],
+      "kpi": 306,
+      "sor": 325,
+      "wab": 256,
+      "bpi": 297,
+      "pom": 288,
+      "tRank": 281
     }
   ]
 }
