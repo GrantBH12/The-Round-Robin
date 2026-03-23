@@ -12,8 +12,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
       - uses: actions/setup-python@v5
         with:
@@ -25,9 +23,11 @@ jobs:
       - name: Run scraper
         run: python scrape_nitty_gritty.py
 
-      - name: Commit updated data
+      - name: Commit and push
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+          git fetch origin main
+          git reset --soft origin/main
           git add teams.json
-          git diff --staged --quiet || (git commit -m "Update teams.json $(date -u +%Y-%m-%d)" && git push --force)
+          git diff --staged --quiet || (git commit -m "Update teams.json $(date -u +%Y-%m-%d)" && git push origin main)
