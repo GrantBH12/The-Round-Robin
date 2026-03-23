@@ -1,0 +1,30 @@
+name: Scrape Bracketology Data
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Run scraper
+        run: python scrape_nitty_gritty.py --top 68
+
+      - name: Commit updated data
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add teams.json
+          git diff --staged --quiet || git commit -m "Update teams.json $(date -u +%Y-%m-%d)"
+          git push
