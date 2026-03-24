@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bracketology Tier List</title>
+<title>The Round Robin Bracketology Hub</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #0B1120; overflow: hidden; }
@@ -33,7 +33,7 @@ function LoadingScreen() {
         background: "linear-gradient(135deg,#E8872B,#F0A855)",
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         fontFamily: "'Segoe UI','Inter',system-ui,sans-serif",
-      }}>Bracketology Tier List</h1>
+      }}>The Round Robin Bracketology Hub</h1>
       <p style={{ color: "#4A5568", fontSize: 13, marginTop: 8, fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
         Loading team data...
       </p>
@@ -59,6 +59,7 @@ function ErrorScreen({ error, onRetry }) {
 }
 
 let REAL_TEAMS = [];
+let DATA_SCRAPED_AT = "";
 
 const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:6}));
 const EXTRA_TIERS = [
@@ -86,14 +87,12 @@ function App() {
   });
   const [loaded, setLoaded] = useState(false);
 
-  // Load saved state on mount
   useEffect(() => {
     (async () => {
       try {
         const result = { value: localStorage.getItem("bracketology-board-state") };
         if (result && result.value) {
           const saved = JSON.parse(result.value);
-          // Validate: make sure every team ID exists in our data
           const allIds = new Set(teams.map(t => t.id));
           const usedIds = new Set();
           let valid = true;
@@ -105,29 +104,21 @@ function App() {
             }
           }
           if (valid && usedIds.size > 0) {
-            // Add any missing teams back to pool
             const missing = teams.filter(t => !usedIds.has(t.id)).map(t => t.id);
             if (!saved[POOL]) saved[POOL] = [];
             saved[POOL] = [...saved[POOL], ...missing];
             setAsgn(saved);
           }
         }
-      } catch (e) {
-        // Storage not available or empty — use default
-      }
+      } catch (e) {}
       setLoaded(true);
     })();
   }, [teams]);
 
-  // Save state whenever assignments change (after initial load)
   useEffect(() => {
     if (!loaded) return;
     (async () => {
-      try {
-        localStorage.setItem("bracketology-board-state", JSON.stringify(asgn));
-      } catch (e) {
-        // Storage not available — silent fail
-      }
+      try { localStorage.setItem("bracketology-board-state", JSON.stringify(asgn)); } catch (e) {}
     })();
   }, [asgn, loaded]);
 
@@ -136,6 +127,9 @@ function App() {
   const [expanded, setExpanded] = useState(new Set());
   const [selected, setSelected] = useState(null);
   const [tab, setTab] = useState("board");
+  const [dragTid, setDragTid] = useState(null);
+  const [dropZone, setDropZone] = useState(null);
+  const dragRef = useRef(null);
 
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
@@ -192,6 +186,44 @@ function App() {
     moveTeam(tid, target);
   }, [moveTeam]);
 
+  // ── Drag-and-drop ──
+  const handleDragStart = useCallback((e, tid) => {
+    dragRef.current = tid;
+    setDragTid(tid);
+    setSelected(null);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", tid);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    dragRef.current = null;
+    setDragTid(null);
+    setDropZone(null);
+  }, []);
+
+  const handleDragOverZone = useCallback((e, zoneId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDropZone(zoneId);
+  }, []);
+
+  const handleDragLeaveZone = useCallback((e) => {
+    if (!e.currentTarget.contains(e.relatedTarget)) setDropZone(null);
+  }, []);
+
+  const handleDropOnZone = useCallback((e, zoneId) => {
+    e.preventDefault();
+    const tid = dragRef.current || e.dataTransfer.getData("text/plain");
+    if (!tid) return;
+    const seed = SEEDS.find(s => s.id === zoneId);
+    if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(tid)) {
+      setDragTid(null); setDropZone(null); return;
+    }
+    moveTeam(tid, zoneId);
+    setDragTid(null);
+    setDropZone(null);
+  }, [asgn, moveTeam]);
+
   const poolF = useMemo(() => {
     let ids = asgn[POOL];
     if (confF !== "All") ids = ids.filter(id => tm[id]?.conf === confF);
@@ -209,14 +241,20 @@ function App() {
     if (!t) return null;
     const isEx = expanded.has(tid);
     const isSel = selected === tid;
+    const isDragging = dragTid === tid;
     return (
-      <div style={{
-        background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
-        border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
-        borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px", cursor: "pointer",
-        userSelect: "none", marginBottom: 2, transition: "all 0.12s",
-        boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
-      }}
+      <div
+        draggable
+        onDragStart={e => handleDragStart(e, tid)}
+        onDragEnd={handleDragEnd}
+        style={{
+          background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
+          border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
+          borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px", cursor: "grab",
+          userSelect: "none", marginBottom: 2, transition: "all 0.12s",
+          boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
+          opacity: isDragging ? 0.4 : 1,
+        }}
         onClick={e => handleTeamClick(tid, e)}
         onDoubleClick={() => toggleEx(tid)}
       >
@@ -258,12 +296,17 @@ function App() {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
               }}>{seed.num}</div>
-              <div style={{
-                flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
-                borderRadius: 6, padding: "2px 4px",
-                border: `1px dashed ${isSel ? "#E8872B44" : "#1A2740"}`,
-                background: isSel ? "rgba(232,135,43,0.02)" : "transparent",
-              }}>
+              <div
+                onDragOver={e => handleDragOverZone(e, seed.id)}
+                onDragLeave={handleDragLeaveZone}
+                onDrop={e => handleDropOnZone(e, seed.id)}
+                style={{
+                  flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
+                  borderRadius: 6, padding: "2px 4px",
+                  border: `1px dashed ${dropZone === seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                  background: dropZone === seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                  transition: "background 0.1s, border-color 0.1s",
+                }}>
                 {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>
                   {isSel ? "Click to place" : `${seed.max} slots`}
                 </span>}
@@ -292,10 +335,16 @@ function App() {
               <span style={{ fontSize: 12, fontWeight: 700, color: tier.ac }}>{tier.label}</span>
               <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
             </div>
-            <div style={{
-              minHeight: 28, borderRadius: 6, padding: "2px 4px",
-              border: `1px dashed ${isSel ? "#E8872B44" : "#1A2740"}`,
-            }}>
+            <div
+              onDragOver={e => handleDragOverZone(e, tier.id)}
+              onDragLeave={handleDragLeaveZone}
+              onDrop={e => handleDropOnZone(e, tier.id)}
+              style={{
+                minHeight: 28, borderRadius: 6, padding: "2px 4px",
+                border: `1px dashed ${dropZone === tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                background: dropZone === tier.id ? "rgba(232,135,43,0.06)" : "transparent",
+                transition: "background 0.1s, border-color 0.1s",
+              }}>
               {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
               {ids.map(id => <Card key={id} tid={id} showActions zone={tier.id}/>)}
             </div>
@@ -324,21 +373,17 @@ function App() {
             if (!t) return null;
             const kw = t.keyWins || [];
             const kl = t.keyLosses || [];
-
             return (
               <div key={tid} style={{
                 flex: "0 0 205px", background: "#111B2E", border: "1px solid #2A3F66", borderRadius: 8,
                 padding: "12px 10px", display: "flex", flexDirection: "column", overflowY: "auto", minHeight: 0,
               }}>
-                {/* Header */}
                 <div style={{ textAlign: "center", marginBottom: 8, borderBottom: "1px solid #1A2740", paddingBottom: 8 }}>
                   <div style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 11 }}>#{t.net}</div>
                   <div style={{ color: "#E2E8F0", fontWeight: 800, fontSize: 15, lineHeight: 1.2 }}>{t.name}</div>
                   <div style={{ color: "#4A5568", fontSize: 10, marginTop: 2 }}>{t.conf} ({t.confRecord})</div>
                   <div style={{ color: "#8694A8", fontSize: 13, fontWeight: 700, marginTop: 4 }}>{t.record}</div>
                 </div>
-
-                {/* Resume stats */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 11, marginBottom: 8 }}>
                   <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
                   <St l="NC Rec" v={t.ncRecord}/>
@@ -348,16 +393,12 @@ function App() {
                   <St l="Avg W" v={`#${t.avgNetWins}`}/>
                   <St l="Avg L" v={`#${t.avgNetLosses}`}/>
                 </div>
-
-                {/* Quads */}
                 <div style={{ background: "#0B1120", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11 }}>
                   <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/>
                   <St l="Q2" v={t.q2}/>
                   <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
                   <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
                 </div>
-
-                {/* Ranking metrics */}
                 <div style={{ background: "#0D1425", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11, border: "1px solid #1A2740" }}>
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#6B7A90", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rankings</div>
                   <St l="KPI" v={t.kpi != null ? `#${t.kpi}` : "—"}/>
@@ -367,8 +408,6 @@ function App() {
                   <St l="KenPom" v={t.pom != null ? `#${t.pom}` : "—"}/>
                   <St l="T-Rank" v={t.tRank != null ? `#${t.tRank}` : "—"}/>
                 </div>
-
-                {/* Top Wins */}
                 <div style={{ marginBottom: 6 }}>
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Wins</div>
                   {kw.length > 0 ? kw.map((w, i) => (
@@ -377,8 +416,6 @@ function App() {
                     </div>
                   )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>—</div>}
                 </div>
-
-                {/* Losses */}
                 <div style={{ marginBottom: 8 }}>
                   <div style={{ fontSize: 9, fontWeight: 700, color: "#F87171", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Losses</div>
                   {kl.length > 0 ? kl.map((l, i) => (
@@ -387,11 +424,7 @@ function App() {
                     </div>
                   )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>None</div>}
                 </div>
-
-                {/* Spacer */}
                 <div style={{ flex: 1 }} />
-
-                {/* Send buttons */}
                 <div style={{ borderTop: "1px solid #1A2740", paddingTop: 6, display: "flex", flexDirection: "column", gap: 4 }}>
                   <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
                     {SEEDS.slice(0,16).map(s => (
@@ -431,10 +464,10 @@ function App() {
       <div style={{ padding: "14px 18px 10px", borderBottom: "1px solid #1A2740", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em", background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Bracketology Tier List
+            The Round Robin Bracketology Hub
           </h1>
           <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>
-            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · click to select, click zone to place, double-click to expand
+            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "—"}
           </p>
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -495,7 +528,15 @@ function App() {
             </div>
             <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
           </div>
-          <div style={{ flex: 1, overflowY: "auto", padding: "4px 6px" }}>
+          <div
+            onDragOver={e => handleDragOverZone(e, POOL)}
+            onDragLeave={handleDragLeaveZone}
+            onDrop={e => handleDropOnZone(e, POOL)}
+            style={{
+              flex: 1, overflowY: "auto", padding: "4px 6px",
+              background: dropZone === POOL ? "rgba(74,111,165,0.06)" : "transparent",
+              transition: "background 0.1s",
+            }}>
             {poolF.map(id => <Card key={id} tid={id} showActions zone={POOL}/>)}
           </div>
         </div>
@@ -513,7 +554,6 @@ function St({ l, v, g, w }) {
   );
 }
 
-
 function Root() {
   const [teams, setTeams] = useState(null);
   const [error, setError] = useState(null);
@@ -527,6 +567,7 @@ function Root() {
       })
       .then(data => {
         REAL_TEAMS = data.teams;
+        DATA_SCRAPED_AT = data.meta?.scrapedAt || "";
         setTeams(data.teams);
       })
       .catch(e => setError(e.message));
