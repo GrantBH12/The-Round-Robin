@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bracketology Tier List</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0B1120; overflow: hidden; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0B1120; }
+  ::-webkit-scrollbar-thumb { background: #1A2740; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useRef, useCallback, useMemo, useEffect } = React;
+
+const DATA_URL = "https://grantbh12.github.io/The-Round-Robin/teams.json";
+
+function LoadingScreen() {
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#0B1120", display: "flex",
+      alignItems: "center", justifyContent: "center", flexDirection: "column",
+    }}>
+      <h1 style={{
+        fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em",
+        background: "linear-gradient(135deg,#E8872B,#F0A855)",
+        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+        fontFamily: "'Segoe UI','Inter',system-ui,sans-serif",
+      }}>Bracketology Tier List</h1>
+      <p style={{ color: "#4A5568", fontSize: 13, marginTop: 8, fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
+        Loading team data...
+      </p>
+    </div>
+  );
+}
+
+function ErrorScreen({ error, onRetry }) {
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#0B1120", display: "flex",
+      alignItems: "center", justifyContent: "center", flexDirection: "column",
+      fontFamily: "'Segoe UI','Inter',system-ui,sans-serif",
+    }}>
+      <h1 style={{ fontSize: 20, color: "#F87171", marginBottom: 8 }}>Failed to load data</h1>
+      <p style={{ color: "#4A5568", fontSize: 12, marginBottom: 16 }}>{error}</p>
+      <button onClick={onRetry} style={{
+        background: "#E8872B", border: "none", borderRadius: 6,
+        color: "#fff", fontSize: 13, padding: "8px 20px", cursor: "pointer",
+      }}>Retry</button>
+    </div>
+  );
+}
+
+let REAL_TEAMS = [];
+
+const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:6}));
+const EXTRA_TIERS = [
+  {id:"ffo",label:"First Four Out",ac:"#8B4444"},
+  {id:"nfo",label:"Next Four Out",ac:"#6B3A3A"},
+  {id:"ac",label:"Also Considered",ac:"#555B6E"},
+];
+const COMPARE = "compare";
+const POOL = "pool";
+const MAX_EX = 8;
+const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C","#3D5E8C","#304D73","#304D73","#2A4060","#2A4060","#7A5A3A","#7A5A3A","#606060","#606060","#505050"];
+
+function App() {
+  const teams = useMemo(() => REAL_TEAMS, []);
+  const tm = useMemo(() => Object.fromEntries(teams.map(t => [t.id, t])), [teams]);
+  const allConfs = useMemo(() => ["All", ...[...new Set(teams.map(t => t.conf))].sort()], [teams]);
+
+  const [asgn, setAsgn] = useState(() => {
+    const a = {};
+    SEEDS.forEach(s => a[s.id] = []);
+    EXTRA_TIERS.forEach(t => a[t.id] = []);
+    a[COMPARE] = [];
+    a[POOL] = teams.map(t => t.id);
+    return a;
+  });
+  const [loaded, setLoaded] = useState(false);
+
+  // Load saved state on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = { value: localStorage.getItem("bracketology-board-state") };
+        if (result && result.value) {
+          const saved = JSON.parse(result.value);
+          // Validate: make sure every team ID exists in our data
+          const allIds = new Set(teams.map(t => t.id));
+          const usedIds = new Set();
+          let valid = true;
+          for (const k in saved) {
+            if (!Array.isArray(saved[k])) { valid = false; break; }
+            for (const id of saved[k]) {
+              if (!allIds.has(id)) { valid = false; break; }
+              usedIds.add(id);
+            }
+          }
+          if (valid && usedIds.size > 0) {
+            // Add any missing teams back to pool
+            const missing = teams.filter(t => !usedIds.has(t.id)).map(t => t.id);
+            if (!saved[POOL]) saved[POOL] = [];
+            saved[POOL] = [...saved[POOL], ...missing];
+            setAsgn(saved);
+          }
+        }
+      } catch (e) {
+        // Storage not available or empty — use default
+      }
+      setLoaded(true);
+    })();
+  }, [teams]);
+
+  // Save state whenever assignments change (after initial load)
+  useEffect(() => {
+    if (!loaded) return;
+    (async () => {
+      try {
+        localStorage.setItem("bracketology-board-state", JSON.stringify(asgn));
+      } catch (e) {
+        // Storage not available — silent fail
+      }
+    })();
+  }, [asgn, loaded]);
+
+  const [search, setSearch] = useState("");
+  const [confF, setConfF] = useState("All");
+  const [expanded, setExpanded] = useState(new Set());
+  const [selected, setSelected] = useState(null);
+  const [tab, setTab] = useState("board");
+
+  const toggleEx = useCallback(tid => {
+    setExpanded(p => {
+      const n = new Set(p);
+      if (n.has(tid)) n.delete(tid);
+      else { if (n.size >= MAX_EX) n.delete(n.values().next().value); n.add(tid); }
+      return n;
+    });
+  }, []);
+
+  const findZone = useCallback((tid) => {
+    for (const k in asgn) { if (asgn[k].includes(tid)) return k; }
+    return null;
+  }, [asgn]);
+
+  const moveTeam = useCallback((tid, target) => {
+    setAsgn(p => {
+      const n = {};
+      for (const k in p) n[k] = p[k].filter(x => x !== tid);
+      if (target === POOL) {
+        const teamNet = tm[tid]?.net ?? 999;
+        const pool = n[POOL];
+        let insertIdx = pool.length;
+        for (let i = 0; i < pool.length; i++) {
+          if ((tm[pool[i]]?.net ?? 999) > teamNet) { insertIdx = i; break; }
+        }
+        pool.splice(insertIdx, 0, tid);
+      } else {
+        n[target] = [...n[target], tid];
+      }
+      return n;
+    });
+  }, [tm]);
+
+  const handleTeamClick = useCallback((tid, e) => {
+    e.stopPropagation();
+    setSelected(prev => prev === tid ? null : tid);
+  }, []);
+
+  const handleZoneClick = useCallback((zoneId) => {
+    if (!selected) return;
+    const seed = SEEDS.find(s => s.id === zoneId);
+    if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
+    moveTeam(selected, zoneId);
+    setSelected(null);
+  }, [selected, asgn, moveTeam]);
+
+  const sendToCompare = useCallback((tid) => {
+    if (asgn[COMPARE].length >= 8) return;
+    moveTeam(tid, COMPARE);
+  }, [asgn, moveTeam]);
+
+  const sendFromCompare = useCallback((tid, target) => {
+    moveTeam(tid, target);
+  }, [moveTeam]);
+
+  const poolF = useMemo(() => {
+    let ids = asgn[POOL];
+    if (confF !== "All") ids = ids.filter(id => tm[id]?.conf === confF);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      ids = ids.filter(id => { const t = tm[id]; return t && (t.name.toLowerCase().includes(q) || t.conf.toLowerCase().includes(q) || String(t.net).includes(q)); });
+    }
+    return ids;
+  }, [asgn, confF, search, tm]);
+
+  const totalPlaced = SEEDS.reduce((s, sd) => s + asgn[sd.id].length, 0) + EXTRA_TIERS.reduce((s, t) => s + asgn[t.id].length, 0);
+
+  const Card = ({tid, showActions, zone}) => {
+    const t = tm[tid];
+    if (!t) return null;
+    const isEx = expanded.has(tid);
+    const isSel = selected === tid;
+    return (
+      <div style={{
+        background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
+        border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
+        borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px", cursor: "pointer",
+        userSelect: "none", marginBottom: 2, transition: "all 0.12s",
+        boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
+      }}
+        onClick={e => handleTeamClick(tid, e)}
+        onDoubleClick={() => toggleEx(tid)}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, minWidth: 22, textAlign: "right" }}>{t.net}</span>
+          <span style={{ color: "#E2E8F0", fontWeight: 600, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: 12 }}>{t.name}</span>
+          <span style={{ color: "#4A5568", fontSize: 9 }}>{t.conf}</span>
+          <span style={{ color: "#8694A8", fontSize: 11, fontFamily: "monospace" }}>{t.record}</span>
+          <span style={{ color: parseInt(t.q1) >= 6 ? "#4ADE80" : parseInt(t.q1) >= 3 ? "#A3E635" : "#6B7A90", fontSize: 10, fontFamily: "monospace" }}>Q1:{t.q1}</span>
+          {showActions && zone !== COMPARE && (
+            <button onClick={e => { e.stopPropagation(); sendToCompare(tid); }}
+              style={{ background: "#1A2740", border: "1px solid #2A3F66", borderRadius: 3, color: "#8694A8", fontSize: 9, padding: "1px 5px", cursor: "pointer" }}
+              title="Send to compare">⇄</button>
+          )}
+        </div>
+        {isEx && (
+          <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #1A2740", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px 14px", fontSize: 11 }}>
+            <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/><St l="Conf" v={t.confRecord}/><St l="NC" v={t.ncRecord}/>
+            <St l="Home" v={t.home}/><St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/><St l="Neut" v={t.neutral}/>
+            <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/><St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
+            <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/><St l="AvgW" v={`#${t.avgNetWins}`}/><St l="AvgL" v={`#${t.avgNetLosses}`}/>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const BoardView = () => (
+    <div style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
+      {SEEDS.map((seed, si) => {
+        const ids = asgn[seed.id];
+        const color = SEED_COLORS[si] || "#555";
+        const isSel = !!selected;
+        return (
+          <div key={seed.id} style={{ marginBottom: 4 }} onClick={() => handleZoneClick(seed.id)}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, minHeight: 30 }}>
+              <div style={{
+                width: 28, minWidth: 28, height: 24, borderRadius: 4, background: color,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
+              }}>{seed.num}</div>
+              <div style={{
+                flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
+                borderRadius: 6, padding: "2px 4px",
+                border: `1px dashed ${isSel ? "#E8872B44" : "#1A2740"}`,
+                background: isSel ? "rgba(232,135,43,0.02)" : "transparent",
+              }}>
+                {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>
+                  {isSel ? "Click to place" : `${seed.max} slots`}
+                </span>}
+                {ids.map(id => <div key={id} style={{flex:"0 0 auto",minWidth:180,maxWidth:320}}><Card tid={id} showActions zone={seed.id}/></div>)}
+                {ids.length < seed.max && ids.length > 0 && Array.from({length: Math.min(2, seed.max - ids.length)}).map((_,i) => (
+                  <div key={`empty-${i}`} style={{
+                    width: 80, height: 24, borderRadius: 4, border: "1px dashed #1A2740",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 9, color: "#1E2D4A", margin: 1,
+                  }}>{isSel ? "+" : ""}</div>
+                ))}
+              </div>
+              <span style={{ fontSize: 9, color: "#4A5568", minWidth: 20, textAlign: "right", marginTop: 6 }}>{ids.length}/{seed.max}</span>
+            </div>
+          </div>
+        );
+      })}
+      <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
+      {EXTRA_TIERS.map(tier => {
+        const ids = asgn[tier.id];
+        const isSel = !!selected;
+        return (
+          <div key={tier.id} style={{ marginBottom: 6 }} onClick={() => handleZoneClick(tier.id)}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+              <div style={{ width: 4, height: 14, borderRadius: 2, background: tier.ac }} />
+              <span style={{ fontSize: 12, fontWeight: 700, color: tier.ac }}>{tier.label}</span>
+              <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
+            </div>
+            <div style={{
+              minHeight: 28, borderRadius: 6, padding: "2px 4px",
+              border: `1px dashed ${isSel ? "#E8872B44" : "#1A2740"}`,
+            }}>
+              {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
+              {ids.map(id => <Card key={id} tid={id} showActions zone={tier.id}/>)}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  const CompareView = () => {
+    const ids = asgn[COMPARE];
+    return (
+      <div style={{ flex: "1 1 62%", display: "flex", flexDirection: "column", overflow: "hidden", padding: "10px 14px" }}>
+        <div style={{ marginBottom: 8 }}>
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#E8872B" }}>Compare Resumes</h2>
+          <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>{ids.length}/8 teams · click ⇄ on pool cards to add</p>
+        </div>
+        {ids.length === 0 && (
+          <div style={{ textAlign: "center", padding: "60px 0", color: "#2A3F66", fontSize: 13 }}>
+            Click the ⇄ button on any team card to send it here
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 8, flex: 1, overflowX: "auto", overflowY: "hidden", paddingBottom: 4 }}>
+          {ids.map(tid => {
+            const t = tm[tid];
+            if (!t) return null;
+            const kw = t.keyWins || [];
+            const kl = t.keyLosses || [];
+
+            return (
+              <div key={tid} style={{
+                flex: "0 0 205px", background: "#111B2E", border: "1px solid #2A3F66", borderRadius: 8,
+                padding: "12px 10px", display: "flex", flexDirection: "column", overflowY: "auto", minHeight: 0,
+              }}>
+                {/* Header */}
+                <div style={{ textAlign: "center", marginBottom: 8, borderBottom: "1px solid #1A2740", paddingBottom: 8 }}>
+                  <div style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 11 }}>#{t.net}</div>
+                  <div style={{ color: "#E2E8F0", fontWeight: 800, fontSize: 15, lineHeight: 1.2 }}>{t.name}</div>
+                  <div style={{ color: "#4A5568", fontSize: 10, marginTop: 2 }}>{t.conf} ({t.confRecord})</div>
+                  <div style={{ color: "#8694A8", fontSize: 13, fontWeight: 700, marginTop: 4 }}>{t.record}</div>
+                </div>
+
+                {/* Resume stats */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 11, marginBottom: 8 }}>
+                  <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
+                  <St l="NC Rec" v={t.ncRecord}/>
+                  <St l="Home" v={t.home}/>
+                  <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
+                  <St l="Neutral" v={t.neutral}/>
+                  <St l="Avg W" v={`#${t.avgNetWins}`}/>
+                  <St l="Avg L" v={`#${t.avgNetLosses}`}/>
+                </div>
+
+                {/* Quads */}
+                <div style={{ background: "#0B1120", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11 }}>
+                  <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/>
+                  <St l="Q2" v={t.q2}/>
+                  <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
+                  <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
+                </div>
+
+                {/* Ranking metrics */}
+                <div style={{ background: "#0D1425", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11, border: "1px solid #1A2740" }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#6B7A90", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rankings</div>
+                  <St l="KPI" v={t.kpi != null ? `#${t.kpi}` : "—"}/>
+                  <St l="SOR" v={t.sor != null ? `#${t.sor}` : "—"}/>
+                  <St l="WAB" v={t.wab != null ? `#${t.wab}` : "—"}/>
+                  <St l="BPI" v={t.bpi != null ? `#${t.bpi}` : "—"}/>
+                  <St l="KenPom" v={t.pom != null ? `#${t.pom}` : "—"}/>
+                  <St l="T-Rank" v={t.tRank != null ? `#${t.tRank}` : "—"}/>
+                </div>
+
+                {/* Top Wins */}
+                <div style={{ marginBottom: 6 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Wins</div>
+                  {kw.length > 0 ? kw.map((w, i) => (
+                    <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <span style={{ color: "#4ADE80", fontFamily: "monospace", fontSize: 9 }}>#{w.oppNet}</span>{" "}{w.site === "A" ? "@ " : w.site === "N" ? "v " : ""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+                    </div>
+                  )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>—</div>}
+                </div>
+
+                {/* Losses */}
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: "#F87171", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Losses</div>
+                  {kl.length > 0 ? kl.map((l, i) => (
+                    <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <span style={{ color: "#F87171", fontFamily: "monospace", fontSize: 9 }}>#{l.oppNet}</span>{" "}{l.site === "A" ? "@ " : l.site === "N" ? "v " : ""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+                    </div>
+                  )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>None</div>}
+                </div>
+
+                {/* Spacer */}
+                <div style={{ flex: 1 }} />
+
+                {/* Send buttons */}
+                <div style={{ borderTop: "1px solid #1A2740", paddingTop: 6, display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                    {SEEDS.slice(0,16).map(s => (
+                      <button key={s.id} onClick={() => sendFromCompare(tid, s.id)}
+                        disabled={asgn[s.id].length >= s.max}
+                        style={{
+                          background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2,
+                          color: asgn[s.id].length >= s.max ? "#1A2740" : "#8694A8",
+                          fontSize: 8, padding: "2px 4px", cursor: asgn[s.id].length >= s.max ? "not-allowed" : "pointer",
+                          minWidth: 18, textAlign: "center",
+                        }}>{s.num}</button>
+                    ))}
+                  </div>
+                  <div style={{ display: "flex", gap: 3 }}>
+                    {EXTRA_TIERS.map(et => (
+                      <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                        style={{ background: "#0B1120", border: `1px solid ${et.ac}44`, borderRadius: 2, color: et.ac, fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
+                        {et.label.split(" ").map(w=>w[0]).join("")}
+                      </button>
+                    ))}
+                    <button onClick={() => moveTeam(tid, POOL)}
+                      style={{ background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2, color: "#6B7A90", fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
+                      ← Pool
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#0B1120", color: "#E2E8F0", fontFamily: "'Segoe UI','Inter',system-ui,sans-serif" }}>
+      <div style={{ padding: "14px 18px 10px", borderBottom: "1px solid #1A2740", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em", background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            Bracketology Tier List
+          </h1>
+          <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>
+            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · click to select, click zone to place, double-click to expand
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <button onClick={() => setTab("board")} style={{
+            background: tab === "board" ? "#E8872B" : "transparent", border: `1px solid ${tab === "board" ? "#E8872B" : "#1A2740"}`,
+            borderRadius: 5, color: tab === "board" ? "#fff" : "#6B7A90", fontSize: 11, padding: "4px 12px", cursor: "pointer", fontWeight: 600,
+          }}>Board</button>
+          <button onClick={() => setTab("compare")} style={{
+            background: tab === "compare" ? "#E8872B" : "transparent", border: `1px solid ${tab === "compare" ? "#E8872B" : "#1A2740"}`,
+            borderRadius: 5, color: tab === "compare" ? "#fff" : "#6B7A90", fontSize: 11, padding: "4px 12px", cursor: "pointer", fontWeight: 600,
+          }}>Compare ({asgn[COMPARE].length})</button>
+          {selected && (
+            <>
+              <button onClick={() => setSelected(null)} style={{
+                background: "#E8872B22", border: "1px solid #E8872B", borderRadius: 5,
+                color: "#E8872B", fontSize: 10, padding: "3px 10px", cursor: "pointer",
+              }}>✕ Deselect {tm[selected]?.name}</button>
+              {findZone(selected) !== POOL && (
+                <button onClick={() => { moveTeam(selected, POOL); setSelected(null); }} style={{
+                  background: "#1A274088", border: "1px solid #4A6FA5", borderRadius: 5,
+                  color: "#4A6FA5", fontSize: 10, padding: "3px 10px", cursor: "pointer",
+                }}>← Pool</button>
+              )}
+            </>
+          )}
+          <button onClick={async () => {
+            const all = []; for (const k in asgn) all.push(...asgn[k]);
+            all.sort((a, b) => (tm[a]?.net ?? 999) - (tm[b]?.net ?? 999));
+            const n = {}; SEEDS.forEach(s => n[s.id] = []); EXTRA_TIERS.forEach(t => n[t.id] = []);
+            n[COMPARE] = []; n[POOL] = all; setAsgn(n); setExpanded(new Set()); setSelected(null);
+            try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
+          }} style={{ background: "transparent", border: "1px solid #1A2740", borderRadius: 5, color: "#6B7A90", fontSize: 10, padding: "3px 10px", cursor: "pointer" }}>
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", height: "calc(100vh - 70px)", overflow: "hidden" }}>
+        {tab === "board" ? <BoardView /> : <CompareView />}
+
+        <div style={{ flex: "0 0 300px", borderLeft: "1px solid #1A2740", display: "flex", flexDirection: "column", background: "#0D1425" }}>
+          <div style={{ padding: "8px 10px", borderBottom: "1px solid #1A2740" }}>
+            <input value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search..."
+              style={{ width: "100%", boxSizing: "border-box", padding: "6px 8px", background: "#111B2E", border: "1px solid #1A2740", borderRadius: 5, color: "#E2E8F0", fontSize: 12, outline: "none" }}
+              onFocus={e => e.target.style.borderColor = "#E8872B"}
+              onBlur={e => e.target.style.borderColor = "#1A2740"}
+            />
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 2, marginTop: 5 }}>
+              {allConfs.map(c => (
+                <button key={c} onClick={() => setConfF(c)} style={{
+                  background: confF === c ? "#E8872B" : "#111B2E",
+                  border: `1px solid ${confF === c ? "#E8872B" : "#1A2740"}`,
+                  borderRadius: 3, color: confF === c ? "#fff" : "#4A5568",
+                  fontSize: 9, padding: "1px 4px", cursor: "pointer", fontWeight: confF === c ? 700 : 400,
+                }}>{c}</button>
+              ))}
+            </div>
+            <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto", padding: "4px 6px" }}>
+            {poolF.map(id => <Card key={id} tid={id} showActions zone={POOL}/>)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function St({ l, v, g, w }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <span style={{ color: "#4A5568" }}>{l}</span>
+      <span style={{ color: g ? "#4ADE80" : w ? "#F87171" : "#8694A8", fontFamily: "monospace" }}>{v}</span>
+    </div>
+  );
+}
+
+
+function Root() {
+  const [teams, setTeams] = useState(null);
+  const [error, setError] = useState(null);
+
+  const loadData = useCallback(() => {
+    setError(null);
+    fetch(DATA_URL)
+      .then(r => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(data => {
+        REAL_TEAMS = data.teams;
+        setTeams(data.teams);
+      })
+      .catch(e => setError(e.message));
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  if (error) return <ErrorScreen error={error} onRetry={loadData} />;
+  if (!teams) return <LoadingScreen />;
+  return <App />;
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Root />);
+</script>
+</body>
+</html>
