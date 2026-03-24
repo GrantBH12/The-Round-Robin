@@ -59,6 +59,7 @@ function ErrorScreen({ error, onRetry }) {
 }
 
 let REAL_TEAMS = [];
+let DATA_SCRAPED_AT = "";
 
 const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:6}));
 const EXTRA_TIERS = [
@@ -434,7 +435,7 @@ function App() {
             Bracketology Tier List
           </h1>
           <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>
-            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · click to select, click zone to place, double-click to expand
+            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "—"}
           </p>
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -527,6 +528,7 @@ function Root() {
       })
       .then(data => {
         REAL_TEAMS = data.teams;
+        DATA_SCRAPED_AT = data.meta?.scrapedAt || "";
         setTeams(data.teams);
       })
       .catch(e => setError(e.message));
