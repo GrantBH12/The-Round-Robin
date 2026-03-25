@@ -130,6 +130,7 @@ function App() {
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const dragRef = useRef(null);
+  const didDragRef = useRef(false);
 
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
@@ -165,6 +166,7 @@ function App() {
   }, [tm]);
 
   const handleTeamClick = useCallback((tid, e) => {
+    if (didDragRef.current) return;
     e.stopPropagation();
     setSelected(prev => prev === tid ? null : tid);
   }, []);
@@ -189,6 +191,7 @@ function App() {
   // ── Drag-and-drop ──
   const handleDragStart = useCallback((e, tid) => {
     dragRef.current = tid;
+    didDragRef.current = true;
     setDragTid(tid);
     setSelected(null);
     e.dataTransfer.effectAllowed = "move";
@@ -199,6 +202,8 @@ function App() {
     dragRef.current = null;
     setDragTid(null);
     setDropZone(null);
+    // Reset didDragRef after a tick so the click handler can check it first
+    setTimeout(() => { didDragRef.current = false; }, 50);
   }, []);
 
   const handleDragOverZone = useCallback((e, zoneId) => {
