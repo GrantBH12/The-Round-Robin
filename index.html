@@ -135,6 +135,14 @@ function App() {
   const poolScrollRef = useRef(null);
   const savedScrollRef = useRef({board:0, pool:0});
 
+  // After any render during drag, restore scroll positions
+  useEffect(() => {
+    if (dragTid) {
+      if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
+      if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
+    }
+  });
+
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
       const n = new Set(p);
@@ -199,17 +207,14 @@ function App() {
       const dx = e.clientX - dragRef.current.startX;
       const dy = e.clientY - dragRef.current.startY;
       if (!dragRef.current.dragging && Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
+        // Save scroll positions RIGHT NOW before any state change triggers re-render
+        savedScrollRef.current.board = boardScrollRef.current?.scrollTop || 0;
+        savedScrollRef.current.pool = poolScrollRef.current?.scrollTop || 0;
         dragRef.current.dragging = true;
         setDragTid(tid);
         setSelected(null);
-        // Save current scroll positions before anything can jump
-        savedScrollRef.current.board = boardScrollRef.current?.scrollTop || 0;
-        savedScrollRef.current.pool = poolScrollRef.current?.scrollTop || 0;
       }
       if (dragRef.current.dragging) {
-        // Continuously restore scroll positions during drag
-        if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
-        if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
         setDragPos({ x: e.clientX, y: e.clientY });
         const els = document.querySelectorAll("[data-zone]");
         let found = null;
