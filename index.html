@@ -135,12 +135,16 @@ function App() {
   const poolScrollRef = useRef(null);
   const savedScrollRef = useRef({board:0, pool:0});
 
-  // After any render during drag, restore scroll positions
+  // Save scroll positions before every render
+  const saveScroll = useCallback(() => {
+    if (boardScrollRef.current) savedScrollRef.current.board = boardScrollRef.current.scrollTop;
+    if (poolScrollRef.current) savedScrollRef.current.pool = poolScrollRef.current.scrollTop;
+  }, []);
+
+  // After every render, restore scroll positions
   useEffect(() => {
-    if (dragTid) {
-      if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
-      if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
-    }
+    if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
+    if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
   });
 
   const toggleEx = useCallback(tid => {
@@ -186,9 +190,10 @@ function App() {
     const seed = SEEDS.find(s => s.id === zoneId);
     if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
     if (zoneId === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
+    saveScroll();
     moveTeam(selected, zoneId);
     setSelected(null);
-  }, [selected, asgn, moveTeam]);
+  }, [selected, asgn, moveTeam, saveScroll]);
 
   const sendFromCompare = useCallback((tid, target) => {
     moveTeam(tid, target);
@@ -199,7 +204,8 @@ function App() {
 
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
-    e.preventDefault(); // prevent browser scroll-to-element behavior
+    e.preventDefault();
+    saveScroll();
     dragRef.current = { tid, startX: e.clientX, startY: e.clientY, dragging: false, zoneRef: null };
     setDragPos({ x: e.clientX, y: e.clientY });
 
@@ -208,8 +214,7 @@ function App() {
       const dy = e.clientY - dragRef.current.startY;
       if (!dragRef.current.dragging && Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
         // Save scroll positions RIGHT NOW before any state change triggers re-render
-        savedScrollRef.current.board = boardScrollRef.current?.scrollTop || 0;
-        savedScrollRef.current.pool = poolScrollRef.current?.scrollTop || 0;
+        saveScroll();
         dragRef.current.dragging = true;
         setDragTid(tid);
         setSelected(null);
@@ -252,7 +257,7 @@ function App() {
 
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
-  }, [asgn, moveTeam]);
+  }, [asgn, moveTeam, saveScroll]);
 
   const poolF = useMemo(() => {
     let ids = asgn[POOL];
