@@ -188,6 +188,7 @@ function App() {
 
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
+    e.preventDefault(); // prevent browser scroll-to-element behavior
     dragRef.current = { tid, startX: e.clientX, startY: e.clientY, dragging: false, zoneRef: null };
     setDragPos({ x: e.clientX, y: e.clientY });
 
