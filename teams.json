@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-25T21:20:56.276037+00:00",
+    "scrapedAt": "2026-03-25T21:35:20.361853+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -11,6 +11,7 @@
     {
       "id": "t1",
       "name": "Duke",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Duke.png",
       "conf": "ACC",
       "confRecord": "17-1",
       "net": 1,
@@ -90,6 +91,7 @@
     {
       "id": "t2",
       "name": "Michigan",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Michigan.png",
       "conf": "Big Ten",
       "confRecord": "19-1",
       "net": 2,
@@ -176,6 +178,7 @@
     {
       "id": "t3",
       "name": "Arizona",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Arizona.png",
       "conf": "Big 12",
       "confRecord": "16-2",
       "net": 3,
@@ -255,6 +258,7 @@
     {
       "id": "t4",
       "name": "Florida",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Florida.png",
       "conf": "SEC",
       "confRecord": "16-2",
       "net": 4,
@@ -355,6 +359,7 @@
     {
       "id": "t5",
       "name": "Houston",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Houston.png",
       "conf": "Big 12",
       "confRecord": "14-4",
       "net": 5,
@@ -455,6 +460,7 @@
     {
       "id": "t6",
       "name": "Iowa State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Iowa-State.png",
       "conf": "Big 12",
       "confRecord": "12-6",
       "net": 6,
@@ -555,6 +561,7 @@
     {
       "id": "t7",
       "name": "Gonzaga",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Gonzaga.png",
       "conf": "West Coast",
       "confRecord": "16-2",
       "net": 7,
@@ -648,6 +655,7 @@
     {
       "id": "t8",
       "name": "Illinois",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Illinois.png",
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 8,
@@ -748,6 +756,7 @@
     {
       "id": "t9",
       "name": "Purdue",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Purdue.png",
       "conf": "Big Ten",
       "confRecord": "13-7",
       "net": 9,
@@ -848,6 +857,7 @@
     {
       "id": "t10",
       "name": "Connecticut",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Connecticut.png",
       "conf": "Big East",
       "confRecord": "17-3",
       "net": 10,
@@ -948,6 +958,7 @@
     {
       "id": "t11",
       "name": "Michigan State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Michigan-State.png",
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 11,
@@ -1048,6 +1059,7 @@
     {
       "id": "t12",
       "name": "Virginia",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Virginia.png",
       "conf": "ACC",
       "confRecord": "15-3",
       "net": 12,
@@ -1148,6 +1160,7 @@
     {
       "id": "t13",
       "name": "Vanderbilt",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Vanderbilt.png",
       "conf": "SEC",
       "confRecord": "11-7",
       "net": 13,
@@ -1248,6 +1261,7 @@
     {
       "id": "t14",
       "name": "Nebraska",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Nebraska.png",
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 14,
@@ -1348,6 +1362,7 @@
     {
       "id": "t15",
       "name": "Arkansas",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Arkansas.png",
       "conf": "SEC",
       "confRecord": "13-5",
       "net": 15,
@@ -1448,6 +1463,7 @@
     {
       "id": "t16",
       "name": "Saint John's",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Saint-Johns.png",
       "conf": "Big East",
       "confRecord": "18-2",
       "net": 16,
@@ -1548,6 +1564,7 @@
     {
       "id": "t17",
       "name": "Louisville",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Louisville.png",
       "conf": "ACC",
       "confRecord": "11-7",
       "net": 17,
@@ -1648,6 +1665,7 @@
     {
       "id": "t18",
       "name": "Alabama",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Alabama.png",
       "conf": "SEC",
       "confRecord": "13-5",
       "net": 18,
@@ -1748,6 +1766,7 @@
     {
       "id": "t19",
       "name": "Texas Tech",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Texas-Tech.png",
       "conf": "Big 12",
       "confRecord": "12-6",
       "net": 19,
@@ -1848,6 +1867,7 @@
     {
       "id": "t20",
       "name": "Tennessee",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Tennessee.png",
       "conf": "SEC",
       "confRecord": "11-7",
       "net": 20,
@@ -1948,6 +1968,7 @@
     {
       "id": "t21",
       "name": "Kansas",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Kansas.png",
       "conf": "Big 12",
       "confRecord": "12-6",
       "net": 21,
@@ -2048,6 +2069,7 @@
     {
       "id": "t22",
       "name": "Saint Mary's College",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Saint-Marys-College.png",
       "conf": "West Coast",
       "confRecord": "16-2",
       "net": 22,
@@ -2148,6 +2170,7 @@
     {
       "id": "t23",
       "name": "BYU",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/BYU.png",
       "conf": "Big 12",
       "confRecord": "9-9",
       "net": 23,
@@ -2248,6 +2271,7 @@
     {
       "id": "t24",
       "name": "North Carolina",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/North-Carolina.png",
       "conf": "ACC",
       "confRecord": "12-6",
       "net": 24,
@@ -2348,6 +2372,7 @@
     {
       "id": "t25",
       "name": "Wisconsin",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Wisconsin.png",
       "conf": "Big Ten",
       "confRecord": "14-6",
       "net": 25,
@@ -2448,6 +2473,7 @@
     {
       "id": "t26",
       "name": "Utah State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Utah-State.png",
       "conf": "Mountain West",
       "confRecord": "15-5",
       "net": 26,
@@ -2548,6 +2574,7 @@
     {
       "id": "t27",
       "name": "Iowa",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Iowa.png",
       "conf": "Big Ten",
       "confRecord": "10-10",
       "net": 27,
@@ -2648,6 +2675,7 @@
     {
       "id": "t28",
       "name": "Kentucky",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Kentucky.png",
       "conf": "SEC",
       "confRecord": "10-8",
       "net": 28,
@@ -2748,6 +2776,7 @@
     {
       "id": "t29",
       "name": "Ohio State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Ohio-State.png",
       "conf": "Big Ten",
       "confRecord": "12-8",
       "net": 29,
@@ -2848,6 +2877,7 @@
     {
       "id": "t30",
       "name": "UCLA",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/UCLA.png",
       "conf": "Big Ten",
       "confRecord": "13-7",
       "net": 30,
@@ -2948,6 +2978,7 @@
     {
       "id": "t31",
       "name": "Saint Louis",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Saint-Louis.png",
       "conf": "Atlantic 10",
       "confRecord": "15-3",
       "net": 31,
@@ -3048,6 +3079,7 @@
     {
       "id": "t32",
       "name": "Miami (FL)",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Miami-FL.png",
       "conf": "ACC",
       "confRecord": "13-5",
       "net": 32,
@@ -3148,6 +3180,7 @@
     {
       "id": "t33",
       "name": "Georgia",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Georgia.png",
       "conf": "SEC",
       "confRecord": "10-8",
       "net": 33,
@@ -3248,6 +3281,7 @@
     {
       "id": "t34",
       "name": "Clemson",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Clemson.png",
       "conf": "ACC",
       "confRecord": "12-6",
       "net": 34,
@@ -3348,6 +3382,7 @@
     {
       "id": "t35",
       "name": "Villanova",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Villanova.png",
       "conf": "Big East",
       "confRecord": "15-5",
       "net": 35,
@@ -3448,6 +3483,7 @@
     {
       "id": "t36",
       "name": "North Carolina State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/North-Carolina-State.png",
       "conf": "ACC",
       "confRecord": "10-8",
       "net": 36,
@@ -3548,6 +3584,7 @@
     {
       "id": "t37",
       "name": "SMU",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/SMU.png",
       "conf": "ACC",
       "confRecord": "8-10",
       "net": 37,
@@ -3648,6 +3685,7 @@
     {
       "id": "t38",
       "name": "Auburn",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Auburn.png",
       "conf": "SEC",
       "confRecord": "7-11",
       "net": 38,
@@ -3748,6 +3786,7 @@
     {
       "id": "t39",
       "name": "TCU",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/TCU.png",
       "conf": "Big 12",
       "confRecord": "11-7",
       "net": 39,
@@ -3848,6 +3887,7 @@
     {
       "id": "t40",
       "name": "Santa Clara",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Santa-Clara.png",
       "conf": "West Coast",
       "confRecord": "15-3",
       "net": 40,
@@ -3948,6 +3988,7 @@
     {
       "id": "t41",
       "name": "Indiana",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Indiana.png",
       "conf": "Big Ten",
       "confRecord": "9-11",
       "net": 41,
@@ -4048,6 +4089,7 @@
     {
       "id": "t42",
       "name": "Texas",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Texas.png",
       "conf": "SEC",
       "confRecord": "9-9",
       "net": 42,
@@ -4148,6 +4190,7 @@
     {
       "id": "t43",
       "name": "VCU",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/VCU.png",
       "conf": "Atlantic 10",
       "confRecord": "15-3",
       "net": 43,
@@ -4248,6 +4291,7 @@
     {
       "id": "t44",
       "name": "Texas A&M",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Texas-AM.png",
       "conf": "SEC",
       "confRecord": "11-7",
       "net": 44,
@@ -4348,6 +4392,7 @@
     {
       "id": "t45",
       "name": "South Florida",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/South-Florida.png",
       "conf": "American",
       "confRecord": "15-3",
       "net": 45,
@@ -4448,6 +4493,7 @@
     {
       "id": "t46",
       "name": "New Mexico",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/New-Mexico.png",
       "conf": "Mountain West",
       "confRecord": "13-7",
       "net": 46,
@@ -4548,6 +4594,7 @@
     {
       "id": "t47",
       "name": "San Diego State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/San-Diego-State.png",
       "conf": "Mountain West",
       "confRecord": "14-6",
       "net": 47,
@@ -4648,6 +4695,7 @@
     {
       "id": "t48",
       "name": "Oklahoma",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Oklahoma.png",
       "conf": "SEC",
       "confRecord": "7-11",
       "net": 48,
@@ -4748,6 +4796,7 @@
     {
       "id": "t49",
       "name": "Cincinnati",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Cincinnati.png",
       "conf": "Big 12",
       "confRecord": "9-9",
       "net": 49,
@@ -4848,6 +4897,7 @@
     {
       "id": "t50",
       "name": "Baylor",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Baylor.png",
       "conf": "Big 12",
       "confRecord": "6-12",
       "net": 50,
@@ -4948,6 +4998,7 @@
     {
       "id": "t51",
       "name": "UCF",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/UCF.png",
       "conf": "Big 12",
       "confRecord": "9-9",
       "net": 51,
@@ -5048,6 +5099,7 @@
     {
       "id": "t52",
       "name": "Tulsa",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Tulsa.png",
       "conf": "American",
       "confRecord": "13-5",
       "net": 52,
@@ -5148,6 +5200,7 @@
     {
       "id": "t53",
       "name": "Seton Hall",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Seton-Hall.png",
       "conf": "Big East",
       "confRecord": "10-10",
       "net": 53,
@@ -5248,6 +5301,7 @@
     {
       "id": "t54",
       "name": "Akron",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Akron.png",
       "conf": "Mid-American",
       "confRecord": "17-1",
       "net": 54,
@@ -5348,6 +5402,7 @@
     {
       "id": "t55",
       "name": "Virginia Tech",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Virginia-Tech.png",
       "conf": "ACC",
       "confRecord": "8-10",
       "net": 55,
@@ -5448,6 +5503,7 @@
     {
       "id": "t56",
       "name": "McNeese",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/McNeese.png",
       "conf": "Southland",
       "confRecord": "19-3",
       "net": 56,
@@ -5548,6 +5604,7 @@
     {
       "id": "t57",
       "name": "Washington",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Washington.png",
       "conf": "Big Ten",
       "confRecord": "7-13",
       "net": 57,
@@ -5648,6 +5705,7 @@
     {
       "id": "t58",
       "name": "Missouri",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Missouri.png",
       "conf": "SEC",
       "confRecord": "10-8",
       "net": 58,
@@ -5748,6 +5806,7 @@
     {
       "id": "t59",
       "name": "West Virginia",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/West-Virginia.png",
       "conf": "Big 12",
       "confRecord": "9-9",
       "net": 59,
@@ -5848,6 +5907,7 @@
     {
       "id": "t60",
       "name": "Boise State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Boise-State.png",
       "conf": "Mountain West",
       "confRecord": "12-8",
       "net": 60,
@@ -5948,6 +6008,7 @@
     {
       "id": "t61",
       "name": "Stanford",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Stanford.png",
       "conf": "ACC",
       "confRecord": "9-9",
       "net": 61,
@@ -6048,6 +6109,7 @@
     {
       "id": "t62",
       "name": "Florida State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Florida-State.png",
       "conf": "ACC",
       "confRecord": "10-8",
       "net": 62,
@@ -6148,6 +6210,7 @@
     {
       "id": "t63",
       "name": "Belmont",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Belmont.png",
       "conf": "Missouri Valley",
       "confRecord": "16-4",
       "net": 63,
@@ -6248,6 +6311,7 @@
     {
       "id": "t64",
       "name": "Miami (OH)",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Miami-OH.png",
       "conf": "Mid-American",
       "confRecord": "18-0",
       "net": 64,
@@ -6327,6 +6391,7 @@
     {
       "id": "t65",
       "name": "Northwestern",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Northwestern.png",
       "conf": "Big Ten",
       "confRecord": "5-15",
       "net": 65,
@@ -6427,6 +6492,7 @@
     {
       "id": "t66",
       "name": "Wake Forest",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Wake-Forest.png",
       "conf": "ACC",
       "confRecord": "7-11",
       "net": 66,
@@ -6527,6 +6593,7 @@
     {
       "id": "t67",
       "name": "California",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/California.png",
       "conf": "ACC",
       "confRecord": "9-9",
       "net": 67,
@@ -6627,6 +6694,7 @@
     {
       "id": "t68",
       "name": "Yale",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Yale.png",
       "conf": "Ivy League",
       "confRecord": "11-3",
       "net": 68,
@@ -6727,6 +6795,7 @@
     {
       "id": "t69",
       "name": "Dayton",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Dayton.png",
       "conf": "Atlantic 10",
       "confRecord": "12-6",
       "net": 69,
@@ -6827,6 +6896,7 @@
     {
       "id": "t70",
       "name": "Nevada",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Nevada.png",
       "conf": "Mountain West",
       "confRecord": "12-8",
       "net": 70,
@@ -6927,6 +6997,7 @@
     {
       "id": "t71",
       "name": "Grand Canyon",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Grand-Canyon.png",
       "conf": "Mountain West",
       "confRecord": "13-7",
       "net": 71,
@@ -7027,6 +7098,7 @@
     {
       "id": "t72",
       "name": "Northern Iowa",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Northern-Iowa.png",
       "conf": "Missouri Valley",
       "confRecord": "11-9",
       "net": 72,
@@ -7127,6 +7199,7 @@
     {
       "id": "t73",
       "name": "Arizona State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Arizona-State.png",
       "conf": "Big 12",
       "confRecord": "7-11",
       "net": 73,
@@ -7227,6 +7300,7 @@
     {
       "id": "t74",
       "name": "Oklahoma State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Oklahoma-State.png",
       "conf": "Big 12",
       "confRecord": "6-12",
       "net": 74,
@@ -7327,6 +7401,7 @@
     {
       "id": "t75",
       "name": "High Point",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/High-Point.png",
       "conf": "Big South",
       "confRecord": "15-1",
       "net": 75,
@@ -7427,6 +7502,7 @@
     {
       "id": "t76",
       "name": "Colorado",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Colorado.png",
       "conf": "Big 12",
       "confRecord": "7-11",
       "net": 76,
@@ -7527,6 +7603,7 @@
     {
       "id": "t77",
       "name": "LSU",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/LSU.png",
       "conf": "SEC",
       "confRecord": "3-15",
       "net": 77,
@@ -7627,6 +7704,7 @@
     {
       "id": "t78",
       "name": "Wichita State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Wichita-State.png",
       "conf": "American",
       "confRecord": "13-5",
       "net": 78,
@@ -7727,6 +7805,7 @@
     {
       "id": "t79",
       "name": "USC",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/USC.png",
       "conf": "Big Ten",
       "confRecord": "7-13",
       "net": 79,
@@ -7827,6 +7906,7 @@
     {
       "id": "t80",
       "name": "Providence",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Providence.png",
       "conf": "Big East",
       "confRecord": "7-13",
       "net": 80,
@@ -7927,6 +8007,7 @@
     {
       "id": "t81",
       "name": "Minnesota",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Minnesota.png",
       "conf": "Big Ten",
       "confRecord": "8-12",
       "net": 81,
@@ -8027,6 +8108,7 @@
     {
       "id": "t82",
       "name": "Ole Miss",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Ole-Miss.png",
       "conf": "SEC",
       "confRecord": "4-14",
       "net": 82,
@@ -8127,6 +8209,7 @@
     {
       "id": "t83",
       "name": "Creighton",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Creighton.png",
       "conf": "Big East",
       "confRecord": "9-11",
       "net": 83,
@@ -8227,6 +8310,7 @@
     {
       "id": "t84",
       "name": "Butler",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Butler.png",
       "conf": "Big East",
       "confRecord": "7-13",
       "net": 84,
@@ -8327,6 +8411,7 @@
     {
       "id": "t85",
       "name": "Utah Valley",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Utah-Valley.png",
       "conf": "Western Athletic",
       "confRecord": "14-4",
       "net": 85,
@@ -8427,6 +8512,7 @@
     {
       "id": "t86",
       "name": "Syracuse",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Syracuse.png",
       "conf": "ACC",
       "confRecord": "6-12",
       "net": 86,
@@ -8527,6 +8613,7 @@
     {
       "id": "t87",
       "name": "Colorado State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Colorado-State.png",
       "conf": "Mountain West",
       "confRecord": "11-9",
       "net": 87,
@@ -8627,6 +8714,7 @@
     {
       "id": "t88",
       "name": "Hofstra",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Hofstra.png",
       "conf": "Coastal Athletic",
       "confRecord": "12-6",
       "net": 88,
@@ -8727,6 +8815,7 @@
     {
       "id": "t89",
       "name": "Stephen F. Austin",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Stephen-F-Austin.png",
       "conf": "Southland",
       "confRecord": "20-2",
       "net": 89,
@@ -8827,6 +8916,7 @@
     {
       "id": "t90",
       "name": "Georgetown",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Georgetown.png",
       "conf": "Big East",
       "confRecord": "6-14",
       "net": 90,
@@ -8927,6 +9017,7 @@
     {
       "id": "t91",
       "name": "George Washington",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/George-Washington.png",
       "conf": "Atlantic 10",
       "confRecord": "8-10",
       "net": 91,
@@ -9027,6 +9118,7 @@
     {
       "id": "t92",
       "name": "George Mason",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/George-Mason.png",
       "conf": "Atlantic 10",
       "confRecord": "11-7",
       "net": 92,
@@ -9127,6 +9219,7 @@
     {
       "id": "t93",
       "name": "Marquette",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Marquette.png",
       "conf": "Big East",
       "confRecord": "7-13",
       "net": 93,
@@ -9227,6 +9320,7 @@
     {
       "id": "t94",
       "name": "Notre Dame",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Notre-Dame.png",
       "conf": "ACC",
       "confRecord": "4-14",
       "net": 94,
@@ -9327,6 +9421,7 @@
     {
       "id": "t95",
       "name": "Illinois State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Illinois-State.png",
       "conf": "Missouri Valley",
       "confRecord": "12-8",
       "net": 95,
@@ -9427,6 +9522,7 @@
     {
       "id": "t96",
       "name": "UNCW",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/UNCW.png",
       "conf": "Coastal Athletic",
       "confRecord": "15-3",
       "net": 96,
@@ -9527,6 +9623,7 @@
     {
       "id": "t97",
       "name": "Xavier",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Xavier.png",
       "conf": "Big East",
       "confRecord": "6-14",
       "net": 97,
@@ -9627,6 +9724,7 @@
     {
       "id": "t98",
       "name": "California Baptist",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/California-Baptist.png",
       "conf": "Western Athletic",
       "confRecord": "13-5",
       "net": 98,
@@ -9727,6 +9825,7 @@
     {
       "id": "t99",
       "name": "Wyoming",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Wyoming.png",
       "conf": "Mountain West",
       "confRecord": "9-11",
       "net": 99,
@@ -9827,6 +9926,7 @@
     {
       "id": "t100",
       "name": "Kansas State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Kansas-State.png",
       "conf": "Big 12",
       "confRecord": "3-15",
       "net": 100,
@@ -9927,6 +10027,7 @@
     {
       "id": "t101",
       "name": "Hawaii",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Hawaii.png",
       "conf": "Big West",
       "confRecord": "14-6",
       "net": 101,
@@ -10027,6 +10128,7 @@
     {
       "id": "t102",
       "name": "DePaul",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/DePaul.png",
       "conf": "Big East",
       "confRecord": "8-12",
       "net": 102,
@@ -10127,6 +10229,7 @@
     {
       "id": "t103",
       "name": "Saint Thomas",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Saint-Thomas.png",
       "conf": "The Summit League",
       "confRecord": "12-4",
       "net": 103,
@@ -10227,6 +10330,7 @@
     {
       "id": "t104",
       "name": "Pittsburgh",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Pittsburgh.png",
       "conf": "ACC",
       "confRecord": "5-13",
       "net": 104,
@@ -10327,6 +10431,7 @@
     {
       "id": "t105",
       "name": "Murray State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Murray-State.png",
       "conf": "Missouri Valley",
       "confRecord": "12-8",
       "net": 105,
@@ -10427,6 +10532,7 @@
     {
       "id": "t106",
       "name": "Liberty",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Liberty.png",
       "conf": "Conference USA",
       "confRecord": "17-3",
       "net": 106,
@@ -10527,6 +10633,7 @@
     {
       "id": "t114",
       "name": "North Dakota State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/North-Dakota-State.png",
       "conf": "The Summit League",
       "confRecord": "14-2",
       "net": 114,
@@ -10627,6 +10734,7 @@
     {
       "id": "t117",
       "name": "UC Irvine",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/UC-Irvine.png",
       "conf": "Big West",
       "confRecord": "15-5",
       "net": 117,
@@ -10727,6 +10835,7 @@
     {
       "id": "t125",
       "name": "Troy",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Troy.png",
       "conf": "Sun Belt",
       "confRecord": "12-6",
       "net": 125,
@@ -10827,6 +10936,7 @@
     {
       "id": "t127",
       "name": "Wright State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Wright-State.png",
       "conf": "Horizon League",
       "confRecord": "15-5",
       "net": 127,
@@ -10927,6 +11037,7 @@
     {
       "id": "t137",
       "name": "Navy",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Navy.png",
       "conf": "Patriot League",
       "confRecord": "17-1",
       "net": 137,
@@ -11027,6 +11138,7 @@
     {
       "id": "t139",
       "name": "Penn",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Penn.png",
       "conf": "Ivy League",
       "confRecord": "9-5",
       "net": 139,
@@ -11127,6 +11239,7 @@
     {
       "id": "t140",
       "name": "East Tennessee State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/East-Tennessee-State.png",
       "conf": "Southern",
       "confRecord": "13-5",
       "net": 140,
@@ -11227,6 +11340,7 @@
     {
       "id": "t145",
       "name": "Idaho",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Idaho.png",
       "conf": "Big Sky",
       "confRecord": "9-9",
       "net": 145,
@@ -11327,6 +11441,7 @@
     {
       "id": "t147",
       "name": "Portland State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Portland-State.png",
       "conf": "Big Sky",
       "confRecord": "13-5",
       "net": 147,
@@ -11427,6 +11542,7 @@
     {
       "id": "t155",
       "name": "Kennesaw State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Kennesaw-State.png",
       "conf": "Conference USA",
       "confRecord": "10-10",
       "net": 155,
@@ -11527,6 +11643,7 @@
     {
       "id": "t164",
       "name": "Austin Peay",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Austin-Peay.png",
       "conf": "ASUN",
       "confRecord": "15-3",
       "net": 164,
@@ -11627,6 +11744,7 @@
     {
       "id": "t172",
       "name": "Tennessee State",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Tennessee-State.png",
       "conf": "Ohio Valley",
       "confRecord": "15-5",
       "net": 172,
@@ -11727,6 +11845,7 @@
     {
       "id": "t180",
       "name": "Merrimack",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Merrimack.png",
       "conf": "MAAC",
       "confRecord": "17-3",
       "net": 180,
@@ -11827,6 +11946,7 @@
     {
       "id": "t183",
       "name": "Siena",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Siena.png",
       "conf": "MAAC",
       "confRecord": "13-7",
       "net": 183,
@@ -11927,6 +12047,7 @@
     {
       "id": "t186",
       "name": "Furman",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Furman.png",
       "conf": "Southern",
       "confRecord": "10-8",
       "net": 186,
@@ -12027,6 +12148,7 @@
     {
       "id": "t189",
       "name": "Queens",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Queens.png",
       "conf": "ASUN",
       "confRecord": "13-5",
       "net": 189,
@@ -12127,6 +12249,7 @@
     {
       "id": "t196",
       "name": "UMBC",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/UMBC.png",
       "conf": "America East",
       "confRecord": "14-2",
       "net": 196,
@@ -12227,6 +12350,7 @@
     {
       "id": "t198",
       "name": "Long Island",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Long-Island.png",
       "conf": "NEC",
       "confRecord": "15-3",
       "net": 198,
@@ -12327,6 +12451,7 @@
     {
       "id": "t203",
       "name": "Howard",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Howard.png",
       "conf": "MEAC",
       "confRecord": "11-3",
       "net": 203,
@@ -12427,6 +12552,7 @@
     {
       "id": "t261",
       "name": "Bethune-Cookman",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Bethune-Cookman.png",
       "conf": "SWAC",
       "confRecord": "14-4",
       "net": 261,
@@ -12527,6 +12653,7 @@
     {
       "id": "t275",
       "name": "Lehigh",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Lehigh.png",
       "conf": "Patriot League",
       "confRecord": "11-7",
       "net": 275,
@@ -12627,6 +12754,7 @@
     {
       "id": "t300",
       "name": "Prairie View A&M",
+      "logo": "https://www.warrennolan.com/images/team/new/80x80/Prairie-View-AM.png",
       "conf": "SWAC",
       "confRecord": "9-9",
       "net": 300,
