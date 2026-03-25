@@ -126,7 +126,7 @@ function App() {
   const [confF, setConfF] = useState("All");
   const [expanded, setExpanded] = useState(new Set());
   const [selected, setSelected] = useState(null);
-  const [tab, setTab] = useState("board");
+  const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [dragPos, setDragPos] = useState({x:0,y:0});
@@ -174,14 +174,10 @@ function App() {
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
     if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
+    if (zoneId === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
     moveTeam(selected, zoneId);
     setSelected(null);
   }, [selected, asgn, moveTeam]);
-
-  const sendToCompare = useCallback((tid) => {
-    if (asgn[COMPARE].length >= 8) return;
-    moveTeam(tid, COMPARE);
-  }, [asgn, moveTeam]);
 
   const sendFromCompare = useCallback((tid, target) => {
     moveTeam(tid, target);
@@ -224,13 +220,12 @@ function App() {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
       if (dragRef.current.dragging) {
-        // Complete drag drop
         const targetZone = dragRef.current.zoneRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
-          if (!seed || asgn[targetZone].length < seed.max || asgn[targetZone].includes(tid)) {
-            moveTeam(tid, targetZone);
-          }
+          const atMax = seed ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
+                             : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
+          if (!atMax) moveTeam(tid, targetZone);
         }
         setDragTid(null);
         setDropZone(null);
@@ -283,11 +278,6 @@ function App() {
           <span style={{ color: "#4A5568", fontSize: 9 }}>{t.conf}</span>
           <span style={{ color: "#8694A8", fontSize: 11, fontFamily: "monospace" }}>{t.record}</span>
           <span style={{ color: parseInt(t.q1) >= 6 ? "#4ADE80" : parseInt(t.q1) >= 3 ? "#A3E635" : "#6B7A90", fontSize: 10, fontFamily: "monospace" }}>Q1:{t.q1}</span>
-          {showActions && zone !== COMPARE && (
-            <button onClick={e => { e.stopPropagation(); sendToCompare(tid); }}
-              style={{ background: "#1A2740", border: "1px solid #2A3F66", borderRadius: 3, color: "#8694A8", fontSize: 9, padding: "1px 5px", cursor: "pointer" }}
-              title="Send to compare">⇄</button>
-          )}
         </div>
         {isEx && (
           <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #1A2740", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px 14px", fontSize: 11 }}>
@@ -301,174 +291,223 @@ function App() {
     );
   };
 
-  const BoardView = () => (
-    <div style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
-      {SEEDS.map((seed, si) => {
-        const ids = asgn[seed.id];
-        const color = SEED_COLORS[si] || "#555";
-        const isSel = !!selected;
-        return (
-          <div key={seed.id} style={{ marginBottom: 4 }} onClick={() => handleZoneClick(seed.id)}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 8, minHeight: 30 }}>
-              <div style={{
-                width: 28, minWidth: 28, height: 24, borderRadius: 4, background: color,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
-              }}>{seed.num}</div>
+  const BoardView = () => {
+    const compareIds = asgn[COMPARE];
+    const isSel = !!selected;
+    return (
+      <div style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
+        {/* Seed lines 1-16 */}
+        {SEEDS.map((seed, si) => {
+          const ids = asgn[seed.id];
+          const color = SEED_COLORS[si] || "#555";
+          return (
+            <div key={seed.id} style={{ marginBottom: 4 }} onClick={() => handleZoneClick(seed.id)}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, minHeight: 30 }}>
+                <div style={{
+                  width: 28, minWidth: 28, height: 24, borderRadius: 4, background: color,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
+                }}>{seed.num}</div>
+                <div
+                  data-zone={seed.id}
+                  style={{
+                    flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
+                    borderRadius: 6, padding: "2px 4px",
+                    border: `1px dashed ${dropZone === seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                    background: dropZone === seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                    transition: "background 0.1s, border-color 0.1s",
+                  }}>
+                  {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>
+                    {isSel ? "Click to place" : `${seed.max} slots`}
+                  </span>}
+                  {ids.map(id => <div key={id} style={{flex:"0 0 auto",minWidth:180,maxWidth:320}}><Card tid={id} zone={seed.id}/></div>)}
+                  {ids.length < seed.max && ids.length > 0 && Array.from({length: Math.min(2, seed.max - ids.length)}).map((_,i) => (
+                    <div key={`empty-${i}`} style={{
+                      width: 80, height: 24, borderRadius: 4, border: "1px dashed #1A2740",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 9, color: "#1E2D4A", margin: 1,
+                    }}>{isSel ? "+" : ""}</div>
+                  ))}
+                </div>
+                <span style={{ fontSize: 9, color: "#4A5568", minWidth: 20, textAlign: "right", marginTop: 6 }}>{ids.length}/{seed.max}</span>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Divider */}
+        <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
+
+        {/* Extra tiers */}
+        {EXTRA_TIERS.map(tier => {
+          const ids = asgn[tier.id];
+          return (
+            <div key={tier.id} style={{ marginBottom: 6 }} onClick={() => handleZoneClick(tier.id)}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                <div style={{ width: 4, height: 14, borderRadius: 2, background: tier.ac }} />
+                <span style={{ fontSize: 12, fontWeight: 700, color: tier.ac }}>{tier.label}</span>
+                <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
+              </div>
               <div
-                data-zone={seed.id}
+                data-zone={tier.id}
                 style={{
-                  flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
-                  borderRadius: 6, padding: "2px 4px",
-                  border: `1px dashed ${dropZone === seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
-                  background: dropZone === seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                  minHeight: 28, borderRadius: 6, padding: "2px 4px",
+                  border: `1px dashed ${dropZone === tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                  background: dropZone === tier.id ? "rgba(232,135,43,0.06)" : "transparent",
                   transition: "background 0.1s, border-color 0.1s",
                 }}>
-                {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>
-                  {isSel ? "Click to place" : `${seed.max} slots`}
-                </span>}
-                {ids.map(id => <div key={id} style={{flex:"0 0 auto",minWidth:180,maxWidth:320}}><Card tid={id} showActions zone={seed.id}/></div>)}
-                {ids.length < seed.max && ids.length > 0 && Array.from({length: Math.min(2, seed.max - ids.length)}).map((_,i) => (
-                  <div key={`empty-${i}`} style={{
-                    width: 80, height: 24, borderRadius: 4, border: "1px dashed #1A2740",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 9, color: "#1E2D4A", margin: 1,
-                  }}>{isSel ? "+" : ""}</div>
-                ))}
+                {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
+                {ids.map(id => <Card key={id} tid={id} zone={tier.id}/>)}
               </div>
-              <span style={{ fontSize: 9, color: "#4A5568", minWidth: 20, textAlign: "right", marginTop: 6 }}>{ids.length}/{seed.max}</span>
             </div>
-          </div>
-        );
-      })}
-      <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
-      {EXTRA_TIERS.map(tier => {
-        const ids = asgn[tier.id];
-        const isSel = !!selected;
-        return (
-          <div key={tier.id} style={{ marginBottom: 6 }} onClick={() => handleZoneClick(tier.id)}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-              <div style={{ width: 4, height: 14, borderRadius: 2, background: tier.ac }} />
-              <span style={{ fontSize: 12, fontWeight: 700, color: tier.ac }}>{tier.label}</span>
-              <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
-            </div>
-            <div
-              data-zone={tier.id}
-              style={{
-                minHeight: 28, borderRadius: 6, padding: "2px 4px",
-                border: `1px dashed ${dropZone === tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
-                background: dropZone === tier.id ? "rgba(232,135,43,0.06)" : "transparent",
-                transition: "background 0.1s, border-color 0.1s",
-              }}>
-              {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
-              {ids.map(id => <Card key={id} tid={id} showActions zone={tier.id}/>)}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+          );
+        })}
 
-  const CompareView = () => {
-    const ids = asgn[COMPARE];
-    return (
-      <div style={{ flex: "1 1 62%", display: "flex", flexDirection: "column", overflow: "hidden", padding: "10px 14px" }}>
-        <div style={{ marginBottom: 8 }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#E8872B" }}>Compare Resumes</h2>
-          <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>{ids.length}/8 teams · click ⇄ on pool cards to add</p>
-        </div>
-        {ids.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 0", color: "#2A3F66", fontSize: 13 }}>
-            Click the ⇄ button on any team card to send it here
-          </div>
-        )}
-        <div style={{ display: "flex", gap: 8, flex: 1, overflowX: "auto", overflowY: "hidden", paddingBottom: 4 }}>
-          {ids.map(tid => {
-            const t = tm[tid];
-            if (!t) return null;
-            const kw = t.keyWins || [];
-            const kl = t.keyLosses || [];
-            return (
-              <div key={tid} style={{
-                flex: "0 0 205px", background: "#111B2E", border: "1px solid #2A3F66", borderRadius: 8,
-                padding: "12px 10px", display: "flex", flexDirection: "column", overflowY: "auto", minHeight: 0,
-              }}>
-                <div style={{ textAlign: "center", marginBottom: 8, borderBottom: "1px solid #1A2740", paddingBottom: 8 }}>
-                  <div style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 11 }}>#{t.net}</div>
-                  <div style={{ color: "#E2E8F0", fontWeight: 800, fontSize: 15, lineHeight: 1.2 }}>{t.name}</div>
-                  <div style={{ color: "#4A5568", fontSize: 10, marginTop: 2 }}>{t.conf} ({t.confRecord})</div>
-                  <div style={{ color: "#8694A8", fontSize: 13, fontWeight: 700, marginTop: 4 }}>{t.record}</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 11, marginBottom: 8 }}>
-                  <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
-                  <St l="NC Rec" v={t.ncRecord}/>
-                  <St l="Home" v={t.home}/>
-                  <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
-                  <St l="Neutral" v={t.neutral}/>
-                  <St l="Avg W" v={`#${t.avgNetWins}`}/>
-                  <St l="Avg L" v={`#${t.avgNetLosses}`}/>
-                </div>
-                <div style={{ background: "#0B1120", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11 }}>
-                  <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/>
-                  <St l="Q2" v={t.q2}/>
-                  <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
-                  <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
-                </div>
-                <div style={{ background: "#0D1425", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11, border: "1px solid #1A2740" }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, color: "#6B7A90", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rankings</div>
-                  <St l="KPI" v={t.kpi != null ? `#${t.kpi}` : "—"}/>
-                  <St l="SOR" v={t.sor != null ? `#${t.sor}` : "—"}/>
-                  <St l="WAB" v={t.wab != null ? `#${t.wab}` : "—"}/>
-                  <St l="BPI" v={t.bpi != null ? `#${t.bpi}` : "—"}/>
-                  <St l="KenPom" v={t.pom != null ? `#${t.pom}` : "—"}/>
-                  <St l="T-Rank" v={t.tRank != null ? `#${t.tRank}` : "—"}/>
-                </div>
-                <div style={{ marginBottom: 6 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Wins</div>
-                  {kw.length > 0 ? kw.map((w, i) => (
-                    <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      <span style={{ color: "#4ADE80", fontFamily: "monospace", fontSize: 9 }}>#{w.oppNet}</span>{" "}{w.site === "A" ? "@ " : w.site === "N" ? "v " : ""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-                    </div>
-                  )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>—</div>}
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ fontSize: 9, fontWeight: 700, color: "#F87171", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Losses</div>
-                  {kl.length > 0 ? kl.map((l, i) => (
-                    <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      <span style={{ color: "#F87171", fontFamily: "monospace", fontSize: 9 }}>#{l.oppNet}</span>{" "}{l.site === "A" ? "@ " : l.site === "N" ? "v " : ""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-                    </div>
-                  )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>None</div>}
-                </div>
-                <div style={{ flex: 1 }} />
-                <div style={{ borderTop: "1px solid #1A2740", paddingTop: 6, display: "flex", flexDirection: "column", gap: 4 }}>
-                  <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
-                    {SEEDS.slice(0,16).map(s => (
-                      <button key={s.id} onClick={() => sendFromCompare(tid, s.id)}
-                        disabled={asgn[s.id].length >= s.max}
-                        style={{
-                          background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2,
-                          color: asgn[s.id].length >= s.max ? "#1A2740" : "#8694A8",
-                          fontSize: 8, padding: "2px 4px", cursor: asgn[s.id].length >= s.max ? "not-allowed" : "pointer",
-                          minWidth: 18, textAlign: "center",
-                        }}>{s.num}</button>
-                    ))}
-                  </div>
-                  <div style={{ display: "flex", gap: 3 }}>
-                    {EXTRA_TIERS.map(et => (
-                      <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
-                        style={{ background: "#0B1120", border: `1px solid ${et.ac}44`, borderRadius: 2, color: et.ac, fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
-                        {et.label.split(" ").map(w=>w[0]).join("")}
-                      </button>
-                    ))}
-                    <button onClick={() => moveTeam(tid, POOL)}
-                      style={{ background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2, color: "#6B7A90", fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
-                      ← Pool
-                    </button>
-                  </div>
-                </div>
+        {/* Divider */}
+        <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
+
+        {/* Collapsible Compare section */}
+        <div style={{ marginBottom: 16 }}>
+          {/* Toggle header */}
+          <div
+            onClick={() => setCompareOpen(o => !o)}
+            style={{
+              display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+              marginBottom: compareOpen ? 8 : 0, userSelect: "none",
+            }}>
+            <span style={{ color: "#4A6FA5", fontSize: 13, fontWeight: 700 }}>
+              {compareOpen ? "▾" : "▸"}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#4A6FA5" }}>Compare Resumes</span>
+            <span style={{ fontSize: 9, color: "#4A5568" }}>
+              {compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 teams · click to expand`}
+            </span>
+            {!compareOpen && compareIds.length > 0 && (
+              <div style={{ display: "flex", gap: 4, marginLeft: 4 }}>
+                {compareIds.slice(0,4).map(id => (
+                  <span key={id} style={{ fontSize: 9, color: "#8694A8", background: "#111B2E", border: "1px solid #1A2740", borderRadius: 3, padding: "1px 5px" }}>
+                    {tm[id]?.name}
+                  </span>
+                ))}
+                {compareIds.length > 4 && <span style={{ fontSize: 9, color: "#4A5568" }}>+{compareIds.length - 4} more</span>}
               </div>
-            );
-          })}
+            )}
+          </div>
+
+          {compareOpen && (
+            <div>
+              {/* Drop zone target strip */}
+              <div
+                data-zone={COMPARE}
+                onClick={() => handleZoneClick(COMPARE)}
+                style={{
+                  minHeight: compareIds.length === 0 ? 48 : 8,
+                  borderRadius: 6, marginBottom: compareIds.length > 0 ? 8 : 0,
+                  border: `1px dashed ${dropZone === COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A2740"}`,
+                  background: dropZone === COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "background 0.1s, border-color 0.1s",
+                }}>
+                {compareIds.length === 0 && (
+                  <span style={{ fontSize: 11, color: "#1E2D4A" }}>
+                    {isSel ? "Click to add to compare" : "Drag or select a team to compare"}
+                  </span>
+                )}
+              </div>
+
+              {/* Compare cards horizontal scroll */}
+              {compareIds.length > 0 && (
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                  {compareIds.map(tid => {
+                    const t = tm[tid];
+                    if (!t) return null;
+                    const kw = t.keyWins || [];
+                    const kl = t.keyLosses || [];
+                    return (
+                      <div key={tid} style={{
+                        flex: "0 0 195px", background: "#111B2E", border: "1px solid #2A3F66",
+                        borderRadius: 8, padding: "12px 10px", display: "flex", flexDirection: "column",
+                      }}>
+                        <div style={{ textAlign: "center", marginBottom: 8, borderBottom: "1px solid #1A2740", paddingBottom: 8 }}>
+                          <div style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 11 }}>#{t.net}</div>
+                          <div style={{ color: "#E2E8F0", fontWeight: 800, fontSize: 14, lineHeight: 1.2 }}>{t.name}</div>
+                          <div style={{ color: "#4A5568", fontSize: 10, marginTop: 2 }}>{t.conf} ({t.confRecord})</div>
+                          <div style={{ color: "#8694A8", fontSize: 12, fontWeight: 700, marginTop: 3 }}>{t.record}</div>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 11, marginBottom: 8 }}>
+                          <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
+                          <St l="NC Rec" v={t.ncRecord}/>
+                          <St l="Home" v={t.home}/>
+                          <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
+                          <St l="Neutral" v={t.neutral}/>
+                          <St l="Avg W" v={`#${t.avgNetWins}`}/>
+                          <St l="Avg L" v={`#${t.avgNetLosses}`}/>
+                        </div>
+                        <div style={{ background: "#0B1120", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11 }}>
+                          <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/>
+                          <St l="Q2" v={t.q2}/>
+                          <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
+                          <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
+                        </div>
+                        <div style={{ background: "#0D1425", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11, border: "1px solid #1A2740" }}>
+                          <div style={{ fontSize: 9, fontWeight: 700, color: "#6B7A90", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rankings</div>
+                          <St l="KPI" v={t.kpi != null ? `#${t.kpi}` : "—"}/>
+                          <St l="SOR" v={t.sor != null ? `#${t.sor}` : "—"}/>
+                          <St l="WAB" v={t.wab != null ? `#${t.wab}` : "—"}/>
+                          <St l="BPI" v={t.bpi != null ? `#${t.bpi}` : "—"}/>
+                          <St l="KenPom" v={t.pom != null ? `#${t.pom}` : "—"}/>
+                          <St l="T-Rank" v={t.tRank != null ? `#${t.tRank}` : "—"}/>
+                        </div>
+                        <div style={{ marginBottom: 6 }}>
+                          <div style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Wins</div>
+                          {kw.length > 0 ? kw.map((w, i) => (
+                            <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <span style={{ color: "#4ADE80", fontFamily: "monospace", fontSize: 9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+                            </div>
+                          )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>—</div>}
+                        </div>
+                        <div style={{ marginBottom: 8 }}>
+                          <div style={{ fontSize: 9, fontWeight: 700, color: "#F87171", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Losses</div>
+                          {kl.length > 0 ? kl.map((l, i) => (
+                            <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                              <span style={{ color: "#F87171", fontFamily: "monospace", fontSize: 9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+                            </div>
+                          )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>None</div>}
+                        </div>
+                        <div style={{ flex: 1 }} />
+                        <div style={{ borderTop: "1px solid #1A2740", paddingTop: 6, display: "flex", flexDirection: "column", gap: 4 }}>
+                          <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
+                            {SEEDS.map(s => (
+                              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)}
+                                disabled={asgn[s.id].length >= s.max}
+                                style={{
+                                  background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2,
+                                  color: asgn[s.id].length >= s.max ? "#1A2740" : "#8694A8",
+                                  fontSize: 8, padding: "2px 4px", cursor: asgn[s.id].length >= s.max ? "not-allowed" : "pointer",
+                                  minWidth: 18, textAlign: "center",
+                                }}>{s.num}</button>
+                            ))}
+                          </div>
+                          <div style={{ display: "flex", gap: 3 }}>
+                            {EXTRA_TIERS.map(et => (
+                              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                                style={{ background: "#0B1120", border: `1px solid ${et.ac}44`, borderRadius: 2, color: et.ac, fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
+                                {et.label.split(" ").map(w=>w[0]).join("")}
+                              </button>
+                            ))}
+                            <button onClick={() => moveTeam(tid, POOL)}
+                              style={{ background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2, color: "#6B7A90", fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
+                              ← Pool
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -499,14 +538,6 @@ function App() {
           </p>
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <button onClick={() => setTab("board")} style={{
-            background: tab === "board" ? "#E8872B" : "transparent", border: `1px solid ${tab === "board" ? "#E8872B" : "#1A2740"}`,
-            borderRadius: 5, color: tab === "board" ? "#fff" : "#6B7A90", fontSize: 11, padding: "4px 12px", cursor: "pointer", fontWeight: 600,
-          }}>Board</button>
-          <button onClick={() => setTab("compare")} style={{
-            background: tab === "compare" ? "#E8872B" : "transparent", border: `1px solid ${tab === "compare" ? "#E8872B" : "#1A2740"}`,
-            borderRadius: 5, color: tab === "compare" ? "#fff" : "#6B7A90", fontSize: 11, padding: "4px 12px", cursor: "pointer", fontWeight: 600,
-          }}>Compare ({asgn[COMPARE].length})</button>
           {selected && (
             <>
               <button onClick={() => setSelected(null)} style={{
@@ -534,7 +565,7 @@ function App() {
       </div>
 
       <div style={{ display: "flex", height: "calc(100vh - 70px)", overflow: "hidden" }}>
-        {tab === "board" ? <BoardView /> : <CompareView />}
+        <BoardView />
 
         <div style={{ flex: "0 0 300px", borderLeft: "1px solid #1A2740", display: "flex", flexDirection: "column", background: "#0D1425" }}>
           <div style={{ padding: "8px 10px", borderBottom: "1px solid #1A2740" }}>
