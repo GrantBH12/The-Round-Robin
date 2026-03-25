@@ -29,6 +29,7 @@ HEADERS = {
 }
 
 BASE = "https://www.warrennolan.com"
+LOGO_BASE = "https://www.warrennolan.com/images/team/new/80x80"
 
 
 def fetch_html(url: str) -> str:
@@ -134,10 +135,14 @@ def scrape_nitty_gritty(html: str) -> list[dict]:
         try: avg_l = int(cells[15].get_text(strip=True))
         except: avg_l = 0
 
+        # Build logo URL from slug
+        logo = f"{LOGO_BASE}/{slug}.png" if slug else ""
+
         teams.append({
             "id": f"t{net}",
             "name": name,
             "slug": slug,
+            "logo": logo,
             "conf": conf,
             "confRecord": conf_record,
             "net": net,
@@ -181,22 +186,12 @@ def scrape_team_sheet(slug: str, year: str = "2026") -> dict:
     wins = []
     losses = []
 
-    # Game data is in div.ts-nitty-row elements (not tables)
-    # Each game row has 6 child divs:
-    #   0: ts-nitty-rank        → opponent NET (int)
-    #   1: ts-nitty-location    → H/A/N
-    #   2: ts-nitty-opponent    → opponent name
-    #   3: ts-nitty-score       → team score
-    #   4: ts-nitty-score       → opponent score (has ts-nitty-loss class if loss)
-    #   5: ts-nitty-date        → date string
-    # Header row has 5 children (no second score div), skip it.
-
     rows = soup.find_all("div", class_="ts-nitty-row")
 
     for row in rows:
         children = row.find_all("div", recursive=False)
         if len(children) < 6:
-            continue  # skip header rows
+            continue
 
         try:
             opp_net = int(children[0].get_text(strip=True))
@@ -214,7 +209,6 @@ def scrape_team_sheet(slug: str, year: str = "2026") -> dict:
 
         date_str = children[5].get_text(strip=True) if len(children) > 5 else ""
 
-        # Loss is marked by ts-nitty-loss class on the opponent score div
         opp_score_classes = children[4].get("class", [])
         is_loss = "ts-nitty-loss" in opp_score_classes or score1 < score2
 
@@ -231,19 +225,13 @@ def scrape_team_sheet(slug: str, year: str = "2026") -> dict:
         else:
             wins.append(game)
 
-    # Sort wins by opponent NET (ascending = best wins first)
     wins.sort(key=lambda g: g["oppNet"])
-    # Sort losses by opponent NET (descending = worst losses first)
     losses.sort(key=lambda g: g["oppNet"], reverse=True)
 
-    # ── Parse metrics (KPI, SOR, WAB, BPI, POM, T-Rank) ──
-    # These are in two ts-half-width divs, each containing:
-    #   ts-data-right: labels separated by text (e.g. "KPI:SOR:WAB:")
-    #   ts-data-left: values separated by <br/> tags (e.g. "1<br/>3<br/>2")
     metrics = {}
     metric_keys = [
-        ["kpi", "sor", "wab"],       # Result-Based
-        ["bpi", "pom", "tRank"],     # Predictive
+        ["kpi", "sor", "wab"],
+        ["bpi", "pom", "tRank"],
     ]
     half_widths = soup.find_all("div", class_="ts-half-width")
     mi = 0
@@ -251,15 +239,12 @@ def scrape_team_sheet(slug: str, year: str = "2026") -> dict:
         data_left = hw.find("div", class_="ts-data-left")
         if not data_left or mi >= len(metric_keys):
             continue
-        # Values are separated by <br/> tags
-        # Get text nodes between <br/> elements
         parts = []
         for item in data_left.children:
             if isinstance(item, str):
                 val = item.strip()
                 if val:
                     parts.append(val)
-        # Map to keys
         keys = metric_keys[mi]
         for j, key in enumerate(keys):
             if j < len(parts):
@@ -299,7 +284,7 @@ def main():
     print(f"  Found {len(teams)} teams")
     if teams:
         t = teams[0]
-        print(f"  Sanity check: #{t['net']} {t['name']} ({t['conf']}) {t['record']} Q1:{t['q1']}")
+        print(f"  Sanity check: #{t['net']} {t['name']} ({t['conf']}) {t['record']} Q1:{t['q1']} logo:{t['logo']}")
 
     # Step 2: Scrape team sheets for wins/losses
     if not args.skip_sheets:
@@ -317,7 +302,6 @@ def main():
             result = scrape_team_sheet(slug, args.year)
             team["keyWins"] = result["wins"]
             team["keyLosses"] = result["losses"]
-            # Store ranking metrics
             m = result.get("metrics", {})
             team["kpi"] = m.get("kpi")
             team["sor"] = m.get("sor")
@@ -339,7 +323,7 @@ def main():
     else:
         print("\nStep 2: Skipping team sheets (--skip-sheets)")
 
-    # Remove slug from output (internal use only)
+    # Remove slug from output (keep logo, remove slug)
     for team in teams:
         team.pop("slug", None)
 
