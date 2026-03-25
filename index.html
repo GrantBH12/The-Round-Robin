@@ -581,7 +581,7 @@ function App() {
             </div>
             <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>{poolF.length} teams</div>
           </div>
-          <div style={{padding:"8px 10px",borderTop:"1px solid #1A2740",fontSize:9,color:"#4A5568"}}>Data sourced from WarrenNolan.com · Not affiliated with the NCAA · For informational purposes only · © 2026 The Round Robin</div><div ref={poolScrollRef} data-zone={POOL} style={{
+          <div ref={poolScrollRef} data-zone={POOL} style={{
             flex:1, overflowY:"auto", padding:"4px 6px",
             background: dropZone===POOL ? "rgba(74,111,165,0.06)" : "transparent",
             transition:"background 0.1s",
@@ -590,7 +590,7 @@ function App() {
               <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
             ))}
           </div>
-        </div>
+        <div style={{padding:"8px 10px",borderTop:"1px solid #1A2740",fontSize:9,color:"#4A5568"}}>Data sourced from WarrenNolan.com · Not affiliated with the NCAA · For informational purposes only · © 2026 The Round Robin</div></div>
 
       </div>
     </div>
