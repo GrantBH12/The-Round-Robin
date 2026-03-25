@@ -50,21 +50,20 @@ function St({ l, v, g, w }) {
   );
 }
 
-// Card defined OUTSIDE App so React never remounts it
-const TeamCard = memo(function TeamCard({ tid, tm, expanded, selected, dragTid, onMouseDown, onDoubleClick }) {
+// TeamCard defined OUTSIDE App — prevents React from remounting scroll containers
+const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown }) {
   const t = tm[tid];
   if (!t) return null;
-  const isEx = expanded.has(tid);
   const isSel = selected === tid;
   const isDragging = dragTid === tid;
   return (
     <div
+      data-card={tid}
       onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
-      onDoubleClick={e => { e.stopPropagation(); onDoubleClick(tid); }}
       style={{
         background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
-        border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
-        borderRadius:6, padding: isEx ? "8px 10px" : "5px 8px",
+        border: `1.5px solid ${isSel ? "#E8872B" : "#1A2740"}`,
+        borderRadius:6, padding:"5px 8px",
         cursor: isDragging ? "grabbing" : "grab",
         userSelect:"none", marginBottom:2, transition: isDragging ? "none" : "all 0.12s",
         boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
@@ -72,20 +71,13 @@ const TeamCard = memo(function TeamCard({ tid, tm, expanded, selected, dragTid, 
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
+        {t.logo && <img src={t.logo} alt="" style={{ width:18, height:18, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
         <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
         <span style={{ color:"#8694A8", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
         <span style={{ color: parseInt(t.q1)>=6 ? "#4ADE80" : parseInt(t.q1)>=3 ? "#A3E635" : "#6B7A90", fontSize:10, fontFamily:"monospace" }}>Q1:{t.q1}</span>
       </div>
-      {isEx && (
-        <div style={{ marginTop:6, paddingTop:6, borderTop:"1px solid #1A2740", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"3px 14px", fontSize:11 }}>
-          <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/><St l="Conf" v={t.confRecord}/><St l="NC" v={t.ncRecord}/>
-          <St l="Home" v={t.home}/><St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/><St l="Neut" v={t.neutral}/>
-          <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/><St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
-          <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/><St l="AvgW" v={`#${t.avgNetWins}`}/><St l="AvgL" v={`#${t.avgNetLosses}`}/>
-        </div>
-      )}
     </div>
   );
 });
@@ -101,7 +93,6 @@ const EXTRA_TIERS = [
 ];
 const COMPARE = "compare";
 const POOL = "pool";
-const MAX_EX = 8;
 const DRAG_THRESHOLD = 6;
 const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C","#3D5E8C","#304D73","#304D73","#2A4060","#2A4060","#7A5A3A","#7A5A3A","#606060","#606060","#505050"];
 
@@ -155,32 +146,23 @@ function App() {
 
   const [search, setSearch] = useState("");
   const [confF, setConfF] = useState("All");
-  const [expanded, setExpanded] = useState(new Set());
   const [selected, setSelected] = useState(null);
   const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
+  const [insertTarget, setInsertTarget] = useState(null);
 
-  const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null});
+  const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null});
   const ghostRef = useRef(null);
   const boardScrollRef = useRef(null);
   const poolScrollRef = useRef(null);
-
-  const toggleEx = useCallback(tid => {
-    setExpanded(p => {
-      const n = new Set(p);
-      if (n.has(tid)) n.delete(tid);
-      else { if (n.size >= MAX_EX) n.delete(n.values().next().value); n.add(tid); }
-      return n;
-    });
-  }, []);
 
   const findZone = useCallback(tid => {
     for (const k in asgn) { if (asgn[k].includes(tid)) return k; }
     return null;
   }, [asgn]);
 
-  const moveTeam = useCallback((tid, target) => {
+  const moveTeam = useCallback((tid, target, beforeTid = null) => {
     setAsgn(p => {
       const n = {};
       for (const k in p) n[k] = p[k].filter(x => x !== tid);
@@ -192,6 +174,9 @@ function App() {
           if ((tm[pool[i]]?.net ?? 999) > teamNet) { idx = i; break; }
         }
         pool.splice(idx, 0, tid);
+      } else if (beforeTid && n[target].includes(beforeTid)) {
+        const idx = n[target].indexOf(beforeTid);
+        n[target].splice(idx, 0, tid);
       } else {
         n[target] = [...n[target], tid];
       }
@@ -215,7 +200,7 @@ function App() {
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    dragRef.current = { tid, startX:e.clientX, startY:e.clientY, dragging:false, zoneRef:null };
+    dragRef.current = { tid, startX:e.clientX, startY:e.clientY, dragging:false, zoneRef:null, insertRef:null };
 
     const onMouseMove = (mv) => {
       const dx = mv.clientX - dragRef.current.startX;
@@ -236,17 +221,41 @@ function App() {
           ghostRef.current.style.left = (mv.clientX+12)+"px";
           ghostRef.current.style.top = (mv.clientY-10)+"px";
         }
-        const els = document.querySelectorAll("[data-zone]");
-        let found = null;
-        for (const el of els) {
+        // Find which zone we're over
+        let foundZone = null;
+        const zoneEls = document.querySelectorAll("[data-zone]");
+        for (const el of zoneEls) {
           const r = el.getBoundingClientRect();
           if (mv.clientX>=r.left && mv.clientX<=r.right && mv.clientY>=r.top && mv.clientY<=r.bottom) {
-            found = el.getAttribute("data-zone"); break;
+            foundZone = el.getAttribute("data-zone"); break;
           }
         }
-        if (found !== dragRef.current.zoneRef) {
-          dragRef.current.zoneRef = found;
-          setDropZone(found);
+        // Find insert position within zone by hit-testing individual cards
+        let foundInsert = null;
+        if (foundZone && foundZone !== POOL) {
+          const cardEls = document.querySelectorAll("[data-card]");
+          for (const el of cardEls) {
+            const cardTid = el.getAttribute("data-card");
+            if (cardTid === tid) continue;
+            const r = el.getBoundingClientRect();
+            if (mv.clientX>=r.left && mv.clientX<=r.right && mv.clientY>=r.top && mv.clientY<=r.bottom) {
+              const midY = r.top + r.height / 2;
+              const midX = r.left + r.width / 2;
+              // For compare zone (horizontal), use X axis; for seed lines (wrapping), use Y
+              const insertBefore = foundZone === COMPARE ? mv.clientX < midX : mv.clientY < midY;
+              foundInsert = { zone: foundZone, beforeTid: insertBefore ? cardTid : null, afterTid: insertBefore ? null : cardTid };
+              break;
+            }
+          }
+        }
+        const zoneChanged = foundZone !== dragRef.current.zoneRef;
+        const insertKey = foundInsert ? `${foundInsert.beforeTid}:${foundInsert.afterTid}` : null;
+        const prevInsertKey = dragRef.current.insertRef ? `${dragRef.current.insertRef.beforeTid}:${dragRef.current.insertRef.afterTid}` : null;
+        if (zoneChanged || insertKey !== prevInsertKey) {
+          dragRef.current.zoneRef = foundZone;
+          dragRef.current.insertRef = foundInsert;
+          setDropZone(foundZone);
+          setInsertTarget(foundInsert);
         }
       }
     };
@@ -257,19 +266,33 @@ function App() {
       if (ghostRef.current) ghostRef.current.style.display = "none";
       if (dragRef.current.dragging) {
         const targetZone = dragRef.current.zoneRef;
+        const insert = dragRef.current.insertRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
           const atMax = seed
             ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
             : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
-          if (!atMax) moveTeam(tid, targetZone);
+          if (!atMax) {
+            let beforeTid = null;
+            if (insert && insert.zone === targetZone) {
+              if (insert.beforeTid) {
+                beforeTid = insert.beforeTid;
+              } else if (insert.afterTid) {
+                const zoneList = asgn[targetZone].filter(x => x !== tid);
+                const afterIdx = zoneList.indexOf(insert.afterTid);
+                beforeTid = afterIdx >= 0 && afterIdx + 1 < zoneList.length ? zoneList[afterIdx + 1] : null;
+              }
+            }
+            moveTeam(tid, targetZone, beforeTid);
+          }
         }
         setDragTid(null);
         setDropZone(null);
+        setInsertTarget(null);
       } else {
         setSelected(prev => prev === tid ? null : tid);
       }
-      dragRef.current = { tid:null, startX:0, startY:0, dragging:false, zoneRef:null };
+      dragRef.current = { tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null };
     };
 
     document.addEventListener("mousemove", onMouseMove);
@@ -293,7 +316,7 @@ function App() {
   return (
     <div style={{ minHeight:"100vh", background:"#0B1120", color:"#E2E8F0", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
 
-      {/* Ghost — pure DOM, zero React renders during drag */}
+      {/* Ghost — pure DOM, never triggers React re-render */}
       <div ref={ghostRef} style={{
         display:"none", position:"fixed", pointerEvents:"none", zIndex:9999,
         background:"#1A2740", border:"1.5px solid #E8872B", borderRadius:6,
@@ -302,14 +325,17 @@ function App() {
       }}/>
 
       {/* Header */}
-      <div style={{ padding:"14px 18px 10px", borderBottom:"1px solid #1A2740", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
-        <div>
-          <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-            The Round Robin Bracketology Hub
-          </h1>
-          <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
-            {totalPlaced} placed · {asgn[POOL].length} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
-          </p>
+      <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A2740", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <img src="logo.png" alt="" style={{ height:40, objectFit:"contain" }} onError={e => e.target.style.display="none"}/>
+          <div>
+            <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+              Bracketology Hub
+            </h1>
+            <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
+              {totalPlaced} placed · {asgn[POOL].length} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
+            </p>
+          </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center" }}>
           {selected && <>
@@ -326,7 +352,7 @@ function App() {
             const all = []; for (const k in asgn) all.push(...asgn[k]);
             all.sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
             const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-            n[COMPARE]=[]; n[POOL]=all; setAsgn(n); setExpanded(new Set()); setSelected(null);
+            n[COMPARE]=[]; n[POOL]=all; setAsgn(n); setSelected(null);
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
           }} style={{ background:"transparent", border:"1px solid #1A2740", borderRadius:5, color:"#6B7A90", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
             Reset
@@ -335,12 +361,12 @@ function App() {
       </div>
 
       {/* Main layout */}
-      <div style={{ display:"flex", height:"calc(100vh - 70px)", overflow:"hidden" }}>
+      <div style={{ display:"flex", height:"calc(100vh - 66px)", overflow:"hidden" }}>
 
-        {/* Board — stable ref, never remounts */}
+        {/* Board */}
         <div ref={boardScrollRef} style={{ flex:"1 1 62%", overflowY:"auto", padding:"10px 8px 10px 14px" }}>
 
-          {/* Seed lines */}
+          {/* Seed lines 1-16 */}
           {SEEDS.map((seed, si) => {
             const ids = asgn[seed.id];
             const color = SEED_COLORS[si] || "#555";
@@ -356,9 +382,15 @@ function App() {
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
                     {ids.length === 0 && <span style={{ fontSize:10, color:"#1E2D4A", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
-                    {ids.map(id => (
+                    {ids.map((id, idx) => (
                       <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
-                        <TeamCard tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>
+                        {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
+                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
+                        )}
+                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
+                        {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
+                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
+                        )}
                       </div>
                     ))}
                     {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
@@ -390,7 +422,17 @@ function App() {
                   transition:"background 0.1s, border-color 0.1s",
                 }}>
                   {ids.length === 0 && <span style={{ fontSize:10, color:"#1E2D4A", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
-                  {ids.map(id => <TeamCard key={id} tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>)}
+                  {ids.map((id, idx) => (
+                    <div key={id}>
+                      {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
+                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
+                      )}
+                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
+                      {insertTarget?.zone === tier.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
+                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             );
@@ -418,91 +460,99 @@ function App() {
                 data-zone={COMPARE}
                 onClick={() => handleZoneClick(COMPARE)}
                 style={{
-                  minHeight:100,
-                  borderRadius:6,
+                  minHeight:100, borderRadius:6,
                   border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A2740"}`,
                   background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
                   transition:"background 0.1s, border-color 0.1s",
                   padding: compareIds.length===0 ? "0" : "8px",
                   display:"flex", alignItems: compareIds.length===0 ? "center" : "flex-start",
                   justifyContent: compareIds.length===0 ? "center" : "flex-start",
-                  overflowX:"auto",
-                  gap:8,
+                  overflowX:"auto", gap:8,
                 }}>
                 {compareIds.length===0 && (
                   <span style={{ fontSize:11, color:"#1E2D4A" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>
                 )}
-                {compareIds.map(tid => {
+                {compareIds.map((tid, idx) => {
                   const t = tm[tid];
                   if (!t) return null;
                   const kw = t.keyWins||[];
                   const kl = t.keyLosses||[];
                   return (
-                    <div key={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }} style={{ flex:"0 0 195px", background:"#111B2E", border:"1px solid #2A3F66", borderRadius:8, padding:"12px 10px", display:"flex", flexDirection:"column", cursor:"grab" }}>
-                      <div style={{ textAlign:"center", marginBottom:8, borderBottom:"1px solid #1A2740", paddingBottom:8 }}>
-                        <div style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:11 }}>#{t.net}</div>
-                        <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:14, lineHeight:1.2 }}>{t.name}</div>
-                        <div style={{ color:"#4A5568", fontSize:10, marginTop:2 }}>{t.conf} ({t.confRecord})</div>
-                        <div style={{ color:"#8694A8", fontSize:12, fontWeight:700, marginTop:3 }}>{t.record}</div>
-                      </div>
-                      <div style={{ display:"flex", flexDirection:"column", gap:3, fontSize:11, marginBottom:8 }}>
-                        <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
-                        <St l="NC Rec" v={t.ncRecord}/>
-                        <St l="Home" v={t.home}/>
-                        <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
-                        <St l="Neutral" v={t.neutral}/>
-                        <St l="Avg W" v={`#${t.avgNetWins}`}/>
-                        <St l="Avg L" v={`#${t.avgNetLosses}`}/>
-                      </div>
-                      <div style={{ background:"#0B1120", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11 }}>
-                        <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/>
-                        <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/><St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
-                      </div>
-                      <div style={{ background:"#0D1425", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11, border:"1px solid #1A2740" }}>
-                        <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", marginBottom:1, textTransform:"uppercase", letterSpacing:"0.05em" }}>Rankings</div>
-                        <St l="KPI" v={t.kpi!=null?`#${t.kpi}`:"—"}/><St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
-                        <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/><St l="BPI" v={t.bpi!=null?`#${t.bpi}`:"—"}/>
-                        <St l="KenPom" v={t.pom!=null?`#${t.pom}`:"—"}/><St l="T-Rank" v={t.tRank!=null?`#${t.tRank}`:"—"}/>
-                      </div>
-                      <div style={{ marginBottom:6 }}>
-                        <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Top Wins</div>
-                        {kw.length>0 ? kw.map((w,i) => (
-                          <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                            <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-                          </div>
-                        )) : <div style={{ fontSize:9, color:"#2A3F66" }}>—</div>}
-                      </div>
-                      <div style={{ marginBottom:8 }}>
-                        <div style={{ fontSize:9, fontWeight:700, color:"#F87171", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Losses</div>
-                        {kl.length>0 ? kl.map((l,i) => (
-                          <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                            <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-                          </div>
-                        )) : <div style={{ fontSize:9, color:"#2A3F66" }}>None</div>}
-                      </div>
-                      <div style={{ flex:1 }}/>
-                      <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid #1A2740", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
-                        <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
-                          {SEEDS.map(s => (
-                            <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
-                              style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:3, color:asgn[s.id].length>=s.max?"#1A2740":"#8694A8", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
-                              {s.num}
-                            </button>
-                          ))}
+                    <div key={tid} style={{ display:"flex", flexShrink:0 }}>
+                      {insertTarget?.zone === COMPARE && insertTarget?.beforeTid === tid && (
+                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
+                      )}
+                      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
+                        style={{ width:195, background:"#111B2E", border:"1px solid #2A3F66", borderRadius:8, padding:"12px 10px", display:"flex", flexDirection:"column", cursor:"grab" }}>
+                        <div style={{ textAlign:"center", marginBottom:8, borderBottom:"1px solid #1A2740", paddingBottom:8 }}>
+                          {t.logo && <img src={t.logo} alt="" style={{ width:48, height:48, objectFit:"contain", marginBottom:4, display:"block", margin:"0 auto 4px" }} onError={e => e.target.style.display="none"}/>}
+                          <div style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:11 }}>#{t.net}</div>
+                          <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:14, lineHeight:1.2 }}>{t.name}</div>
+                          <div style={{ color:"#4A5568", fontSize:10, marginTop:2 }}>{t.conf} ({t.confRecord})</div>
+                          <div style={{ color:"#8694A8", fontSize:12, fontWeight:700, marginTop:3 }}>{t.record}</div>
                         </div>
-                        <div style={{ display:"flex", gap:3 }}>
-                          {EXTRA_TIERS.map(et => (
-                            <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
-                              style={{ background:"#0B1120", border:`1px solid ${et.ac}44`, borderRadius:3, color:et.ac, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                              {et.label.split(" ").map(w=>w[0]).join("")}
+                        <div style={{ display:"flex", flexDirection:"column", gap:3, fontSize:11, marginBottom:8 }}>
+                          <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
+                          <St l="NC Rec" v={t.ncRecord}/>
+                          <St l="Home" v={t.home}/>
+                          <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
+                          <St l="Neutral" v={t.neutral}/>
+                          <St l="Avg W" v={`#${t.avgNetWins}`}/>
+                          <St l="Avg L" v={`#${t.avgNetLosses}`}/>
+                        </div>
+                        <div style={{ background:"#0B1120", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11 }}>
+                          <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/>
+                          <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/><St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
+                        </div>
+                        <div style={{ background:"#0D1425", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11, border:"1px solid #1A2740" }}>
+                          <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", marginBottom:1, textTransform:"uppercase", letterSpacing:"0.05em" }}>Rankings</div>
+                          <St l="KPI" v={t.kpi!=null?`#${t.kpi}`:"—"}/><St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
+                          <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/><St l="BPI" v={t.bpi!=null?`#${t.bpi}`:"—"}/>
+                          <St l="KenPom" v={t.pom!=null?`#${t.pom}`:"—"}/><St l="T-Rank" v={t.tRank!=null?`#${t.tRank}`:"—"}/>
+                        </div>
+                        <div style={{ marginBottom:6 }}>
+                          <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Top Wins</div>
+                          {kw.length>0 ? kw.map((w,i) => (
+                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                              <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+                            </div>
+                          )) : <div style={{ fontSize:9, color:"#2A3F66" }}>—</div>}
+                        </div>
+                        <div style={{ marginBottom:8 }}>
+                          <div style={{ fontSize:9, fontWeight:700, color:"#F87171", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Losses</div>
+                          {kl.length>0 ? kl.map((l,i) => (
+                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                              <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+                            </div>
+                          )) : <div style={{ fontSize:9, color:"#2A3F66" }}>None</div>}
+                        </div>
+                        <div style={{ flex:1 }}/>
+                        <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid #1A2740", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
+                          <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
+                            {SEEDS.map(s => (
+                              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
+                                style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:3, color:asgn[s.id].length>=s.max?"#1A2740":"#8694A8", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
+                                {s.num}
+                              </button>
+                            ))}
+                          </div>
+                          <div style={{ display:"flex", gap:3 }}>
+                            {EXTRA_TIERS.map(et => (
+                              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                                style={{ background:"#0B1120", border:`1px solid ${et.ac}44`, borderRadius:3, color:et.ac, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                                {et.label.split(" ").map(w=>w[0]).join("")}
+                              </button>
+                            ))}
+                            <button onClick={() => moveTeam(tid, POOL)}
+                              style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:3, color:"#6B7A90", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                              ← Pool
                             </button>
-                          ))}
-                          <button onClick={() => moveTeam(tid, POOL)}
-                            style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:3, color:"#6B7A90", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                            ← Pool
-                          </button>
+                          </div>
                         </div>
                       </div>
+                      {insertTarget?.zone === COMPARE && !insertTarget?.beforeTid && insertTarget?.afterTid === tid && idx === compareIds.length-1 && (
+                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginLeft:4, minHeight:40 }}/>
+                      )}
                     </div>
                   );
                 })}
@@ -537,7 +587,7 @@ function App() {
             transition:"background 0.1s",
           }}>
             {poolF.map(id => (
-              <TeamCard key={id} tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>
+              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
             ))}
           </div>
         </div>
