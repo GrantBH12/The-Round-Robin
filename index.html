@@ -129,26 +129,21 @@ function App() {
   const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
-  const [dragPos, setDragPos] = useState({x:0,y:0});
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null});
+  const ghostRef = useRef(null);
   const boardScrollRef = useRef(null);
   const poolScrollRef = useRef(null);
   const savedScrollRef = useRef({board:0, pool:0});
-  const restoringRef = useRef(false);
 
-  // Save current scroll positions
   const saveScroll = useCallback(() => {
     if (boardScrollRef.current) savedScrollRef.current.board = boardScrollRef.current.scrollTop;
     if (poolScrollRef.current) savedScrollRef.current.pool = poolScrollRef.current.scrollTop;
   }, []);
 
-  // Restore scroll after a React-triggered re-render (not after user scroll)
   const restoreScroll = useCallback(() => {
-    restoringRef.current = true;
     requestAnimationFrame(() => {
       if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
       if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
-      restoringRef.current = false;
     });
   }, []);
 
@@ -215,7 +210,6 @@ function App() {
     e.preventDefault();
     saveScroll();
     dragRef.current = { tid, startX: e.clientX, startY: e.clientY, dragging: false, zoneRef: null };
-    setDragPos({ x: e.clientX, y: e.clientY });
 
     const onMouseMove = (e) => {
       const dx = e.clientX - dragRef.current.startX;
@@ -223,12 +217,23 @@ function App() {
       if (!dragRef.current.dragging && Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
         saveScroll();
         dragRef.current.dragging = true;
+        // Move ghost into position before showing it
+        if (ghostRef.current) {
+          ghostRef.current.style.left = (e.clientX + 12) + "px";
+          ghostRef.current.style.top = (e.clientY - 10) + "px";
+          ghostRef.current.style.display = "block";
+        }
         setDragTid(tid);
         setSelected(null);
         restoreScroll();
       }
       if (dragRef.current.dragging) {
-        setDragPos({ x: e.clientX, y: e.clientY });
+        // Move ghost directly via DOM — zero React re-renders
+        if (ghostRef.current) {
+          ghostRef.current.style.left = (e.clientX + 12) + "px";
+          ghostRef.current.style.top = (e.clientY - 10) + "px";
+        }
+        // Hit-test drop zones
         const els = document.querySelectorAll("[data-zone]");
         let found = null;
         for (const el of els) {
@@ -238,28 +243,34 @@ function App() {
             break;
           }
         }
-        setDropZone(found);
+        if (found !== dragRef.current.zoneRef) {
+          // Only call setDropZone when the zone actually changes
+          setDropZone(found);
+          saveScroll();
+          restoreScroll();
+        }
         dragRef.current.zoneRef = found;
       }
     };
 
-    const onMouseUp = (e) => {
+    const onMouseUp = () => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+      if (ghostRef.current) ghostRef.current.style.display = "none";
       if (dragRef.current.dragging) {
         saveScroll();
         const targetZone = dragRef.current.zoneRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
-          const atMax = seed ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
-                             : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
+          const atMax = seed
+            ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
+            : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
           if (!atMax) moveTeam(tid, targetZone);
         }
         setDragTid(null);
         setDropZone(null);
         restoreScroll();
       } else {
-        // It was a click — just select, no scroll save needed
         setSelected(prev => prev === tid ? null : tid);
       }
       dragRef.current = { tid: null, startX: 0, startY: 0, dragging: false, zoneRef: null };
@@ -544,19 +555,18 @@ function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0B1120", color: "#E2E8F0", fontFamily: "'Segoe UI','Inter',system-ui,sans-serif" }}>
-      {/* Floating drag ghost */}
-      {dragTid && tm[dragTid] && (
-        <div style={{
-          position: "fixed", left: dragPos.x + 12, top: dragPos.y - 10,
-          pointerEvents: "none", zIndex: 9999, opacity: 0.9,
-          background: "#1A2740", border: "1.5px solid #E8872B", borderRadius: 6,
-          padding: "5px 8px", fontSize: 12, color: "#E2E8F0", whiteSpace: "nowrap",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-        }}>
-          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, marginRight: 6 }}>#{tm[dragTid].net}</span>
-          <span style={{ fontWeight: 600 }}>{tm[dragTid].name}</span>
-        </div>
-      )}
+      {/* Static ghost — moved via DOM, never triggers React render */}
+      <div ref={ghostRef} style={{
+        display: "none", position: "fixed", pointerEvents: "none", zIndex: 9999, opacity: 0.9,
+        background: "#1A2740", border: "1.5px solid #E8872B", borderRadius: 6,
+        padding: "5px 10px", fontSize: 12, color: "#E2E8F0", whiteSpace: "nowrap",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+      }}>
+        {dragTid && tm[dragTid] && <>
+          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, marginRight: 6 }}>#{tm[dragTid]?.net}</span>
+          <span style={{ fontWeight: 600 }}>{tm[dragTid]?.name}</span>
+        </>}
+      </div>
       <div style={{ padding: "14px 18px 10px", borderBottom: "1px solid #1A2740", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em", background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
