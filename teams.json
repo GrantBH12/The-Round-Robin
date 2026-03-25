@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-24T08:43:05.743760+00:00",
+    "scrapedAt": "2026-03-25T08:41:32.524906+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -4451,18 +4451,18 @@
       "conf": "Mountain West",
       "confRecord": "13-7",
       "net": 46,
-      "record": "24-10",
+      "record": "25-10",
       "sos": 86,
       "ncRecord": "8-2",
       "ncSos": 146,
-      "home": "15-3",
+      "home": "16-3",
       "road": "7-5",
       "neutral": "2-2",
       "q1": "2-7",
       "q2": "6-1",
-      "q3": "6-2",
+      "q3": "7-2",
       "q4": "10-0",
-      "avgNetWins": 166,
+      "avgNetWins": 164,
       "avgNetLosses": 62,
       "keyWins": [
         {
@@ -5051,18 +5051,18 @@
       "conf": "American",
       "confRecord": "13-5",
       "net": 52,
-      "record": "26-7",
+      "record": "27-7",
       "sos": 170,
       "ncRecord": "10-1",
       "ncSos": 329,
-      "home": "13-2",
+      "home": "14-2",
       "road": "8-4",
       "neutral": "5-1",
       "q1": "0-1",
       "q2": "3-4",
-      "q3": "11-2",
+      "q3": "12-2",
       "q4": "12-0",
-      "avgNetWins": 184,
+      "avgNetWins": 180,
       "avgNetLosses": 85,
       "keyWins": [
         {
@@ -5080,6 +5080,13 @@
           "date": "02-01"
         },
         {
+          "opp": "Wichita State",
+          "oppNet": 78,
+          "score": "83-79",
+          "site": "H",
+          "date": "03-24"
+        },
+        {
           "opp": "Stephen F. Austin",
           "oppNet": 89,
           "score": "89-84",
@@ -5092,13 +5099,6 @@
           "score": "77-66",
           "site": "H",
           "date": "03-22"
-        },
-        {
-          "opp": "UAB",
-          "oppNet": 118,
-          "score": "99-77",
-          "site": "A",
-          "date": "01-18"
         }
       ],
       "keyLosses": [
@@ -7630,19 +7630,19 @@
       "conf": "American",
       "confRecord": "13-5",
       "net": 78,
-      "record": "23-11",
+      "record": "23-12",
       "sos": 112,
       "ncRecord": "7-5",
       "ncSos": 200,
       "home": "14-3",
-      "road": "8-4",
+      "road": "8-5",
       "neutral": "1-4",
-      "q1": "3-4",
+      "q1": "3-5",
       "q2": "4-3",
       "q3": "5-3",
       "q4": "11-1",
       "avgNetWins": 177,
-      "avgNetLosses": 101,
+      "avgNetLosses": 97,
       "keyWins": [
         {
           "opp": "South Florida",
