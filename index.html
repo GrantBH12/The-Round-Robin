@@ -199,10 +199,19 @@ function App() {
         dragRef.current.dragging = true;
         setDragTid(tid);
         setSelected(null);
+        // Lock all scrollable containers during drag
+        document.querySelectorAll("[data-scrollable]").forEach(el => {
+          el.dataset.scrollTop = el.scrollTop;
+          el.style.overflowY = "hidden";
+          el.style.overflowX = "hidden";
+        });
       }
       if (dragRef.current.dragging) {
+        // Restore scroll positions (browser may reset them)
+        document.querySelectorAll("[data-scrollable]").forEach(el => {
+          if (el.dataset.scrollTop !== undefined) el.scrollTop = parseInt(el.dataset.scrollTop) || 0;
+        });
         setDragPos({ x: e.clientX, y: e.clientY });
-        // Hit-test all drop zones
         const els = document.querySelectorAll("[data-zone]");
         let found = null;
         for (const el of els) {
@@ -220,6 +229,12 @@ function App() {
     const onMouseUp = (e) => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
+      // Restore scroll on all containers
+      document.querySelectorAll("[data-scrollable]").forEach(el => {
+        el.style.overflowY = "auto";
+        el.style.overflowX = "";
+        delete el.dataset.scrollTop;
+      });
       if (dragRef.current.dragging) {
         const targetZone = dragRef.current.zoneRef;
         if (targetZone) {
@@ -296,7 +311,7 @@ function App() {
     const compareIds = asgn[COMPARE];
     const isSel = !!selected;
     return (
-      <div style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
+      <div data-scrollable="true" style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
         {/* Seed lines 1-16 */}
         {SEEDS.map((seed, si) => {
           const ids = asgn[seed.id];
@@ -312,7 +327,7 @@ function App() {
                 <div
                   data-zone={seed.id}
                   style={{
-                    flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
+                    flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 40,
                     borderRadius: 6, padding: "2px 4px",
                     border: `1px dashed ${dropZone === seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
                     background: dropZone === seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
@@ -402,7 +417,7 @@ function App() {
                 data-zone={COMPARE}
                 onClick={() => handleZoneClick(COMPARE)}
                 style={{
-                  minHeight: compareIds.length === 0 ? 48 : 8,
+                  minHeight: compareIds.length === 0 ? 80 : 20,
                   borderRadius: 6, marginBottom: compareIds.length > 0 ? 8 : 0,
                   border: `1px dashed ${dropZone === COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A2740"}`,
                   background: dropZone === COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
@@ -589,6 +604,7 @@ function App() {
             <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
           </div>
           <div
+            data-scrollable="true"
             data-zone={POOL}
             style={{
               flex: 1, overflowY: "auto", padding: "4px 6px",
