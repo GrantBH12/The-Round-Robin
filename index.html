@@ -18,45 +18,77 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 <script type="text/babel">
-const { useState, useRef, useCallback, useMemo, useEffect } = React;
+const { useState, useRef, useCallback, useMemo, useEffect, memo } = React;
 
 const DATA_URL = "https://grantbh12.github.io/The-Round-Robin/teams.json";
 
 function LoadingScreen() {
   return (
-    <div style={{
-      minHeight: "100vh", background: "#0B1120", display: "flex",
-      alignItems: "center", justifyContent: "center", flexDirection: "column",
-    }}>
-      <h1 style={{
-        fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em",
-        background: "linear-gradient(135deg,#E8872B,#F0A855)",
-        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-        fontFamily: "'Segoe UI','Inter',system-ui,sans-serif",
-      }}>The Round Robin Bracketology Hub</h1>
-      <p style={{ color: "#4A5568", fontSize: 13, marginTop: 8, fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
-        Loading team data...
-      </p>
+    <div style={{ minHeight:"100vh", background:"#0B1120", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column" }}>
+      <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>The Round Robin Bracketology Hub</h1>
+      <p style={{ color:"#4A5568", fontSize:13, marginTop:8, fontFamily:"'Segoe UI',system-ui,sans-serif" }}>Loading team data...</p>
     </div>
   );
 }
 
 function ErrorScreen({ error, onRetry }) {
   return (
-    <div style={{
-      minHeight: "100vh", background: "#0B1120", display: "flex",
-      alignItems: "center", justifyContent: "center", flexDirection: "column",
-      fontFamily: "'Segoe UI','Inter',system-ui,sans-serif",
-    }}>
-      <h1 style={{ fontSize: 20, color: "#F87171", marginBottom: 8 }}>Failed to load data</h1>
-      <p style={{ color: "#4A5568", fontSize: 12, marginBottom: 16 }}>{error}</p>
-      <button onClick={onRetry} style={{
-        background: "#E8872B", border: "none", borderRadius: 6,
-        color: "#fff", fontSize: 13, padding: "8px 20px", cursor: "pointer",
-      }}>Retry</button>
+    <div style={{ minHeight:"100vh", background:"#0B1120", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+      <h1 style={{ fontSize:20, color:"#F87171", marginBottom:8 }}>Failed to load data</h1>
+      <p style={{ color:"#4A5568", fontSize:12, marginBottom:16 }}>{error}</p>
+      <button onClick={onRetry} style={{ background:"#E8872B", border:"none", borderRadius:6, color:"#fff", fontSize:13, padding:"8px 20px", cursor:"pointer" }}>Retry</button>
     </div>
   );
 }
+
+function St({ l, v, g, w }) {
+  return (
+    <div style={{ display:"flex", justifyContent:"space-between" }}>
+      <span style={{ color:"#4A5568" }}>{l}</span>
+      <span style={{ color: g ? "#4ADE80" : w ? "#F87171" : "#8694A8", fontFamily:"monospace" }}>{v}</span>
+    </div>
+  );
+}
+
+// Card defined OUTSIDE App so React never remounts it
+const TeamCard = memo(function TeamCard({ tid, tm, expanded, selected, dragTid, onMouseDown, onDoubleClick }) {
+  const t = tm[tid];
+  if (!t) return null;
+  const isEx = expanded.has(tid);
+  const isSel = selected === tid;
+  const isDragging = dragTid === tid;
+  return (
+    <div
+      onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
+      onDoubleClick={e => { e.stopPropagation(); onDoubleClick(tid); }}
+      style={{
+        background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
+        border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
+        borderRadius:6, padding: isEx ? "8px 10px" : "5px 8px",
+        cursor: isDragging ? "grabbing" : "grab",
+        userSelect:"none", marginBottom:2, transition: isDragging ? "none" : "all 0.12s",
+        boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
+        opacity: isDragging ? 0.35 : 1,
+      }}
+    >
+      <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
+        <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>
+        <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
+        <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
+        <span style={{ color:"#8694A8", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
+        <span style={{ color: parseInt(t.q1)>=6 ? "#4ADE80" : parseInt(t.q1)>=3 ? "#A3E635" : "#6B7A90", fontSize:10, fontFamily:"monospace" }}>Q1:{t.q1}</span>
+      </div>
+      {isEx && (
+        <div style={{ marginTop:6, paddingTop:6, borderTop:"1px solid #1A2740", display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"3px 14px", fontSize:11 }}>
+          <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/><St l="Conf" v={t.confRecord}/><St l="NC" v={t.ncRecord}/>
+          <St l="Home" v={t.home}/><St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/><St l="Neut" v={t.neutral}/>
+          <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/><St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
+          <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/><St l="AvgW" v={`#${t.avgNetWins}`}/><St l="AvgL" v={`#${t.avgNetLosses}`}/>
+        </div>
+      )}
+    </div>
+  );
+});
 
 let REAL_TEAMS = [];
 let DATA_SCRAPED_AT = "";
@@ -70,6 +102,7 @@ const EXTRA_TIERS = [
 const COMPARE = "compare";
 const POOL = "pool";
 const MAX_EX = 8;
+const DRAG_THRESHOLD = 6;
 const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C","#3D5E8C","#304D73","#304D73","#2A4060","#2A4060","#7A5A3A","#7A5A3A","#606060","#606060","#505050"];
 
 function App() {
@@ -90,9 +123,9 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const result = { value: localStorage.getItem("bracketology-board-state") };
-        if (result && result.value) {
-          const saved = JSON.parse(result.value);
+        const val = localStorage.getItem("bracketology-board-state");
+        if (val) {
+          const saved = JSON.parse(val);
           const allIds = new Set(teams.map(t => t.id));
           const usedIds = new Set();
           let valid = true;
@@ -110,16 +143,14 @@ function App() {
             setAsgn(saved);
           }
         }
-      } catch (e) {}
+      } catch(e) {}
       setLoaded(true);
     })();
   }, [teams]);
 
   useEffect(() => {
     if (!loaded) return;
-    (async () => {
-      try { localStorage.setItem("bracketology-board-state", JSON.stringify(asgn)); } catch (e) {}
-    })();
+    try { localStorage.setItem("bracketology-board-state", JSON.stringify(asgn)); } catch(e) {}
   }, [asgn, loaded]);
 
   const [search, setSearch] = useState("");
@@ -129,23 +160,11 @@ function App() {
   const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
+
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null});
   const ghostRef = useRef(null);
   const boardScrollRef = useRef(null);
   const poolScrollRef = useRef(null);
-  const savedScrollRef = useRef({board:0, pool:0});
-
-  const saveScroll = useCallback(() => {
-    if (boardScrollRef.current) savedScrollRef.current.board = boardScrollRef.current.scrollTop;
-    if (poolScrollRef.current) savedScrollRef.current.pool = poolScrollRef.current.scrollTop;
-  }, []);
-
-  const restoreScroll = useCallback(() => {
-    requestAnimationFrame(() => {
-      if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
-      if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
-    });
-  }, []);
 
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
@@ -156,7 +175,7 @@ function App() {
     });
   }, []);
 
-  const findZone = useCallback((tid) => {
+  const findZone = useCallback(tid => {
     for (const k in asgn) { if (asgn[k].includes(tid)) return k; }
     return null;
   }, [asgn]);
@@ -168,11 +187,11 @@ function App() {
       if (target === POOL) {
         const teamNet = tm[tid]?.net ?? 999;
         const pool = n[POOL];
-        let insertIdx = pool.length;
+        let idx = pool.length;
         for (let i = 0; i < pool.length; i++) {
-          if ((tm[pool[i]]?.net ?? 999) > teamNet) { insertIdx = i; break; }
+          if ((tm[pool[i]]?.net ?? 999) > teamNet) { idx = i; break; }
         }
-        pool.splice(insertIdx, 0, tid);
+        pool.splice(idx, 0, tid);
       } else {
         n[target] = [...n[target], tid];
       }
@@ -180,76 +199,55 @@ function App() {
     });
   }, [tm]);
 
-  const handleTeamClick = useCallback((tid, e) => {
-    e.stopPropagation();
-    setSelected(prev => prev === tid ? null : tid);
-  }, []);
-
-  const handleZoneClick = useCallback((zoneId) => {
+  const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
     if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
     if (zoneId === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
-    saveScroll();
     moveTeam(selected, zoneId);
     setSelected(null);
-    restoreScroll();
-  }, [selected, asgn, moveTeam, saveScroll, restoreScroll]);
+  }, [selected, asgn, moveTeam]);
 
   const sendFromCompare = useCallback((tid, target) => {
-    saveScroll();
     moveTeam(tid, target);
-    restoreScroll();
-  }, [moveTeam, saveScroll, restoreScroll]);
-
-  // ── Mouse-based drag ──
-  const DRAG_THRESHOLD = 6; // pixels before drag starts
+  }, [moveTeam]);
 
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    saveScroll();
-    dragRef.current = { tid, startX: e.clientX, startY: e.clientY, dragging: false, zoneRef: null };
+    dragRef.current = { tid, startX:e.clientX, startY:e.clientY, dragging:false, zoneRef:null };
 
-    const onMouseMove = (e) => {
-      const dx = e.clientX - dragRef.current.startX;
-      const dy = e.clientY - dragRef.current.startY;
-      if (!dragRef.current.dragging && Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
-        saveScroll();
+    const onMouseMove = (mv) => {
+      const dx = mv.clientX - dragRef.current.startX;
+      const dy = mv.clientY - dragRef.current.startY;
+      if (!dragRef.current.dragging && Math.sqrt(dx*dx+dy*dy) > DRAG_THRESHOLD) {
         dragRef.current.dragging = true;
-        // Move ghost into position before showing it
         if (ghostRef.current) {
-          ghostRef.current.style.left = (e.clientX + 12) + "px";
-          ghostRef.current.style.top = (e.clientY - 10) + "px";
+          ghostRef.current.textContent = `#${tm[tid]?.net}  ${tm[tid]?.name}`;
+          ghostRef.current.style.left = (mv.clientX+12)+"px";
+          ghostRef.current.style.top = (mv.clientY-10)+"px";
           ghostRef.current.style.display = "block";
         }
         setDragTid(tid);
         setSelected(null);
-        restoreScroll();
       }
       if (dragRef.current.dragging) {
-        // Move ghost directly via DOM — zero React re-renders
         if (ghostRef.current) {
-          ghostRef.current.style.left = (e.clientX + 12) + "px";
-          ghostRef.current.style.top = (e.clientY - 10) + "px";
+          ghostRef.current.style.left = (mv.clientX+12)+"px";
+          ghostRef.current.style.top = (mv.clientY-10)+"px";
         }
-        // Hit-test drop zones
         const els = document.querySelectorAll("[data-zone]");
         let found = null;
         for (const el of els) {
           const r = el.getBoundingClientRect();
-          if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-            found = el.getAttribute("data-zone");
-            break;
+          if (mv.clientX>=r.left && mv.clientX<=r.right && mv.clientY>=r.top && mv.clientY<=r.bottom) {
+            found = el.getAttribute("data-zone"); break;
           }
         }
         if (found !== dragRef.current.zoneRef) {
-          // Only call setDropZone when the zone actually changes
+          dragRef.current.zoneRef = found;
           setDropZone(found);
-          saveScroll();
-          restoreScroll();
         }
-        dragRef.current.zoneRef = found;
       }
     };
 
@@ -258,7 +256,6 @@ function App() {
       document.removeEventListener("mouseup", onMouseUp);
       if (ghostRef.current) ghostRef.current.style.display = "none";
       if (dragRef.current.dragging) {
-        saveScroll();
         const targetZone = dragRef.current.zoneRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
@@ -269,16 +266,15 @@ function App() {
         }
         setDragTid(null);
         setDropZone(null);
-        restoreScroll();
       } else {
         setSelected(prev => prev === tid ? null : tid);
       }
-      dragRef.current = { tid: null, startX: 0, startY: 0, dragging: false, zoneRef: null };
+      dragRef.current = { tid:null, startX:0, startY:0, dragging:false, zoneRef:null };
     };
 
     document.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseup", onMouseUp);
-  }, [asgn, moveTeam, saveScroll, restoreScroll]);
+  }, [asgn, moveTeam, tm]);
 
   const poolF = useMemo(() => {
     let ids = asgn[POOL];
@@ -290,364 +286,260 @@ function App() {
     return ids;
   }, [asgn, confF, search, tm]);
 
-  const totalPlaced = SEEDS.reduce((s, sd) => s + asgn[sd.id].length, 0) + EXTRA_TIERS.reduce((s, t) => s + asgn[t.id].length, 0);
-
-  const Card = ({tid, showActions, zone}) => {
-    const t = tm[tid];
-    if (!t) return null;
-    const isEx = expanded.has(tid);
-    const isSel = selected === tid;
-    const isDragging = dragTid === tid;
-    return (
-      <div
-        onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
-        onDoubleClick={e => { e.stopPropagation(); toggleEx(tid); }}
-        style={{
-          background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
-          border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
-          borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px",
-          cursor: isDragging ? "grabbing" : "grab",
-          userSelect: "none", marginBottom: 2, transition: isDragging ? "none" : "all 0.12s",
-          boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
-          opacity: isDragging ? 0.35 : 1,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, minWidth: 22, textAlign: "right" }}>{t.net}</span>
-          <span style={{ color: "#E2E8F0", fontWeight: 600, flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontSize: 12 }}>{t.name}</span>
-          <span style={{ color: "#4A5568", fontSize: 9 }}>{t.conf}</span>
-          <span style={{ color: "#8694A8", fontSize: 11, fontFamily: "monospace" }}>{t.record}</span>
-          <span style={{ color: parseInt(t.q1) >= 6 ? "#4ADE80" : parseInt(t.q1) >= 3 ? "#A3E635" : "#6B7A90", fontSize: 10, fontFamily: "monospace" }}>Q1:{t.q1}</span>
-        </div>
-        {isEx && (
-          <div style={{ marginTop: 6, paddingTop: 6, borderTop: "1px solid #1A2740", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3px 14px", fontSize: 11 }}>
-            <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/><St l="Conf" v={t.confRecord}/><St l="NC" v={t.ncRecord}/>
-            <St l="Home" v={t.home}/><St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/><St l="Neut" v={t.neutral}/>
-            <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/><St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
-            <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/><St l="AvgW" v={`#${t.avgNetWins}`}/><St l="AvgL" v={`#${t.avgNetLosses}`}/>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const BoardView = () => {
-    const compareIds = asgn[COMPARE];
-    const isSel = !!selected;
-    return (
-      <div ref={boardScrollRef} data-scrollable="true" style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
-        {/* Seed lines 1-16 */}
-        {SEEDS.map((seed, si) => {
-          const ids = asgn[seed.id];
-          const color = SEED_COLORS[si] || "#555";
-          return (
-            <div key={seed.id} style={{ marginBottom: 4 }} onClick={() => handleZoneClick(seed.id)}>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, minHeight: 30 }}>
-                <div style={{
-                  width: 28, minWidth: 28, height: 24, borderRadius: 4, background: color,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
-                }}>{seed.num}</div>
-                <div
-                  data-zone={seed.id}
-                  style={{
-                    flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 40,
-                    borderRadius: 6, padding: "2px 4px",
-                    border: `1px dashed ${dropZone === seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
-                    background: dropZone === seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
-                    transition: "background 0.1s, border-color 0.1s",
-                  }}>
-                  {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>
-                    {isSel ? "Click to place" : `${seed.max} slots`}
-                  </span>}
-                  {ids.map(id => <div key={id} style={{flex:"0 0 auto",minWidth:180,maxWidth:320}}><Card tid={id} zone={seed.id}/></div>)}
-                  {ids.length < seed.max && ids.length > 0 && Array.from({length: Math.min(2, seed.max - ids.length)}).map((_,i) => (
-                    <div key={`empty-${i}`} style={{
-                      width: 80, height: 24, borderRadius: 4, border: "1px dashed #1A2740",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 9, color: "#1E2D4A", margin: 1,
-                    }}>{isSel ? "+" : ""}</div>
-                  ))}
-                </div>
-                <span style={{ fontSize: 9, color: "#4A5568", minWidth: 20, textAlign: "right", marginTop: 6 }}>{ids.length}/{seed.max}</span>
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Divider */}
-        <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
-
-        {/* Extra tiers */}
-        {EXTRA_TIERS.map(tier => {
-          const ids = asgn[tier.id];
-          return (
-            <div key={tier.id} style={{ marginBottom: 6 }} onClick={() => handleZoneClick(tier.id)}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-                <div style={{ width: 4, height: 14, borderRadius: 2, background: tier.ac }} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: tier.ac }}>{tier.label}</span>
-                <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
-              </div>
-              <div
-                data-zone={tier.id}
-                style={{
-                  minHeight: 28, borderRadius: 6, padding: "2px 4px",
-                  border: `1px dashed ${dropZone === tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
-                  background: dropZone === tier.id ? "rgba(232,135,43,0.06)" : "transparent",
-                  transition: "background 0.1s, border-color 0.1s",
-                }}>
-                {ids.length === 0 && <span style={{ fontSize: 10, color: "#1E2D4A", padding: "4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
-                {ids.map(id => <Card key={id} tid={id} zone={tier.id}/>)}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Divider */}
-        <div style={{ height: 1, background: "#1A2740", margin: "10px 0" }} />
-
-        {/* Collapsible Compare section */}
-        <div style={{ marginBottom: 16 }}>
-          {/* Toggle header */}
-          <div
-            onClick={() => setCompareOpen(o => !o)}
-            style={{
-              display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
-              marginBottom: compareOpen ? 8 : 0, userSelect: "none",
-            }}>
-            <span style={{ color: "#4A6FA5", fontSize: 13, fontWeight: 700 }}>
-              {compareOpen ? "▾" : "▸"}
-            </span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "#4A6FA5" }}>Compare Resumes</span>
-            <span style={{ fontSize: 9, color: "#4A5568" }}>
-              {compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 teams · click to expand`}
-            </span>
-            {!compareOpen && compareIds.length > 0 && (
-              <div style={{ display: "flex", gap: 4, marginLeft: 4 }}>
-                {compareIds.slice(0,4).map(id => (
-                  <span key={id} style={{ fontSize: 9, color: "#8694A8", background: "#111B2E", border: "1px solid #1A2740", borderRadius: 3, padding: "1px 5px" }}>
-                    {tm[id]?.name}
-                  </span>
-                ))}
-                {compareIds.length > 4 && <span style={{ fontSize: 9, color: "#4A5568" }}>+{compareIds.length - 4} more</span>}
-              </div>
-            )}
-          </div>
-
-          {compareOpen && (
-            <div>
-              {/* Drop zone target strip */}
-              <div
-                data-zone={COMPARE}
-                onClick={() => handleZoneClick(COMPARE)}
-                style={{
-                  minHeight: compareIds.length === 0 ? 80 : 20,
-                  borderRadius: 6, marginBottom: compareIds.length > 0 ? 8 : 0,
-                  border: `1px dashed ${dropZone === COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A2740"}`,
-                  background: dropZone === COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "background 0.1s, border-color 0.1s",
-                }}>
-                {compareIds.length === 0 && (
-                  <span style={{ fontSize: 11, color: "#1E2D4A" }}>
-                    {isSel ? "Click to add to compare" : "Drag or select a team to compare"}
-                  </span>
-                )}
-              </div>
-
-              {/* Compare cards horizontal scroll */}
-              {compareIds.length > 0 && (
-                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
-                  {compareIds.map(tid => {
-                    const t = tm[tid];
-                    if (!t) return null;
-                    const kw = t.keyWins || [];
-                    const kl = t.keyLosses || [];
-                    return (
-                      <div key={tid} style={{
-                        flex: "0 0 195px", background: "#111B2E", border: "1px solid #2A3F66",
-                        borderRadius: 8, padding: "12px 10px", display: "flex", flexDirection: "column",
-                      }}>
-                        <div style={{ textAlign: "center", marginBottom: 8, borderBottom: "1px solid #1A2740", paddingBottom: 8 }}>
-                          <div style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 11 }}>#{t.net}</div>
-                          <div style={{ color: "#E2E8F0", fontWeight: 800, fontSize: 14, lineHeight: 1.2 }}>{t.name}</div>
-                          <div style={{ color: "#4A5568", fontSize: 10, marginTop: 2 }}>{t.conf} ({t.confRecord})</div>
-                          <div style={{ color: "#8694A8", fontSize: 12, fontWeight: 700, marginTop: 3 }}>{t.record}</div>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: 11, marginBottom: 8 }}>
-                          <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
-                          <St l="NC Rec" v={t.ncRecord}/>
-                          <St l="Home" v={t.home}/>
-                          <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
-                          <St l="Neutral" v={t.neutral}/>
-                          <St l="Avg W" v={`#${t.avgNetWins}`}/>
-                          <St l="Avg L" v={`#${t.avgNetLosses}`}/>
-                        </div>
-                        <div style={{ background: "#0B1120", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11 }}>
-                          <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/>
-                          <St l="Q2" v={t.q2}/>
-                          <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/>
-                          <St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
-                        </div>
-                        <div style={{ background: "#0D1425", borderRadius: 5, padding: "6px 8px", marginBottom: 8, display: "flex", flexDirection: "column", gap: 3, fontSize: 11, border: "1px solid #1A2740" }}>
-                          <div style={{ fontSize: 9, fontWeight: 700, color: "#6B7A90", marginBottom: 1, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rankings</div>
-                          <St l="KPI" v={t.kpi != null ? `#${t.kpi}` : "—"}/>
-                          <St l="SOR" v={t.sor != null ? `#${t.sor}` : "—"}/>
-                          <St l="WAB" v={t.wab != null ? `#${t.wab}` : "—"}/>
-                          <St l="BPI" v={t.bpi != null ? `#${t.bpi}` : "—"}/>
-                          <St l="KenPom" v={t.pom != null ? `#${t.pom}` : "—"}/>
-                          <St l="T-Rank" v={t.tRank != null ? `#${t.tRank}` : "—"}/>
-                        </div>
-                        <div style={{ marginBottom: 6 }}>
-                          <div style={{ fontSize: 9, fontWeight: 700, color: "#4ADE80", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Top Wins</div>
-                          {kw.length > 0 ? kw.map((w, i) => (
-                            <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              <span style={{ color: "#4ADE80", fontFamily: "monospace", fontSize: 9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>—</div>}
-                        </div>
-                        <div style={{ marginBottom: 8 }}>
-                          <div style={{ fontSize: 9, fontWeight: 700, color: "#F87171", marginBottom: 3, textTransform: "uppercase", letterSpacing: "0.05em" }}>Losses</div>
-                          {kl.length > 0 ? kl.map((l, i) => (
-                            <div key={i} style={{ fontSize: 10, color: "#8694A8", padding: "1px 0", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                              <span style={{ color: "#F87171", fontFamily: "monospace", fontSize: 9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize: 9, color: "#2A3F66" }}>None</div>}
-                        </div>
-                        <div style={{ flex: 1 }} />
-                        <div style={{ borderTop: "1px solid #1A2740", paddingTop: 6, display: "flex", flexDirection: "column", gap: 4 }}>
-                          <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
-                            {SEEDS.map(s => (
-                              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)}
-                                disabled={asgn[s.id].length >= s.max}
-                                style={{
-                                  background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2,
-                                  color: asgn[s.id].length >= s.max ? "#1A2740" : "#8694A8",
-                                  fontSize: 8, padding: "2px 4px", cursor: asgn[s.id].length >= s.max ? "not-allowed" : "pointer",
-                                  minWidth: 18, textAlign: "center",
-                                }}>{s.num}</button>
-                            ))}
-                          </div>
-                          <div style={{ display: "flex", gap: 3 }}>
-                            {EXTRA_TIERS.map(et => (
-                              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
-                                style={{ background: "#0B1120", border: `1px solid ${et.ac}44`, borderRadius: 2, color: et.ac, fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
-                                {et.label.split(" ").map(w=>w[0]).join("")}
-                              </button>
-                            ))}
-                            <button onClick={() => moveTeam(tid, POOL)}
-                              style={{ background: "#0B1120", border: "1px solid #1A2740", borderRadius: 2, color: "#6B7A90", fontSize: 8, padding: "2px 4px", cursor: "pointer", flex: 1, textAlign: "center" }}>
-                              ← Pool
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const totalPlaced = SEEDS.reduce((s,sd) => s+asgn[sd.id].length, 0) + EXTRA_TIERS.reduce((s,t) => s+asgn[t.id].length, 0);
+  const compareIds = asgn[COMPARE];
+  const isSel = !!selected;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0B1120", color: "#E2E8F0", fontFamily: "'Segoe UI','Inter',system-ui,sans-serif" }}>
-      {/* Static ghost — moved via DOM, never triggers React render */}
+    <div style={{ minHeight:"100vh", background:"#0B1120", color:"#E2E8F0", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+
+      {/* Ghost — pure DOM, zero React renders during drag */}
       <div ref={ghostRef} style={{
-        display: "none", position: "fixed", pointerEvents: "none", zIndex: 9999, opacity: 0.9,
-        background: "#1A2740", border: "1.5px solid #E8872B", borderRadius: 6,
-        padding: "5px 10px", fontSize: 12, color: "#E2E8F0", whiteSpace: "nowrap",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-      }}>
-        {dragTid && tm[dragTid] && <>
-          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, marginRight: 6 }}>#{tm[dragTid]?.net}</span>
-          <span style={{ fontWeight: 600 }}>{tm[dragTid]?.name}</span>
-        </>}
-      </div>
-      <div style={{ padding: "14px 18px 10px", borderBottom: "1px solid #1A2740", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        display:"none", position:"fixed", pointerEvents:"none", zIndex:9999,
+        background:"#1A2740", border:"1.5px solid #E8872B", borderRadius:6,
+        padding:"5px 10px", fontSize:12, color:"#E2E8F0", whiteSpace:"nowrap",
+        boxShadow:"0 4px 20px rgba(0,0,0,0.5)",
+      }}/>
+
+      {/* Header */}
+      <div style={{ padding:"14px 18px 10px", borderBottom:"1px solid #1A2740", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div>
-          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em", background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
             The Round Robin Bracketology Hub
           </h1>
-          <p style={{ margin: "2px 0 0", fontSize: 10, color: "#4A5568" }}>
-            {totalPlaced} placed · {asgn[POOL].length} pool · {asgn[COMPARE].length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }) : "—"}
+          <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
+            {totalPlaced} placed · {asgn[POOL].length} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {selected && (
-            <>
-              <button onClick={() => setSelected(null)} style={{
-                background: "#E8872B22", border: "1px solid #E8872B", borderRadius: 5,
-                color: "#E8872B", fontSize: 10, padding: "3px 10px", cursor: "pointer",
-              }}>✕ Deselect {tm[selected]?.name}</button>
-              {findZone(selected) !== POOL && (
-                <button onClick={() => { moveTeam(selected, POOL); setSelected(null); }} style={{
-                  background: "#1A274088", border: "1px solid #4A6FA5", borderRadius: 5,
-                  color: "#4A6FA5", fontSize: 10, padding: "3px 10px", cursor: "pointer",
-                }}>← Pool</button>
-              )}
-            </>
-          )}
-          <button onClick={async () => {
+        <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+          {selected && <>
+            <button onClick={() => setSelected(null)} style={{ background:"#E8872B22", border:"1px solid #E8872B", borderRadius:5, color:"#E8872B", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
+              ✕ Deselect {tm[selected]?.name}
+            </button>
+            {findZone(selected) !== POOL && (
+              <button onClick={() => { moveTeam(selected, POOL); setSelected(null); }} style={{ background:"#1A274088", border:"1px solid #4A6FA5", borderRadius:5, color:"#4A6FA5", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
+                ← Pool
+              </button>
+            )}
+          </>}
+          <button onClick={() => {
             const all = []; for (const k in asgn) all.push(...asgn[k]);
-            all.sort((a, b) => (tm[a]?.net ?? 999) - (tm[b]?.net ?? 999));
-            const n = {}; SEEDS.forEach(s => n[s.id] = []); EXTRA_TIERS.forEach(t => n[t.id] = []);
-            n[COMPARE] = []; n[POOL] = all; setAsgn(n); setExpanded(new Set()); setSelected(null);
+            all.sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
+            const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
+            n[COMPARE]=[]; n[POOL]=all; setAsgn(n); setExpanded(new Set()); setSelected(null);
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-          }} style={{ background: "transparent", border: "1px solid #1A2740", borderRadius: 5, color: "#6B7A90", fontSize: 10, padding: "3px 10px", cursor: "pointer" }}>
+          }} style={{ background:"transparent", border:"1px solid #1A2740", borderRadius:5, color:"#6B7A90", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
             Reset
           </button>
         </div>
       </div>
 
-      <div style={{ display: "flex", height: "calc(100vh - 70px)", overflow: "hidden" }}>
-        <BoardView />
+      {/* Main layout */}
+      <div style={{ display:"flex", height:"calc(100vh - 70px)", overflow:"hidden" }}>
 
-        <div style={{ flex: "0 0 300px", borderLeft: "1px solid #1A2740", display: "flex", flexDirection: "column", background: "#0D1425" }}>
-          <div style={{ padding: "8px 10px", borderBottom: "1px solid #1A2740" }}>
-            <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search..."
-              style={{ width: "100%", boxSizing: "border-box", padding: "6px 8px", background: "#111B2E", border: "1px solid #1A2740", borderRadius: 5, color: "#E2E8F0", fontSize: 12, outline: "none" }}
-              onFocus={e => e.target.style.borderColor = "#E8872B"}
-              onBlur={e => e.target.style.borderColor = "#1A2740"}
+        {/* Board — stable ref, never remounts */}
+        <div ref={boardScrollRef} style={{ flex:"1 1 62%", overflowY:"auto", padding:"10px 8px 10px 14px" }}>
+
+          {/* Seed lines */}
+          {SEEDS.map((seed, si) => {
+            const ids = asgn[seed.id];
+            const color = SEED_COLORS[si] || "#555";
+            return (
+              <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
+                <div style={{ display:"flex", alignItems:"flex-start", gap:8, minHeight:30 }}>
+                  <div style={{ width:28, minWidth:28, height:24, borderRadius:4, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", marginTop:2 }}>{seed.num}</div>
+                  <div data-zone={seed.id} style={{
+                    flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
+                    borderRadius:6, padding:"2px 4px",
+                    border:`1px dashed ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                    background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                    transition:"background 0.1s, border-color 0.1s",
+                  }}>
+                    {ids.length === 0 && <span style={{ fontSize:10, color:"#1E2D4A", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
+                    {ids.map(id => (
+                      <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
+                        <TeamCard tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>
+                      </div>
+                    ))}
+                    {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
+                      <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A2740", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1E2D4A", margin:1 }}>{isSel?"+":" "}</div>
+                    ))}
+                  </div>
+                  <span style={{ fontSize:9, color:"#4A5568", minWidth:20, textAlign:"right", marginTop:6 }}>{ids.length}/{seed.max}</span>
+                </div>
+              </div>
+            );
+          })}
+
+          <div style={{ height:1, background:"#1A2740", margin:"10px 0" }} />
+
+          {/* Extra tiers */}
+          {EXTRA_TIERS.map(tier => {
+            const ids = asgn[tier.id];
+            return (
+              <div key={tier.id} style={{ marginBottom:6 }} onClick={() => handleZoneClick(tier.id)}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+                  <div style={{ width:4, height:14, borderRadius:2, background:tier.ac }}/>
+                  <span style={{ fontSize:12, fontWeight:700, color:tier.ac }}>{tier.label}</span>
+                  <span style={{ fontSize:9, color:"#4A5568" }}>({ids.length})</span>
+                </div>
+                <div data-zone={tier.id} style={{
+                  minHeight:28, borderRadius:6, padding:"2px 4px",
+                  border:`1px dashed ${dropZone===tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
+                  background: dropZone===tier.id ? "rgba(232,135,43,0.06)" : "transparent",
+                  transition:"background 0.1s, border-color 0.1s",
+                }}>
+                  {ids.length === 0 && <span style={{ fontSize:10, color:"#1E2D4A", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
+                  {ids.map(id => <TeamCard key={id} tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>)}
+                </div>
+              </div>
+            );
+          })}
+
+          <div style={{ height:1, background:"#1A2740", margin:"10px 0" }} />
+
+          {/* Collapsible Compare */}
+          <div style={{ marginBottom:16 }}>
+            <div onClick={() => setCompareOpen(o => !o)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:compareOpen?8:0, userSelect:"none" }}>
+              <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
+              <span style={{ fontSize:13, fontWeight:700, color:"#4A6FA5" }}>Compare Resumes</span>
+              <span style={{ fontSize:9, color:"#4A5568" }}>{compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 · click to expand`}</span>
+              {!compareOpen && compareIds.length > 0 && (
+                <div style={{ display:"flex", gap:4, marginLeft:4 }}>
+                  {compareIds.slice(0,4).map(id => (
+                    <span key={id} style={{ fontSize:9, color:"#8694A8", background:"#111B2E", border:"1px solid #1A2740", borderRadius:3, padding:"1px 5px" }}>{tm[id]?.name}</span>
+                  ))}
+                  {compareIds.length > 4 && <span style={{ fontSize:9, color:"#4A5568" }}>+{compareIds.length-4}</span>}
+                </div>
+              )}
+            </div>
+            {compareOpen && (
+              <div>
+                <div data-zone={COMPARE} onClick={() => handleZoneClick(COMPARE)} style={{
+                  minHeight: compareIds.length===0 ? 80 : 12,
+                  borderRadius:6, marginBottom: compareIds.length>0 ? 8 : 0,
+                  border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A2740"}`,
+                  background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  transition:"background 0.1s, border-color 0.1s",
+                }}>
+                  {compareIds.length===0 && <span style={{ fontSize:11, color:"#1E2D4A" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>}
+                </div>
+                {compareIds.length > 0 && (
+                  <div style={{ display:"flex", gap:8, overflowX:"auto", paddingBottom:8 }}>
+                    {compareIds.map(tid => {
+                      const t = tm[tid];
+                      if (!t) return null;
+                      const kw = t.keyWins||[];
+                      const kl = t.keyLosses||[];
+                      return (
+                        <div key={tid} style={{ flex:"0 0 195px", background:"#111B2E", border:"1px solid #2A3F66", borderRadius:8, padding:"12px 10px", display:"flex", flexDirection:"column" }}>
+                          <div style={{ textAlign:"center", marginBottom:8, borderBottom:"1px solid #1A2740", paddingBottom:8 }}>
+                            <div style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:11 }}>#{t.net}</div>
+                            <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:14, lineHeight:1.2 }}>{t.name}</div>
+                            <div style={{ color:"#4A5568", fontSize:10, marginTop:2 }}>{t.conf} ({t.confRecord})</div>
+                            <div style={{ color:"#8694A8", fontSize:12, fontWeight:700, marginTop:3 }}>{t.record}</div>
+                          </div>
+                          <div style={{ display:"flex", flexDirection:"column", gap:3, fontSize:11, marginBottom:8 }}>
+                            <St l="SOS" v={`#${t.sos}`} w={t.sos>100}/>
+                            <St l="NC Rec" v={t.ncRecord}/>
+                            <St l="Home" v={t.home}/>
+                            <St l="Road" v={t.road} w={parseInt(t.road.split("-")[1])>parseInt(t.road.split("-")[0])}/>
+                            <St l="Neutral" v={t.neutral}/>
+                            <St l="Avg W" v={`#${t.avgNetWins}`}/>
+                            <St l="Avg L" v={`#${t.avgNetLosses}`}/>
+                          </div>
+                          <div style={{ background:"#0B1120", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11 }}>
+                            <St l="Q1" v={t.q1} g={parseInt(t.q1)>=3}/><St l="Q2" v={t.q2}/>
+                            <St l="Q3" v={t.q3} w={parseInt(t.q3.split("-")[1])>0}/><St l="Q4" v={t.q4} w={parseInt(t.q4.split("-")[1])>0}/>
+                          </div>
+                          <div style={{ background:"#0D1425", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11, border:"1px solid #1A2740" }}>
+                            <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", marginBottom:1, textTransform:"uppercase", letterSpacing:"0.05em" }}>Rankings</div>
+                            <St l="KPI" v={t.kpi!=null?`#${t.kpi}`:"—"}/><St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
+                            <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/><St l="BPI" v={t.bpi!=null?`#${t.bpi}`:"—"}/>
+                            <St l="KenPom" v={t.pom!=null?`#${t.pom}`:"—"}/><St l="T-Rank" v={t.tRank!=null?`#${t.tRank}`:"—"}/>
+                          </div>
+                          <div style={{ marginBottom:6 }}>
+                            <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Top Wins</div>
+                            {kw.length>0 ? kw.map((w,i) => (
+                              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                                <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+                              </div>
+                            )) : <div style={{ fontSize:9, color:"#2A3F66" }}>—</div>}
+                          </div>
+                          <div style={{ marginBottom:8 }}>
+                            <div style={{ fontSize:9, fontWeight:700, color:"#F87171", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Losses</div>
+                            {kl.length>0 ? kl.map((l,i) => (
+                              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                                <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+                              </div>
+                            )) : <div style={{ fontSize:9, color:"#2A3F66" }}>None</div>}
+                          </div>
+                          <div style={{ flex:1 }}/>
+                          <div style={{ borderTop:"1px solid #1A2740", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
+                            <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
+                              {SEEDS.map(s => (
+                                <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
+                                  style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:2, color:asgn[s.id].length>=s.max?"#1A2740":"#8694A8", fontSize:8, padding:"2px 4px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:18, textAlign:"center" }}>
+                                  {s.num}
+                                </button>
+                              ))}
+                            </div>
+                            <div style={{ display:"flex", gap:3 }}>
+                              {EXTRA_TIERS.map(et => (
+                                <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                                  style={{ background:"#0B1120", border:`1px solid ${et.ac}44`, borderRadius:2, color:et.ac, fontSize:8, padding:"2px 4px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                                  {et.label.split(" ").map(w=>w[0]).join("")}
+                                </button>
+                              ))}
+                              <button onClick={() => moveTeam(tid, POOL)}
+                                style={{ background:"#0B1120", border:"1px solid #1A2740", borderRadius:2, color:"#6B7A90", fontSize:8, padding:"2px 4px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                                ← Pool
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>{/* end board */}
+
+        {/* Pool sidebar */}
+        <div style={{ flex:"0 0 300px", borderLeft:"1px solid #1A2740", display:"flex", flexDirection:"column", background:"#0D1425" }}>
+          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A2740" }}>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
+              style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#111B2E", border:"1px solid #1A2740", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
+              onFocus={e => e.target.style.borderColor="#E8872B"}
+              onBlur={e => e.target.style.borderColor="#1A2740"}
             />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 2, marginTop: 5 }}>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:2, marginTop:5 }}>
               {allConfs.map(c => (
                 <button key={c} onClick={() => setConfF(c)} style={{
-                  background: confF === c ? "#E8872B" : "#111B2E",
-                  border: `1px solid ${confF === c ? "#E8872B" : "#1A2740"}`,
-                  borderRadius: 3, color: confF === c ? "#fff" : "#4A5568",
-                  fontSize: 9, padding: "1px 4px", cursor: "pointer", fontWeight: confF === c ? 700 : 400,
+                  background: confF===c ? "#E8872B" : "#111B2E",
+                  border:`1px solid ${confF===c ? "#E8872B" : "#1A2740"}`,
+                  borderRadius:3, color: confF===c ? "#fff" : "#4A5568",
+                  fontSize:9, padding:"1px 4px", cursor:"pointer", fontWeight: confF===c ? 700 : 400,
                 }}>{c}</button>
               ))}
             </div>
-            <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
+            <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>{poolF.length} teams</div>
           </div>
-          <div
-            ref={poolScrollRef}
-            data-scrollable="true"
-            data-zone={POOL}
-            style={{
-              flex: 1, overflowY: "auto", padding: "4px 6px",
-              background: dropZone === POOL ? "rgba(74,111,165,0.06)" : "transparent",
-              transition: "background 0.1s",
-            }}>
-            {poolF.map(id => <Card key={id} tid={id} showActions zone={POOL}/>)}
+          <div ref={poolScrollRef} data-zone={POOL} style={{
+            flex:1, overflowY:"auto", padding:"4px 6px",
+            background: dropZone===POOL ? "rgba(74,111,165,0.06)" : "transparent",
+            transition:"background 0.1s",
+          }}>
+            {poolF.map(id => (
+              <TeamCard key={id} tid={id} tm={tm} expanded={expanded} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} onDoubleClick={toggleEx}/>
+            ))}
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function St({ l, v, g, w }) {
-  return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <span style={{ color: "#4A5568" }}>{l}</span>
-      <span style={{ color: g ? "#4ADE80" : w ? "#F87171" : "#8694A8", fontFamily: "monospace" }}>{v}</span>
+      </div>
     </div>
   );
 }
@@ -655,31 +547,21 @@ function St({ l, v, g, w }) {
 function Root() {
   const [teams, setTeams] = useState(null);
   const [error, setError] = useState(null);
-
   const loadData = useCallback(() => {
     setError(null);
     fetch(DATA_URL)
-      .then(r => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(data => {
-        REAL_TEAMS = data.teams;
-        DATA_SCRAPED_AT = data.meta?.scrapedAt || "";
-        setTeams(data.teams);
-      })
+      .then(r => { if (!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
+      .then(data => { REAL_TEAMS = data.teams; DATA_SCRAPED_AT = data.meta?.scrapedAt||""; setTeams(data.teams); })
       .catch(e => setError(e.message));
   }, []);
-
   useEffect(() => { loadData(); }, [loadData]);
-
-  if (error) return <ErrorScreen error={error} onRetry={loadData} />;
-  if (!teams) return <LoadingScreen />;
-  return <App />;
+  if (error) return <ErrorScreen error={error} onRetry={loadData}/>;
+  if (!teams) return <LoadingScreen/>;
+  return <App/>;
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Root />);
+root.render(<Root/>);
 </script>
 </body>
 </html>
