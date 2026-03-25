@@ -131,6 +131,9 @@ function App() {
   const [dropZone, setDropZone] = useState(null);
   const [dragPos, setDragPos] = useState({x:0,y:0});
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null});
+  const boardScrollRef = useRef(null);
+  const poolScrollRef = useRef(null);
+  const savedScrollRef = useRef({board:0, pool:0});
 
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
@@ -199,18 +202,14 @@ function App() {
         dragRef.current.dragging = true;
         setDragTid(tid);
         setSelected(null);
-        // Lock all scrollable containers during drag
-        document.querySelectorAll("[data-scrollable]").forEach(el => {
-          el.dataset.scrollTop = el.scrollTop;
-          el.style.overflowY = "hidden";
-          el.style.overflowX = "hidden";
-        });
+        // Save current scroll positions before anything can jump
+        savedScrollRef.current.board = boardScrollRef.current?.scrollTop || 0;
+        savedScrollRef.current.pool = poolScrollRef.current?.scrollTop || 0;
       }
       if (dragRef.current.dragging) {
-        // Restore scroll positions (browser may reset them)
-        document.querySelectorAll("[data-scrollable]").forEach(el => {
-          if (el.dataset.scrollTop !== undefined) el.scrollTop = parseInt(el.dataset.scrollTop) || 0;
-        });
+        // Continuously restore scroll positions during drag
+        if (boardScrollRef.current) boardScrollRef.current.scrollTop = savedScrollRef.current.board;
+        if (poolScrollRef.current) poolScrollRef.current.scrollTop = savedScrollRef.current.pool;
         setDragPos({ x: e.clientX, y: e.clientY });
         const els = document.querySelectorAll("[data-zone]");
         let found = null;
@@ -229,12 +228,6 @@ function App() {
     const onMouseUp = (e) => {
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
-      // Restore scroll on all containers
-      document.querySelectorAll("[data-scrollable]").forEach(el => {
-        el.style.overflowY = "auto";
-        el.style.overflowX = "";
-        delete el.dataset.scrollTop;
-      });
       if (dragRef.current.dragging) {
         const targetZone = dragRef.current.zoneRef;
         if (targetZone) {
@@ -311,7 +304,7 @@ function App() {
     const compareIds = asgn[COMPARE];
     const isSel = !!selected;
     return (
-      <div data-scrollable="true" style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
+      <div ref={boardScrollRef} data-scrollable="true" style={{ flex: "1 1 62%", overflowY: "auto", padding: "10px 8px 10px 14px" }}>
         {/* Seed lines 1-16 */}
         {SEEDS.map((seed, si) => {
           const ids = asgn[seed.id];
@@ -604,6 +597,7 @@ function App() {
             <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
           </div>
           <div
+            ref={poolScrollRef}
             data-scrollable="true"
             data-zone={POOL}
             style={{
