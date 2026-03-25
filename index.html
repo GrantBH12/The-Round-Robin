@@ -129,8 +129,8 @@ function App() {
   const [tab, setTab] = useState("board");
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
-  const dragRef = useRef(null);
-  const didDragRef = useRef(false);
+  const [dragPos, setDragPos] = useState({x:0,y:0});
+  const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null});
 
   const toggleEx = useCallback(tid => {
     setExpanded(p => {
@@ -166,13 +166,11 @@ function App() {
   }, [tm]);
 
   const handleTeamClick = useCallback((tid, e) => {
-    if (didDragRef.current) return;
     e.stopPropagation();
     setSelected(prev => prev === tid ? null : tid);
   }, []);
 
   const handleZoneClick = useCallback((zoneId) => {
-    if (didDragRef.current) return;
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
     if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
@@ -189,44 +187,62 @@ function App() {
     moveTeam(tid, target);
   }, [moveTeam]);
 
-  // ── Drag-and-drop ──
-  const handleDragStart = useCallback((e, tid) => {
-    dragRef.current = tid;
-    didDragRef.current = true;
-    setDragTid(tid);
-    setSelected(null);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", tid);
-  }, []);
+  // ── Mouse-based drag ──
+  const DRAG_THRESHOLD = 6; // pixels before drag starts
 
-  const handleDragEnd = useCallback(() => {
-    dragRef.current = null;
-    setDragTid(null);
-    setDropZone(null);
-    setTimeout(() => { didDragRef.current = false; }, 100);
-  }, []);
+  const handleMouseDown = useCallback((e, tid) => {
+    if (e.button !== 0) return;
+    dragRef.current = { tid, startX: e.clientX, startY: e.clientY, dragging: false, zoneRef: null };
+    setDragPos({ x: e.clientX, y: e.clientY });
 
-  const handleDragOverZone = useCallback((e, zoneId) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    setDropZone(zoneId);
-  }, []);
+    const onMouseMove = (e) => {
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
+      if (!dragRef.current.dragging && Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
+        dragRef.current.dragging = true;
+        setDragTid(tid);
+        setSelected(null);
+      }
+      if (dragRef.current.dragging) {
+        setDragPos({ x: e.clientX, y: e.clientY });
+        // Hit-test all drop zones
+        const els = document.querySelectorAll("[data-zone]");
+        let found = null;
+        for (const el of els) {
+          const r = el.getBoundingClientRect();
+          if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+            found = el.getAttribute("data-zone");
+            break;
+          }
+        }
+        setDropZone(found);
+        dragRef.current.zoneRef = found;
+      }
+    };
 
-  const handleDragLeaveZone = useCallback((e) => {
-    if (!e.currentTarget.contains(e.relatedTarget)) setDropZone(null);
-  }, []);
+    const onMouseUp = (e) => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      if (dragRef.current.dragging) {
+        // Complete drag drop
+        const targetZone = dragRef.current.zoneRef;
+        if (targetZone) {
+          const seed = SEEDS.find(s => s.id === targetZone);
+          if (!seed || asgn[targetZone].length < seed.max || asgn[targetZone].includes(tid)) {
+            moveTeam(tid, targetZone);
+          }
+        }
+        setDragTid(null);
+        setDropZone(null);
+      } else {
+        // It was a click
+        setSelected(prev => prev === tid ? null : tid);
+      }
+      dragRef.current = { tid: null, startX: 0, startY: 0, dragging: false, zoneRef: null };
+    };
 
-  const handleDropOnZone = useCallback((e, zoneId) => {
-    e.preventDefault();
-    const tid = dragRef.current || e.dataTransfer.getData("text/plain");
-    if (!tid) return;
-    const seed = SEEDS.find(s => s.id === zoneId);
-    if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(tid)) {
-      setDragTid(null); setDropZone(null); return;
-    }
-    moveTeam(tid, zoneId);
-    setDragTid(null);
-    setDropZone(null);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
   }, [asgn, moveTeam]);
 
   const poolF = useMemo(() => {
@@ -249,20 +265,17 @@ function App() {
     const isDragging = dragTid === tid;
     return (
       <div
-        draggable
-        onDragStart={e => handleDragStart(e, tid)}
-        onDragEnd={handleDragEnd}
+        onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
+        onDoubleClick={e => { e.stopPropagation(); toggleEx(tid); }}
         style={{
           background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
           border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
           borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px",
           cursor: isDragging ? "grabbing" : "grab",
-          userSelect: "none", marginBottom: 2, transition: "all 0.12s",
+          userSelect: "none", marginBottom: 2, transition: isDragging ? "none" : "all 0.12s",
           boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
-          opacity: isDragging ? 0.4 : 1,
+          opacity: isDragging ? 0.35 : 1,
         }}
-        onClick={e => handleTeamClick(tid, e)}
-        onDoubleClick={e => { e.stopPropagation(); toggleEx(tid); }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
           <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, minWidth: 22, textAlign: "right" }}>{t.net}</span>
@@ -303,9 +316,7 @@ function App() {
                 fontSize: 12, fontWeight: 800, color: "#fff", marginTop: 2,
               }}>{seed.num}</div>
               <div
-                onDragOver={e => handleDragOverZone(e, seed.id)}
-                onDragLeave={handleDragLeaveZone}
-                onDrop={e => handleDropOnZone(e, seed.id)}
+                data-zone={seed.id}
                 style={{
                   flex: 1, display: "flex", flexWrap: "wrap", gap: 2, minHeight: 28,
                   borderRadius: 6, padding: "2px 4px",
@@ -342,9 +353,7 @@ function App() {
               <span style={{ fontSize: 9, color: "#4A5568" }}>({ids.length})</span>
             </div>
             <div
-              onDragOver={e => handleDragOverZone(e, tier.id)}
-              onDragLeave={handleDragLeaveZone}
-              onDrop={e => handleDropOnZone(e, tier.id)}
+              data-zone={tier.id}
               style={{
                 minHeight: 28, borderRadius: 6, padding: "2px 4px",
                 border: `1px dashed ${dropZone === tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A2740"}`,
@@ -467,6 +476,19 @@ function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0B1120", color: "#E2E8F0", fontFamily: "'Segoe UI','Inter',system-ui,sans-serif" }}>
+      {/* Floating drag ghost */}
+      {dragTid && tm[dragTid] && (
+        <div style={{
+          position: "fixed", left: dragPos.x + 12, top: dragPos.y - 10,
+          pointerEvents: "none", zIndex: 9999, opacity: 0.9,
+          background: "#1A2740", border: "1.5px solid #E8872B", borderRadius: 6,
+          padding: "5px 8px", fontSize: 12, color: "#E2E8F0", whiteSpace: "nowrap",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        }}>
+          <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, marginRight: 6 }}>#{tm[dragTid].net}</span>
+          <span style={{ fontWeight: 600 }}>{tm[dragTid].name}</span>
+        </div>
+      )}
       <div style={{ padding: "14px 18px 10px", borderBottom: "1px solid #1A2740", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em", background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
@@ -535,9 +557,7 @@ function App() {
             <div style={{ fontSize: 9, color: "#4A5568", marginTop: 4 }}>{poolF.length} teams</div>
           </div>
           <div
-            onDragOver={e => handleDragOverZone(e, POOL)}
-            onDragLeave={handleDragLeaveZone}
-            onDrop={e => handleDropOnZone(e, POOL)}
+            data-zone={POOL}
             style={{
               flex: 1, overflowY: "auto", padding: "4px 6px",
               background: dropZone === POOL ? "rgba(74,111,165,0.06)" : "transparent",
