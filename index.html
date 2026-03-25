@@ -172,6 +172,7 @@ function App() {
   }, []);
 
   const handleZoneClick = useCallback((zoneId) => {
+    if (didDragRef.current) return;
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
     if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
@@ -202,8 +203,7 @@ function App() {
     dragRef.current = null;
     setDragTid(null);
     setDropZone(null);
-    // Reset didDragRef after a tick so the click handler can check it first
-    setTimeout(() => { didDragRef.current = false; }, 50);
+    setTimeout(() => { didDragRef.current = false; }, 100);
   }, []);
 
   const handleDragOverZone = useCallback((e, zoneId) => {
@@ -255,13 +255,14 @@ function App() {
         style={{
           background: isSel ? "rgba(232,135,43,0.15)" : "#111B2E",
           border: `1.5px solid ${isSel ? "#E8872B" : isEx ? "#2A3F66" : "#1A2740"}`,
-          borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px", cursor: "grab",
+          borderRadius: 6, padding: isEx ? "8px 10px" : "5px 8px",
+          cursor: isDragging ? "grabbing" : "grab",
           userSelect: "none", marginBottom: 2, transition: "all 0.12s",
           boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
           opacity: isDragging ? 0.4 : 1,
         }}
         onClick={e => handleTeamClick(tid, e)}
-        onDoubleClick={() => toggleEx(tid)}
+        onDoubleClick={e => { e.stopPropagation(); toggleEx(tid); }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
           <span style={{ color: "#6B7A90", fontFamily: "monospace", fontSize: 10, minWidth: 22, textAlign: "right" }}>{t.net}</span>
