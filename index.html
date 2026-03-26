@@ -275,6 +275,13 @@ function App() {
     return () => clearTimeout(t);
   }, [toastMsg]);
 
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = e => { if (e.key === "Escape") setSelected(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selected]);
+
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
@@ -446,7 +453,7 @@ function App() {
               Bracketology Hub — The Round Robin
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
-              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
+              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const diff = Date.now() - d; const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
             </p>
           </div>
         </div>
@@ -454,7 +461,7 @@ function App() {
           <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:10, color:"#8694A8", cursor:"pointer", userSelect:"none" }}>
             <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)}
               style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
-            include bubble tiers
+            Include Bubble Tiers
           </label>
           <button onClick={autoSeed} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:10, padding:"4px 12px", cursor:"pointer", fontWeight:600 }}>
             Auto-seed
@@ -486,12 +493,20 @@ function App() {
         {/* Pool sidebar */}
         <div style={{ flex:"0 0 260px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#0A1E35" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search teams..."
-              style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#0D2240", border:"1px solid #1A3050", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
-              onFocus={e => e.target.style.borderColor="#E8872B"}
-              onBlur={e => e.target.style.borderColor="#1A3050"}
-            />
-            <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>{poolF.length} teams</div>
+            <div style={{ position:"relative" }}>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, conf, or NET..."
+                style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#0D2240", border:"1px solid #1A3050", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
+                onFocus={e => e.target.style.borderColor="#E8872B"}
+                onBlur={e => e.target.style.borderColor="#1A3050"}
+              />
+              {(search || anyFilterActive) && (
+                <button onClick={() => { setSearch(""); clearFilters(); }}
+                  style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#6B7A90", fontSize:13, cursor:"pointer", lineHeight:1, padding:"0 2px" }}>×</button>
+              )}
+            </div>
+            <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>
+              {anyFilterActive || search ? `${poolF.length} of ${teams.length}` : `${poolF.length} teams`}
+            </div>
           </div>
           <div ref={poolScrollRef} data-zone={POOL} style={{
             flex:1, overflowY:"auto", padding:"4px 6px",
@@ -503,7 +518,7 @@ function App() {
             ))}
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
-            Data sourced from <a href="https://warrennolan.com" target="_blank" style={{ color:"#4A5568" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
+            Data sourced from <a href="https://warrennolan.com" target="_blank" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
           </div>
         </div>
 
@@ -623,7 +638,7 @@ function App() {
                       <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
                     ))}
                   </div>
-                  <span style={{ fontSize:9, color:"#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
+                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
                 </div>
               </div>
             );
