@@ -325,7 +325,7 @@ function App() {
   }, [asgn, moveTeam, tm]);
 
   const poolF = useMemo(() => {
-    let ids = asgn[POOL];
+    let ids = asgn[POOL] || [];
     if (confFs.size > 0) ids = ids.filter(id => confFs.has(tm[id]?.conf));
     if (search.trim()) {
       const q = search.trim().toLowerCase();
