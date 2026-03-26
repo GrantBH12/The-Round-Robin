@@ -512,8 +512,8 @@ function App() {
             const color = SEED_COLORS[si] || "#555";
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
-                <div style={{ display:"flex", alignItems:"flex-start", gap:8, minHeight:30 }}>
-                  <div style={{ width:28, minWidth:28, height:24, borderRadius:4, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", marginTop:2 }}>{seed.num}</div>
+                <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
+                  <div style={{ width:30, minWidth:30, borderRadius:5, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", alignSelf:"stretch", minHeight:40 }}>{seed.num}</div>
                   <div data-zone={seed.id} style={{
                     flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
                     borderRadius:6, padding:"2px 4px",
@@ -537,7 +537,7 @@ function App() {
                       <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
                     ))}
                   </div>
-                  <span style={{ fontSize:9, color:"#4A5568", minWidth:20, textAlign:"right", marginTop:6 }}>{ids.length}/{seed.max}</span>
+                  <span style={{ fontSize:9, color:"#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
                 </div>
               </div>
             );
