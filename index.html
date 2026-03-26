@@ -178,8 +178,6 @@ function App() {
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
-  const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
 
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null});
   const ghostRef = useRef(null);
