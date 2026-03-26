@@ -172,6 +172,8 @@ function App() {
     setMetricRanges({net:[1,400],sos:[1,400],kpi:[1,400],sor:[1,400],wab:[1,400],bpi:[1,400],pom:[1,400],tRank:[1,400]});
   };
   const [selected, setSelected] = useState(null);
+  const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
@@ -210,6 +212,70 @@ function App() {
       return n;
     });
   }, [tm]);
+
+  const autoSeed = useCallback(() => {
+    const poolIds = asgn[POOL];
+    const sortedByNet = [...poolIds].sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
+
+    // One guaranteed entry per conference (best NET)
+    const seenConf = new Set();
+    const autoQSet = new Set();
+    for (const id of sortedByNet) {
+      const conf = tm[id]?.conf;
+      if (conf && !seenConf.has(conf)) { seenConf.add(conf); autoQSet.add(id); }
+    }
+
+    const totalCap = SEEDS.reduce((s,sd) => s+sd.max, 0);
+    const atLargePool = sortedByNet.filter(id => !autoQSet.has(id));
+    const atLargeIn = new Set(atLargePool.slice(0, Math.max(0, totalCap - autoQSet.size)));
+
+    // Field = auto qualifiers + at-large, ordered by NET
+    const fieldSet = new Set([...autoQSet, ...atLargeIn]);
+    const field = sortedByNet.filter(id => fieldSet.has(id));
+
+    const newAsgn = {};
+    SEEDS.forEach(s => newAsgn[s.id] = []);
+    EXTRA_TIERS.forEach(t => newAsgn[t.id] = []);
+    newAsgn[COMPARE] = [...asgn[COMPARE]];
+
+    const placed = new Set();
+    let fIdx = 0;
+    for (const seed of SEEDS) {
+      for (let i = 0; i < seed.max && fIdx < field.length; i++, fIdx++) {
+        newAsgn[seed.id].push(field[fIdx]);
+        placed.add(field[fIdx]);
+      }
+    }
+
+    let ffoCount = 0, nfoCount = 0;
+    if (includeBubbleTiers) {
+      const remaining = sortedByNet.filter(id => !placed.has(id));
+      for (let i = 0; i < 4 && i < remaining.length; i++) {
+        newAsgn['ffo'].push(remaining[i]);
+        placed.add(remaining[i]);
+        ffoCount++;
+      }
+      for (let i = ffoCount; i < ffoCount + 4 && i < remaining.length; i++) {
+        newAsgn['nfo'].push(remaining[i]);
+        placed.add(remaining[i]);
+        nfoCount++;
+      }
+    }
+
+    newAsgn[POOL] = sortedByNet.filter(id => !placed.has(id));
+    setAsgn(newAsgn);
+    setSelected(null);
+
+    const placedCount = fIdx;
+    const msg = `Auto-seeded ${placedCount} teams · ${autoQSet.size} conf champs · ${atLargeIn.size} at-large${includeBubbleTiers ? ` · ${ffoCount} FFO · ${nfoCount} NFO` : ''}`;
+    setToastMsg(msg);
+  }, [asgn, tm, includeBubbleTiers]);
+
+  useEffect(() => {
+    if (!toastMsg) return;
+    const t = setTimeout(() => setToastMsg(""), 4000);
+    return () => clearTimeout(t);
+  }, [toastMsg]);
 
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
@@ -403,6 +469,19 @@ function App() {
         boxShadow:"0 4px 20px rgba(0,0,0,0.5)",
       }}/>
 
+      {/* Toast */}
+      {toastMsg && (
+        <div style={{
+          position:"fixed", bottom:24, left:"50%", transform:"translateX(-50%)",
+          background:"#1A3050", border:"1px solid #E8872B", borderRadius:8,
+          padding:"10px 20px", fontSize:12, color:"#E2E8F0",
+          boxShadow:"0 4px 20px rgba(0,0,0,0.5)", zIndex:10000,
+          pointerEvents:"none", whiteSpace:"nowrap",
+        }}>
+          {toastMsg}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
@@ -416,16 +495,12 @@ function App() {
           </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-          <label style={{ display:"flex", alignItems:"center", gap:4, color:"#6B7A90", fontSize:10, cursor:"pointer", userSelect:"none" }}>
-            <input
-              type="checkbox"
-              checked={includeBubbleTiers}
-              onChange={e => setIncludeBubbleTiers(e.target.checked)}
-              style={{ accentColor:"#E8872B" }}
-            />
+          <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:10, color:"#8694A8", cursor:"pointer", userSelect:"none" }}>
+            <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)}
+              style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
             include bubble tiers
           </label>
-          <button onClick={autoSeed} style={{ background:"#E8872B", border:"1px solid #E8872B", borderRadius:5, color:"#fff", fontSize:10, padding:"3px 10px", cursor:"pointer", fontWeight:700 }}>
+          <button onClick={autoSeed} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:10, padding:"4px 12px", cursor:"pointer", fontWeight:600 }}>
             Auto-seed
           </button>
           {selected && <>
@@ -756,18 +831,8 @@ function App() {
             )}
           </div>
         </div>{/* end board */}
-      </div> {/* This closes the "Main layout" flex div */}
-
-      {toastMsg && (
-        <div style={{
-          position:"fixed", bottom:12, right:14, zIndex:10000,
-          background:"#0D2240", border:"1px solid #1A3050", borderRadius:6,
-          color:"#E2E8F0", fontSize:11, padding:"6px 10px", boxShadow:"0 6px 18px rgba(0,0,0,0.35)",
-        }}>
-          {toastMsg}
-        </div>
-      )}
-    </div>
+      </div>{/* end main layout */}
+    </div>{/* end root */}
   );
 }
 
