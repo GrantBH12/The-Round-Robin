@@ -146,6 +146,26 @@ function App() {
 
   const [search, setSearch] = useState("");
   const [confF, setConfF] = useState("All");
+  const METRICS = [
+    {key:"net",label:"NET"},
+    {key:"sos",label:"SOS"},
+    {key:"kpi",label:"KPI"},
+    {key:"sor",label:"SOR"},
+    {key:"wab",label:"WAB"},
+    {key:"bpi",label:"BPI"},
+    {key:"pom",label:"KenPom"},
+    {key:"tRank",label:"T-Rank"},
+  ];
+  const [metricRanges, setMetricRanges] = useState(() => {
+    const r = {};
+    ["net","sos","kpi","sor","wab","bpi","pom","tRank"].forEach(k => r[k] = [1, 400]);
+    return r;
+  });
+  const anyFilterActive = confF !== "All" || Object.values(metricRanges).some(([mn,mx]) => mn > 1 || mx < 400);
+  const clearFilters = () => {
+    setConfF("All");
+    setMetricRanges({net:[1,400],sos:[1,400],kpi:[1,400],sor:[1,400],wab:[1,400],bpi:[1,400],pom:[1,400],tRank:[1,400]});
+  };
   const [selected, setSelected] = useState(null);
   const [compareOpen, setCompareOpen] = useState(true);
   const [dragTid, setDragTid] = useState(null);
@@ -306,8 +326,18 @@ function App() {
       const q = search.trim().toLowerCase();
       ids = ids.filter(id => { const t = tm[id]; return t && (t.name.toLowerCase().includes(q) || t.conf.toLowerCase().includes(q) || String(t.net).includes(q)); });
     }
+    ids = ids.filter(id => {
+      const t = tm[id];
+      if (!t) return false;
+      return ["net","sos","kpi","sor","wab","bpi","pom","tRank"].every(k => {
+        const val = t[k];
+        if (val == null) return true;
+        const [mn, mx] = metricRanges[k];
+        return val >= mn && val <= mx;
+      });
+    });
     return ids;
-  }, [asgn, confF, search, tm]);
+  }, [asgn, confF, search, tm, metricRanges]);
 
   const totalPlaced = SEEDS.reduce((s,sd) => s+asgn[sd.id].length, 0) + EXTRA_TIERS.reduce((s,t) => s+asgn[t.id].length, 0);
   const compareIds = asgn[COMPARE];
@@ -327,6 +357,7 @@ function App() {
       {/* Header */}
       <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <div>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
               Bracketology Hub — The Round Robin
@@ -363,23 +394,13 @@ function App() {
       <div style={{ display:"flex", height:"calc(100vh - 66px)", overflow:"hidden" }}>
 
         {/* Pool sidebar */}
-        <div style={{ flex:"0 0 300px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#0A1E35" }}>
+        <div style={{ flex:"0 0 260px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#0A1E35" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search teams..."
               style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#0D2240", border:"1px solid #1A3050", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
               onFocus={e => e.target.style.borderColor="#E8872B"}
               onBlur={e => e.target.style.borderColor="#1A3050"}
             />
-            <div style={{ display:"flex", flexWrap:"wrap", gap:2, marginTop:5 }}>
-              {allConfs.map(c => (
-                <button key={c} onClick={() => setConfF(c)} style={{
-                  background: confF===c ? "#E8872B" : "#0D2240",
-                  border:`1px solid ${confF===c ? "#E8872B" : "#1A3050"}`,
-                  borderRadius:3, color: confF===c ? "#fff" : "#4A5568",
-                  fontSize:9, padding:"1px 4px", cursor:"pointer", fontWeight: confF===c ? 700 : 400,
-                }}>{c}</button>
-              ))}
-            </div>
             <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>{poolF.length} teams</div>
           </div>
           <div ref={poolScrollRef} data-zone={POOL} style={{
@@ -393,6 +414,61 @@ function App() {
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
             Data sourced from <a href="https://warrennolan.com" target="_blank" style={{ color:"#4A5568" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
+          </div>
+        </div>
+
+      </div>
+
+        {/* Filter panel */}
+        <div style={{ flex:"0 0 200px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflowY:"auto" }}>
+          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <span style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters</span>
+            {anyFilterActive && <button onClick={clearFilters} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0 }}>Clear all</button>}
+          </div>
+          {/* Conference pills */}
+          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
+            <div style={{ fontSize:9, color:"#4A5568", marginBottom:5, textTransform:"uppercase", letterSpacing:"0.06em" }}>Conference</div>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:2 }}>
+              {allConfs.map(c => (
+                <button key={c} onClick={() => setConfF(c)} style={{
+                  background: confF===c ? "#E8872B" : "#0D2240",
+                  border:`1px solid ${confF===c ? "#E8872B" : "#1A3050"}`,
+                  borderRadius:3, color: confF===c ? "#fff" : "#4A5568",
+                  fontSize:9, padding:"2px 5px", cursor:"pointer", fontWeight: confF===c ? 700 : 400,
+                }}>{c}</button>
+              ))}
+            </div>
+          </div>
+          {/* Metric range sliders */}
+          <div style={{ padding:"8px 10px", display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ fontSize:9, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Rankings</div>
+            {METRICS.map(({key, label}) => {
+              const [mn, mx] = metricRanges[key];
+              const isDefault = mn === 1 && mx === 400;
+              return (
+                <div key={key}>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
+                    <span style={{ fontSize:9, color: isDefault ? "#4A5568" : "#E8872B", fontWeight: isDefault ? 400 : 600 }}>{label}</span>
+                    <span style={{ fontSize:9, color:"#8694A8", fontFamily:"monospace" }}>
+                      {isDefault ? "any" : `#${mn} – #${mx}`}
+                    </span>
+                  </div>
+                  <div style={{ position:"relative", height:20 }}>
+                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:2, background:"#1A3050", borderRadius:1, transform:"translateY(-50%)" }}/>
+                    <div style={{ position:"absolute", top:"50%", height:2, background:"#E8872B", borderRadius:1, transform:"translateY(-50%)",
+                      left: `${((mn-1)/399)*100}%`, right: `${((400-mx)/399)*100}%` }}/>
+                    <input type="range" min="1" max="400" value={mn}
+                      onChange={e => setMetricRanges(p => ({...p, [key]: [Math.min(parseInt(e.target.value), p[key][1]-1), p[key][1]]}))}
+                      style={{ position:"absolute", width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0, padding:0 }}
+                    />
+                    <input type="range" min="1" max="400" value={mx}
+                      onChange={e => setMetricRanges(p => ({...p, [key]: [p[key][0], Math.max(parseInt(e.target.value), p[key][0]+1)]}))}
+                      style={{ position:"absolute", width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0, padding:0 }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -594,7 +670,7 @@ function App() {
           </div>
         </div>{/* end board */}
 
-      </div>
+      
     </div>
   );
 }
