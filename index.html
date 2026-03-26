@@ -85,7 +85,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
 let REAL_TEAMS = [];
 let DATA_SCRAPED_AT = "";
 
-const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:i<10?4:6}));
+const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:(i===10||i===15)?6:4}));
 const EXTRA_TIERS = [
   {id:"ffo",label:"First Four Out",ac:"#8B4444"},
   {id:"nfo",label:"Next Four Out",ac:"#6B3A3A"},
