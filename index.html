@@ -129,7 +129,12 @@ function App() {
           }
           if (valid && usedIds.size > 0) {
             const missing = teams.filter(t => !usedIds.has(t.id)).map(t => t.id);
+            // Safeguard for newly added zones preventing LocalStorage crashes
             if (!saved[POOL]) saved[POOL] = [];
+            if (!saved[COMPARE]) saved[COMPARE] = [];
+            SEEDS.forEach(s => { if (!saved[s.id]) saved[s.id] = []; });
+            EXTRA_TIERS.forEach(t => { if (!saved[t.id]) saved[t.id] = []; });
+            
             saved[POOL] = [...saved[POOL], ...missing];
             setAsgn(saved);
           }
@@ -339,8 +344,8 @@ function App() {
     return ids;
   }, [asgn, confFs, search, tm, metricRanges]);
 
-  const totalPlaced = SEEDS.reduce((s,sd) => s+asgn[sd.id].length, 0) + EXTRA_TIERS.reduce((s,t) => s+asgn[t.id].length, 0);
-  const compareIds = asgn[COMPARE];
+  const totalPlaced = SEEDS.reduce((s,sd) => s+(asgn[sd.id]?.length||0), 0) + EXTRA_TIERS.reduce((s,t) => s+(asgn[t.id]?.length||0), 0);
+  const compareIds = asgn[COMPARE] || [];
   const isSel = !!selected;
 
   return (
@@ -362,7 +367,7 @@ function App() {
               Bracketology Hub — The Round Robin
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
-              {totalPlaced} placed · {asgn[POOL].length} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
+              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? new Date(DATA_SCRAPED_AT).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"}) : "—"}
             </p>
           </div>
         </div>
@@ -454,7 +459,7 @@ function App() {
                       {isDefault ? "any" : `#${mn} – #${mx}`}
                     </span>
                   </div>
-                  <div style={{ position:"relative", height:24, marginTop:4 }}
+                  <div 
                     onMouseDown={e => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       const pct = (e.clientX - rect.left) / rect.width;
@@ -476,7 +481,7 @@ function App() {
                       document.addEventListener("mouseup", onUp);
                       onMove(e);
                     }}
-                    style={{ cursor:"ew-resize" }}
+                    style={{ position:"relative", height:24, marginTop:4, cursor:"ew-resize" }}
                   >
                     {/* Track */}
                     <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
@@ -503,7 +508,7 @@ function App() {
 
           {/* Seed lines 1-16 */}
           {SEEDS.map((seed, si) => {
-            const ids = asgn[seed.id];
+            const ids = asgn[seed.id] || [];
             const color = SEED_COLORS[si] || "#555";
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
@@ -542,7 +547,7 @@ function App() {
 
           {/* Extra tiers */}
           {EXTRA_TIERS.map(tier => {
-            const ids = asgn[tier.id];
+            const ids = asgn[tier.id] || [];
             return (
               <div key={tier.id} style={{ marginBottom:6 }} onClick={() => handleZoneClick(tier.id)}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
