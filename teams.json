@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-25T21:35:20.361853+00:00",
+    "scrapedAt": "2026-03-26T08:45:41.221599+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -3689,18 +3689,18 @@
       "conf": "SEC",
       "confRecord": "7-11",
       "net": 38,
-      "record": "19-16",
+      "record": "20-16",
       "sos": 4,
       "ncRecord": "9-4",
       "ncSos": 15,
-      "home": "13-4",
+      "home": "14-4",
       "road": "2-8",
       "neutral": "4-4",
       "q1": "4-13",
-      "q2": "3-2",
+      "q2": "4-2",
       "q3": "5-1",
       "q4": "7-0",
-      "avgNetWins": 128,
+      "avgNetWins": 125,
       "avgNetLosses": 31,
       "keyWins": [
         {
@@ -6799,19 +6799,19 @@
       "conf": "Atlantic 10",
       "confRecord": "12-6",
       "net": 69,
-      "record": "25-11",
+      "record": "25-12",
       "sos": 90,
       "ncRecord": "9-4",
       "ncSos": 108,
-      "home": "14-3",
+      "home": "14-4",
       "road": "8-5",
       "neutral": "3-3",
       "q1": "1-6",
       "q2": "9-2",
-      "q3": "7-2",
+      "q3": "7-3",
       "q4": "8-1",
       "avgNetWins": 159,
-      "avgNetLosses": 78,
+      "avgNetLosses": 80,
       "keyWins": [
         {
           "opp": "Saint Louis",
@@ -6879,11 +6879,11 @@
           "date": "12-20"
         },
         {
-          "opp": "Cincinnati",
-          "oppNet": 49,
-          "score": "62-74",
-          "site": "A",
-          "date": "11-11"
+          "opp": "Illinois State",
+          "oppNet": 95,
+          "score": "55-61",
+          "site": "H",
+          "date": "03-25"
         }
       ],
       "kpi": 44,
@@ -6900,19 +6900,19 @@
       "conf": "Mountain West",
       "confRecord": "12-8",
       "net": 70,
-      "record": "24-12",
+      "record": "24-13",
       "sos": 89,
       "ncRecord": "8-3",
       "ncSos": 216,
       "home": "17-2",
-      "road": "4-8",
+      "road": "4-9",
       "neutral": "3-2",
-      "q1": "1-6",
+      "q1": "1-7",
       "q2": "5-4",
       "q3": "13-0",
       "q4": "5-2",
       "avgNetWins": 145,
-      "avgNetLosses": 81,
+      "avgNetLosses": 78,
       "keyWins": [
         {
           "opp": "Utah State",
@@ -9425,18 +9425,18 @@
       "conf": "Missouri Valley",
       "confRecord": "12-8",
       "net": 95,
-      "record": "21-12",
+      "record": "22-12",
       "sos": 142,
       "ncRecord": "7-3",
       "ncSos": 300,
       "home": "13-2",
-      "road": "6-7",
+      "road": "7-7",
       "neutral": "2-3",
-      "q1": "2-2",
+      "q1": "3-2",
       "q2": "4-4",
       "q3": "8-5",
       "q4": "7-1",
-      "avgNetWins": 169,
+      "avgNetWins": 164,
       "avgNetLosses": 133,
       "keyWins": [
         {
@@ -9454,6 +9454,13 @@
           "date": "03-22"
         },
         {
+          "opp": "Dayton",
+          "oppNet": 69,
+          "score": "61-55",
+          "site": "A",
+          "date": "03-25"
+        },
+        {
           "opp": "Northern Iowa",
           "oppNet": 72,
           "score": "71-69",
@@ -9466,13 +9473,6 @@
           "score": "59-54",
           "site": "H",
           "date": "01-21"
-        },
-        {
-          "opp": "Murray State",
-          "oppNet": 105,
-          "score": "70-65",
-          "site": "A",
-          "date": "01-28"
         }
       ],
       "keyLosses": [
