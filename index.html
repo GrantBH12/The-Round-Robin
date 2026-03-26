@@ -51,12 +51,12 @@ function St({ l, v }) {
 }
 
 // TeamCard defined OUTSIDE App — prevents React from remounting scroll containers
-const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown }) {
+const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone }) {
   const t = tm[tid];
   if (!t) return null;
   const isSel = selected === tid;
   const isDragging = dragTid === tid;
-  const hasMeta = t.wab != null || t.sor != null;
+  const inPool = zone === "pool";
   return (
     <div
       data-card={tid}
@@ -64,7 +64,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
       style={{
         background: isSel ? "rgba(232,135,43,0.15)" : "#0D2240",
         border: `1.5px solid ${isSel ? "#E8872B" : "#1A3050"}`,
-        borderRadius:6, padding:"6px 8px",
+        borderRadius:6, padding:"5px 8px",
         cursor: isDragging ? "grabbing" : "grab",
         userSelect:"none", marginBottom:3, transition: isDragging ? "none" : "all 0.12s",
         boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
@@ -72,30 +72,12 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
       }}
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
-        {t.logo && <img src={t.logo} alt="" style={{ width:22, height:22, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>
-        <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:13 }}>{t.name}</span>
+        {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
+        {inPool && <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
+        <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
-        <span style={{ color:"#8694A8", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
+        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
       </div>
-      {hasMeta && (
-        <div style={{ display:"flex", alignItems:"center", marginTop:5, paddingTop:5, borderTop:"1px solid #1A3050" }}>
-          <div style={{ flex:1, display:"flex", flexDirection:"column", gap:1 }}>
-            <span style={{ color:"#4A5568", fontSize:8, textTransform:"uppercase", letterSpacing:"0.06em" }}>WAB</span>
-            <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:11, fontWeight:600 }}>{t.wab != null ? `#${t.wab}` : "—"}</span>
-          </div>
-          <div style={{ width:1, background:"#1A3050", alignSelf:"stretch", margin:"0 8px" }}/>
-          <div style={{ flex:1, display:"flex", flexDirection:"column", gap:1 }}>
-            <span style={{ color:"#4A5568", fontSize:8, textTransform:"uppercase", letterSpacing:"0.06em" }}>SOR</span>
-            <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:11, fontWeight:600 }}>{t.sor != null ? `#${t.sor}` : "—"}</span>
-          </div>
-          <div style={{ width:1, background:"#1A3050", alignSelf:"stretch", margin:"0 8px" }}/>
-          <div style={{ flex:1, display:"flex", flexDirection:"column", gap:1 }}>
-            <span style={{ color:"#4A5568", fontSize:8, textTransform:"uppercase", letterSpacing:"0.06em" }}>Q1</span>
-            <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:11, fontWeight:600 }}>{t.q1 || "—"}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 });
@@ -404,7 +386,7 @@ function App() {
                         {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                         )}
-                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
+                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
                         {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
                         )}
@@ -444,7 +426,7 @@ function App() {
                       {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
                         <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                       )}
-                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
+                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
                       {insertTarget?.zone === tier.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
                         <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
                       )}
@@ -604,7 +586,7 @@ function App() {
             transition:"background 0.1s",
           }}>
             {poolF.map(id => (
-              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown}/>
+              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool"/>
             ))}
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
