@@ -358,6 +358,7 @@ function App() {
       <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
           <div>
+          <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
               Bracketology Hub — The Round Robin
             </h1>
@@ -416,6 +417,8 @@ function App() {
           </div>
         </div>
 
+      </div>
+
         {/* Filter panel */}
         <div style={{ flex:"0 0 200px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflowY:"auto" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -454,32 +457,43 @@ function App() {
                       {isDefault ? "any" : `#${mn} – #${mx}`}
                     </span>
                   </div>
-                  <div style={{ position:"relative", height:24, marginTop:4 }}>
+                  <div style={{ position:"relative", height:24, marginTop:4 }}
+                    onMouseDown={e => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const pct = (e.clientX - rect.left) / rect.width;
+                      const val = Math.round(1 + pct * 399);
+                      const [cmn, cmx] = metricRanges[key];
+                      const distMin = Math.abs(val - cmn);
+                      const distMax = Math.abs(val - cmx);
+                      const moveMin = distMin <= distMax;
+                      const onMove = mv => {
+                        const p2 = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
+                        const v2 = Math.round(1 + p2 * 399);
+                        setMetricRanges(p => {
+                          const [a, b] = p[key];
+                          return {...p, [key]: moveMin ? [Math.min(v2, b-1), b] : [a, Math.max(v2, a+1)]};
+                        });
+                      };
+                      const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
+                      document.addEventListener("mousemove", onMove);
+                      document.addEventListener("mouseup", onUp);
+                      onMove(e);
+                    }}
+                    style={{ cursor:"ew-resize" }}
+                  >
                     {/* Track */}
-                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)" }}/>
-                    {/* Active range highlight */}
-                    <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)",
+                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
+                    {/* Active range */}
+                    <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none",
                       left: `${((mn-1)/399)*100}%`, right: `${((400-mx)/399)*100}%` }}/>
                     {/* Min thumb */}
                     <div style={{ position:"absolute", top:"50%", left:`${((mn-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:12, height:12, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1px #E8872B", pointerEvents:"none" }}/>
+                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
+                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
                     {/* Max thumb */}
                     <div style={{ position:"absolute", top:"50%", left:`${((mx-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:12, height:12, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1px #E8872B", pointerEvents:"none" }}/>
-                    {/* Min input — pointer events only on left half */}
-                    <input type="range" min="1" max="400" value={mn}
-                      onChange={e => setMetricRanges(p => ({...p, [key]: [Math.min(parseInt(e.target.value), p[key][1]-1), p[key][1]]}))}
-                      style={{ position:"absolute", width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0, padding:0,
-                        zIndex: mn > mx - 20 ? 5 : 3 }}
-                    />
-                    {/* Max input — always on top unless min is near max */}
-                    <input type="range" min="1" max="400" value={mx}
-                      onChange={e => setMetricRanges(p => ({...p, [key]: [p[key][0], Math.max(parseInt(e.target.value), p[key][0]+1)]}))}
-                      style={{ position:"absolute", width:"100%", height:"100%", opacity:0, cursor:"pointer", margin:0, padding:0,
-                        zIndex: mn > mx - 20 ? 3 : 5 }}
-                    />
+                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
+                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
                   </div>
                 </div>
               );
@@ -685,7 +699,7 @@ function App() {
           </div>
         </div>{/* end board */}
 
-      </div>
+      
     </div>
   );
 }
