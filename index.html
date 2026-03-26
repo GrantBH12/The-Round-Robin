@@ -212,8 +212,8 @@ function App() {
   }, [tm]);
 
   const autoSeed = useCallback(() => {
-    const poolIds = asgn[POOL];
-    const sortedByNet = [...poolIds].sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
+    // Always work from the full 128-team list regardless of current board state
+    const sortedByNet = [...teams.map(t => t.id)].sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
 
     // One guaranteed entry per conference (best NET)
     const seenConf = new Set();
@@ -267,7 +267,7 @@ function App() {
     const placedCount = fIdx;
     const msg = `Auto-seeded ${placedCount} teams · ${autoQSet.size} conf champs · ${atLargeIn.size} at-large${includeBubbleTiers ? ` · ${ffoCount} FFO · ${nfoCount} NFO` : ''}`;
     setToastMsg(msg);
-  }, [asgn, tm, includeBubbleTiers]);
+  }, [asgn, tm, teams, includeBubbleTiers]);
 
   useEffect(() => {
     if (!toastMsg) return;
@@ -470,10 +470,9 @@ function App() {
             )}
           </>}
           <button onClick={() => {
-            const all = []; for (const k in asgn) all.push(...asgn[k]);
-            all.sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
             const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-            n[COMPARE]=[]; n[POOL]=all; setAsgn(n); setSelected(null);
+            n[COMPARE]=[]; n[POOL]=teams.map(t => t.id).sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
+            setAsgn(n); setSelected(null);
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
           }} style={{ background:"transparent", border:"1px solid #1A3050", borderRadius:5, color:"#6B7A90", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
             Reset
