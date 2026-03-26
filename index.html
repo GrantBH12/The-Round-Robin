@@ -85,7 +85,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
 let REAL_TEAMS = [];
 let DATA_SCRAPED_AT = "";
 
-const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:i<10?4:6}));
+const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:(i===10||i===15)?6:4}));
 const EXTRA_TIERS = [
   {id:"ffo",label:"First Four Out",ac:"#8B4444"},
   {id:"nfo",label:"Next Four Out",ac:"#6B3A3A"},
@@ -176,6 +176,8 @@ function App() {
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
+  const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
 
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null});
   const ghostRef = useRef(null);
@@ -348,6 +350,91 @@ function App() {
   const compareIds = asgn[COMPARE] || [];
   const isSel = !!selected;
 
+  const autoSeed = useCallback(() => {
+    const placedNow = SEEDS.reduce((sum, seed) => sum + (asgn[seed.id]?.length || 0), 0)
+      + EXTRA_TIERS.reduce((sum, tier) => sum + (asgn[tier.id]?.length || 0), 0);
+    if (placedNow > 20 && !window.confirm("This will overwrite many current placements. Continue auto-seeding?")) return;
+
+    const poolIds = teams.map(t => t.id);
+    const poolOrder = new Map(poolIds.map((id, idx) => [id, idx]));
+    const netSort = (a, b) => {
+      const netDiff = (tm[a]?.net ?? 999) - (tm[b]?.net ?? 999);
+      if (netDiff !== 0) return netDiff;
+      return (poolOrder.get(a) ?? 0) - (poolOrder.get(b) ?? 0);
+    };
+    const rankedIds = [...poolIds].sort(netSort);
+
+    const autoBidTarget = 31;
+    const seededTarget = 68;
+    const autoQualifiers = [];
+    const seenConfs = new Set();
+    for (const tid of rankedIds) {
+      const conf = tm[tid]?.conf || "__UNKNOWN_CONF__";
+      if (!seenConfs.has(conf)) {
+        seenConfs.add(conf);
+        autoQualifiers.push(tid);
+      }
+    }
+
+    const aqIds = autoQualifiers.slice(0, autoBidTarget);
+    const aqSet = new Set(aqIds);
+    const atLargeTarget = Math.max(0, seededTarget - aqIds.length);
+    const atLargeIds = [];
+    for (const tid of rankedIds) {
+      if (atLargeIds.length >= atLargeTarget) break;
+      if (!aqSet.has(tid)) atLargeIds.push(tid);
+    }
+
+    const seededSet = new Set([...aqIds, ...atLargeIds]);
+    const seededIds = rankedIds.filter(id => seededSet.has(id));
+    let seededCursor = 0;
+    const takeSeedLine = count => {
+      const out = seededIds.slice(seededCursor, seededCursor + count);
+      seededCursor += out.length;
+      return out;
+    };
+    const remainingRanked = rankedIds.filter(id => !seededSet.has(id));
+    const takeRemaining = count => remainingRanked.splice(0, count);
+
+    setAsgn(prev => {
+      const next = {};
+      SEEDS.forEach(seed => {
+        const targetCount = (seed.num === 11 || seed.num === 16) ? 6 : 4;
+        const teamsForSeed = takeSeedLine(targetCount);
+        next[seed.id] = teamsForSeed;
+      });
+
+      if (includeBubbleTiers) {
+        next.ffo = takeRemaining(4);
+        next.nfo = takeRemaining(4);
+      } else {
+        next.ffo = (prev.ffo || []).filter(id => !seededSet.has(id));
+        next.nfo = (prev.nfo || []).filter(id => !seededSet.has(id));
+      }
+
+      const used = new Set();
+      SEEDS.forEach(seed => next[seed.id].forEach(id => used.add(id)));
+      next.ffo.forEach(id => used.add(id));
+      next.nfo.forEach(id => used.add(id));
+      next[COMPARE] = (prev[COMPARE] || []).filter(id => !used.has(id));
+      next[COMPARE].forEach(id => used.add(id));
+      next.ac = (prev.ac || []).filter(id => !used.has(id));
+      next.ac.forEach(id => used.add(id));
+      next[POOL] = rankedIds.filter(id => !used.has(id));
+      return next;
+    });
+    setSelected(null);
+
+    const actualSeeded = seededIds.length;
+    setToastMsg(`Placed ${actualSeeded} teams across seed lines.`);
+  }, [asgn, includeBubbleTiers, tm, teams]);
+
+  useEffect(() => {
+    if (!toastMsg) return;
+    const t = setTimeout(() => setToastMsg(""), 1800);
+    return () => clearTimeout(t);
+  }, [toastMsg]);
+
   return (
     <div style={{ minHeight:"100vh", background:"#081828", color:"#E2E8F0", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
 
@@ -372,6 +459,18 @@ function App() {
           </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+          <label style={{ display:"flex", alignItems:"center", gap:4, color:"#6B7A90", fontSize:10, cursor:"pointer", userSelect:"none" }}>
+            <input
+              type="checkbox"
+              checked={includeBubbleTiers}
+              onChange={e => setIncludeBubbleTiers(e.target.checked)}
+              style={{ accentColor:"#E8872B" }}
+            />
+            include bubble tiers
+          </label>
+          <button onClick={autoSeed} style={{ background:"#E8872B", border:"1px solid #E8872B", borderRadius:5, color:"#fff", fontSize:10, padding:"3px 10px", cursor:"pointer", fontWeight:700 }}>
+            Auto-seed
+          </button>
           {selected && <>
             <button onClick={() => setSelected(null)} style={{ background:"#E8872B22", border:"1px solid #E8872B", borderRadius:5, color:"#E8872B", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
               ✕ Deselect {tm[selected]?.name}
@@ -701,6 +800,16 @@ function App() {
           </div>
         </div>{/* end board */}
       </div> {/* This closes the "Main layout" flex div */}
+
+      {toastMsg && (
+        <div style={{
+          position:"fixed", bottom:12, right:14, zIndex:10000,
+          background:"#0D2240", border:"1px solid #1A3050", borderRadius:6,
+          color:"#E2E8F0", fontSize:11, padding:"6px 10px", boxShadow:"0 6px 18px rgba(0,0,0,0.35)",
+        }}>
+          {toastMsg}
+        </div>
+      )}
     </div>
   );
 }
