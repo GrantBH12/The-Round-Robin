@@ -161,7 +161,7 @@ function SectionToggle({ label, open, onToggle, color }) {
   );
 }
 
-const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange }) {
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange, selected }) {
   const [powerOpen, setPowerOpen] = useState(true);
   const [recordsOpen, setRecordsOpen] = useState(true);
   const [winsOpen, setWinsOpen] = useState(true);
@@ -180,7 +180,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
         <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
       )}
       <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }} onClick={e => e.stopPropagation()}
-        style={{ width:220, background:"#0D2240", border:"1px solid #2A4A7A", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab" }}>
+        style={{ width:220, background: selected===tid ? "rgba(232,135,43,0.15)" : "#0D2240", border: selected===tid ? "1.5px solid #E8872B" : "1px solid #2A4A7A", boxShadow: selected===tid ? "0 0 0 1px #E8872B" : "none", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab", transition:"all 0.12s" }}>
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10, paddingBottom:8, borderBottom:"1px solid #1A3050" }}>
           {t.logo && <img src={t.logo} alt="" style={{ width:34, height:34, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
@@ -472,11 +472,46 @@ function App() {
   }, [toastMsg]);
 
   useEffect(() => {
-    if (!selected) return;
-    const onKey = e => { if (e.key === "Escape") setSelected(null); };
+    const onKey = e => {
+      const tag = e.target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "Escape") { setSelected(null); return; }
+      if (!selected) {
+        // No selection: arrows start selecting from pool/compare
+        if (e.key === "ArrowDown" && poolF.length > 0) { e.preventDefault(); setSelected(poolF[0]); }
+        if (e.key === "ArrowRight" && compareIds.length > 0) { e.preventDefault(); setSelected(compareIds[0]); }
+        return;
+      }
+      const poolIdx = poolF.indexOf(selected);
+      const cmpIdx = compareIds.indexOf(selected);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (poolIdx >= 0) setSelected(poolF[Math.min(poolIdx + 1, poolF.length - 1)]);
+        else if (poolF.length > 0) setSelected(poolF[0]);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (poolIdx > 0) setSelected(poolF[poolIdx - 1]);
+        else if (poolIdx === 0) setSelected(null);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        if (cmpIdx >= 0) setSelected(compareIds[Math.min(cmpIdx + 1, compareIds.length - 1)]);
+        else if (compareIds.length > 0) setSelected(compareIds[0]);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        if (cmpIdx > 0) setSelected(compareIds[cmpIdx - 1]);
+        else if (cmpIdx === 0) setSelected(null);
+      } else if (e.key === "c" || e.key === "C") {
+        if (compareIds.length < 8 && !compareIds.includes(selected)) {
+          moveTeam(selected, COMPARE); setSelected(null);
+        }
+      } else if (e.key === "Backspace" || e.key === "Delete") {
+        const zone = Object.keys(asgn).find(k => asgn[k].includes(selected));
+        if (zone && zone !== POOL) { moveTeam(selected, POOL); setSelected(null); }
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected]);
+  }, [selected, poolF, compareIds, asgn, moveTeam]);
 
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
@@ -974,7 +1009,7 @@ function App() {
                     {compareIds.map(id => (
                       <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
                         insertTarget={insertTarget} sendFromCompare={sendFromCompare}
-                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange}/>
+                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange} selected={selected}/>
                     ))}
                   </div>
                 </>
