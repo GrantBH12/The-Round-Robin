@@ -94,7 +94,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
-        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>
+        {inPool && <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>}
       </div>
     </div>
   );
@@ -738,90 +738,11 @@ function App() {
           </div>
         </div>
 
-        {/* Filter panel */}
-        <div style={{ flex:"0 0 200px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflowY:"auto" }}>
-          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <span style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters</span>
-            {anyFilterActive && <button onClick={clearFilters} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0 }}>Clear all</button>}
-          </div>
-          {/* Conference pills */}
-          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
-            <div style={{ fontSize:9, color:"#4A5568", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em" }}>Conference</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
-              {allConfs.filter(c => c !== "All").map(c => {
-                const active = confFs.has(c);
-                return (
-                  <button key={c} onClick={() => setConfFs(p => { const n = new Set(p); n.has(c) ? n.delete(c) : n.add(c); return n; })} style={{
-                    background: active ? "#E8872B" : "#0D2240",
-                    border:`1px solid ${active ? "#E8872B" : "#1A3050"}`,
-                    borderRadius:4, color: active ? "#fff" : "#6B7A90",
-                    fontSize:10, padding:"3px 7px", cursor:"pointer", fontWeight: active ? 700 : 400,
-                    transition:"all 0.1s",
-                  }}>{c}</button>
-                );
-              })}
-            </div>
-          </div>
-          {/* Metric range sliders */}
-          <div style={{ padding:"8px 10px", display:"flex", flexDirection:"column", gap:10 }}>
-            <div style={{ fontSize:9, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Rankings</div>
-            {METRICS.map(({key, label}) => {
-              const [mn, mx] = metricRanges[key];
-              const isDefault = mn === 1 && mx === 400;
-              return (
-                <div key={key}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
-                    <span style={{ fontSize:9, color: isDefault ? "#4A5568" : "#E8872B", fontWeight: isDefault ? 400 : 600 }}>{label}</span>
-                    <span style={{ fontSize:9, color:"#8694A8", fontFamily:"monospace" }}>
-                      {isDefault ? "any" : `#${mn} – #${mx}`}
-                    </span>
-                  </div>
-                  <div 
-                    onMouseDown={e => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const pct = (e.clientX - rect.left) / rect.width;
-                      const val = Math.round(1 + pct * 399);
-                      const [cmn, cmx] = metricRanges[key];
-                      const distMin = Math.abs(val - cmn);
-                      const distMax = Math.abs(val - cmx);
-                      const moveMin = distMin <= distMax;
-                      const onMove = mv => {
-                        const p2 = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
-                        const v2 = Math.round(1 + p2 * 399);
-                        setMetricRanges(p => {
-                          const [a, b] = p[key];
-                          return {...p, [key]: moveMin ? [Math.min(v2, b-1), b] : [a, Math.max(v2, a+1)]};
-                        });
-                      };
-                      const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
-                      document.addEventListener("mousemove", onMove);
-                      document.addEventListener("mouseup", onUp);
-                      onMove(e);
-                    }}
-                    style={{ position:"relative", height:24, marginTop:4, cursor:"ew-resize" }}
-                  >
-                    {/* Track */}
-                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
-                    {/* Active range */}
-                    <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none",
-                      left: `${((mn-1)/399)*100}%`, right: `${((400-mx)/399)*100}%` }}/>
-                    {/* Min thumb */}
-                    <div style={{ position:"absolute", top:"50%", left:`${((mn-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
-                    {/* Max thumb */}
-                    <div style={{ position:"absolute", top:"50%", left:`${((mx-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        {/* Board: Compare on top, Filters + Seedlines below */}
+        <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
 
-        {/* Board */}
-        <div ref={boardScrollRef} style={{ flex:"1 1 62%", overflowY:"auto", padding:"10px 14px 10px 8px" }}>
+          {/* Compare zone — scrollable if tall */}
+          <div style={{ overflowY:"auto", padding:"10px 14px 6px 8px", borderBottom:"1px solid #1A3050" }}>
 
           {/* Collapsible Compare */}
           <div style={{ marginBottom:16 }}>
@@ -856,7 +777,7 @@ function App() {
               const bestNet = allNet.length ? Math.min(...allNet) : null;
               const bestSos = allSos.length ? Math.min(...allSos) : null;
               const bestSor = allSor.length ? Math.min(...allSor) : null;
-              const bestWab = allWab.length ? Math.max(...allWab) : null;
+              const bestWab = allWab.length ? Math.min(...allWab) : null;
               const bestKpi = allKpi.length ? Math.min(...allKpi) : null;
               const bestBpi = allBpi.length ? Math.min(...allBpi) : null;
               const bestPom = allPom.length ? Math.min(...allPom) : null;
@@ -893,7 +814,7 @@ function App() {
                             </div>
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
                             <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
-                            <Cell val={t.wab!=null?`#${t.wab}`:"—"} pct={barPct(t.wab,allWab,false)} best={t.wab===bestWab}/>
+                            <Cell val={t.wab!=null?`#${t.wab}`:"—"} pct={barPct(t.wab,allWab,true)} best={t.wab===bestWab}/>
                             <Cell val={t.kpi!=null?`#${t.kpi}`:"—"} pct={barPct(t.kpi,allKpi,true)} best={t.kpi===bestKpi}/>
                             <Cell val={t.bpi!=null?`#${t.bpi}`:"—"} pct={barPct(t.bpi,allBpi,true)} best={t.bpi===bestBpi}/>
                             <Cell val={t.pom!=null?`#${t.pom}`:"—"} pct={barPct(t.pom,allPom,true)} best={t.pom===bestPom}/>
@@ -931,7 +852,92 @@ function App() {
             })()}
           </div>
 
-          <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,#1A3050)", margin:"12px 0 8px", borderRadius:1 }}/>
+          </div>{/* end compare wrapper */}
+
+          {/* Bottom row: Filters + Seedlines */}
+          <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+
+            {/* Filters sub-column */}
+            <div style={{ flex:"0 0 240px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflowY:"auto" }}>
+              <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters</span>
+                {anyFilterActive && <button onClick={clearFilters} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0 }}>Clear all</button>}
+              </div>
+              {/* Conference pills */}
+              <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
+                <div style={{ fontSize:9, color:"#4A5568", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em" }}>Conference</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
+                  {allConfs.filter(c => c !== "All").map(c => {
+                    const active = confFs.has(c);
+                    return (
+                      <button key={c} onClick={() => setConfFs(p => { const n = new Set(p); n.has(c) ? n.delete(c) : n.add(c); return n; })} style={{
+                        background: active ? "#E8872B" : "#0D2240",
+                        border:`1px solid ${active ? "#E8872B" : "#1A3050"}`,
+                        borderRadius:4, color: active ? "#fff" : "#6B7A90",
+                        fontSize:10, padding:"3px 7px", cursor:"pointer", fontWeight: active ? 700 : 400,
+                        transition:"all 0.1s",
+                      }}>{c}</button>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Metric range sliders */}
+              <div style={{ padding:"8px 10px", display:"flex", flexDirection:"column", gap:10 }}>
+                <div style={{ fontSize:9, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Rankings</div>
+                {METRICS.map(({key, label}) => {
+                  const [mn, mx] = metricRanges[key];
+                  const isDefault = mn === 1 && mx === 400;
+                  return (
+                    <div key={key}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
+                        <span style={{ fontSize:9, color: isDefault ? "#4A5568" : "#E8872B", fontWeight: isDefault ? 400 : 600 }}>{label}</span>
+                        <span style={{ fontSize:9, color:"#8694A8", fontFamily:"monospace" }}>
+                          {isDefault ? "any" : `#${mn} – #${mx}`}
+                        </span>
+                      </div>
+                      <div
+                        onMouseDown={e => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const pct = (e.clientX - rect.left) / rect.width;
+                          const val = Math.round(1 + pct * 399);
+                          const [cmn, cmx] = metricRanges[key];
+                          const distMin = Math.abs(val - cmn);
+                          const distMax = Math.abs(val - cmx);
+                          const moveMin = distMin <= distMax;
+                          const onMove = mv => {
+                            const p2 = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
+                            const v2 = Math.round(1 + p2 * 399);
+                            setMetricRanges(p => {
+                              const [a, b] = p[key];
+                              return {...p, [key]: moveMin ? [Math.min(v2, b-1), b] : [a, Math.max(v2, a+1)]};
+                            });
+                          };
+                          const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
+                          document.addEventListener("mousemove", onMove);
+                          document.addEventListener("mouseup", onUp);
+                          onMove(e);
+                        }}
+                        style={{ position:"relative", height:24, marginTop:4, cursor:"ew-resize" }}
+                      >
+                        <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
+                        <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none",
+                          left: `${((mn-1)/399)*100}%`, right: `${((400-mx)/399)*100}%` }}/>
+                        <div style={{ position:"absolute", top:"50%", left:`${((mn-1)/399)*100}%`, transform:"translate(-50%,-50%)",
+                          width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
+                          boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
+                        <div style={{ position:"absolute", top:"50%", left:`${((mx-1)/399)*100}%`, transform:"translate(-50%,-50%)",
+                          width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
+                          boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>{/* end filters sub-column */}
+
+            {/* Seedlines sub-column */}
+            <div ref={boardScrollRef} style={{ flex:1, overflowY:"auto", padding:"10px 14px 10px 8px" }}>
+          <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,#1A3050)", margin:"0 0 8px", borderRadius:1 }}/>
           <div style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Bracket Seedlines</div>
 
           {/* Seed lines 1-16 */}
@@ -1008,6 +1014,8 @@ function App() {
               </div>
             );
           })}
+            </div>{/* end seedlines sub-column */}
+          </div>{/* end bottom row */}
         </div>{/* end board */}
       </div>{/* end main layout */}
     </div>
