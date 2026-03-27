@@ -532,6 +532,7 @@ function App() {
         {/* Pool sidebar */}
         <div style={{ flex:"0 0 260px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#0A1E35" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Team Pool</div>
             <div style={{ position:"relative" }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, conf, or NET..."
                 style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#0D2240", border:"1px solid #1A3050", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
@@ -659,80 +660,6 @@ function App() {
         {/* Board */}
         <div ref={boardScrollRef} style={{ flex:"1 1 62%", overflowY:"auto", padding:"10px 14px 10px 8px" }}>
 
-          {/* Seed lines 1-16 */}
-          {SEEDS.map((seed, si) => {
-            const ids = asgn[seed.id] || [];
-            const color = SEED_COLORS[si] || "#555";
-            return (
-              <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
-                <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
-                  <div style={{ width:30, minWidth:30, borderRadius:5, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", alignSelf:"stretch", minHeight:40 }}>{seed.num}</div>
-                  <div data-zone={seed.id} style={{
-                    flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
-                    borderRadius:6, padding:"2px 4px",
-                    border:`1px dashed ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
-                    background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
-                    transition:"background 0.1s, border-color 0.1s",
-                  }}>
-                    {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
-                    {ids.map((id, idx) => (
-                      <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
-                        {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
-                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
-                        )}
-                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
-                        {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
-                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
-                        )}
-                      </div>
-                    ))}
-                    {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
-                      <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
-                    ))}
-                  </div>
-                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
-                </div>
-              </div>
-            );
-          })}
-
-          <div style={{ height:1, background:"#1A3050", margin:"10px 0" }} />
-
-          {/* Extra tiers */}
-          {EXTRA_TIERS.map(tier => {
-            const ids = asgn[tier.id] || [];
-            return (
-              <div key={tier.id} style={{ marginBottom:6 }} onClick={() => handleZoneClick(tier.id)}>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
-                  <div style={{ width:4, height:14, borderRadius:2, background:tier.ac }}/>
-                  <span style={{ fontSize:12, fontWeight:700, color:tier.ac }}>{tier.label}</span>
-                  <span style={{ fontSize:9, color:"#4A5568" }}>({ids.length})</span>
-                </div>
-                <div data-zone={tier.id} style={{
-                  minHeight:28, borderRadius:6, padding:"2px 4px",
-                  border:`1px dashed ${dropZone===tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
-                  background: dropZone===tier.id ? "rgba(232,135,43,0.06)" : "transparent",
-                  transition:"background 0.1s, border-color 0.1s",
-                }}>
-                  {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
-                  {ids.map((id, idx) => (
-                    <div key={id}>
-                      {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
-                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
-                      )}
-                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
-                      {insertTarget?.zone === tier.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
-                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-
-          <div style={{ height:1, background:"#1A3050", margin:"10px 0" }} />
-
           {/* Collapsible Compare */}
           <div style={{ marginBottom:16 }}>
             <div onClick={() => setCompareOpen(o => !o)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:compareOpen?8:0, userSelect:"none" }}>
@@ -852,6 +779,81 @@ function App() {
               </div>
             )}
           </div>
+
+          <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,#1A3050)", margin:"12px 0 8px", borderRadius:1 }}/>
+          <div style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Bracket Seedlines</div>
+
+          {/* Seed lines 1-16 */}
+          {SEEDS.map((seed, si) => {
+            const ids = asgn[seed.id] || [];
+            const color = SEED_COLORS[si] || "#555";
+            return (
+              <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
+                <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
+                  <div style={{ width:30, minWidth:30, borderRadius:5, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", alignSelf:"stretch", minHeight:40 }}>{seed.num}</div>
+                  <div data-zone={seed.id} style={{
+                    flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
+                    borderRadius:6, padding:"2px 4px",
+                    border:`1px dashed ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
+                    background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                    transition:"background 0.1s, border-color 0.1s",
+                  }}>
+                    {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
+                    {ids.map((id, idx) => (
+                      <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
+                        {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
+                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
+                        )}
+                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                        {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
+                          <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
+                        )}
+                      </div>
+                    ))}
+                    {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
+                      <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
+                    ))}
+                  </div>
+                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
+                </div>
+              </div>
+            );
+          })}
+
+          <div style={{ height:1, background:"#1A3050", margin:"10px 0" }} />
+
+          {/* Extra tiers */}
+          {EXTRA_TIERS.map(tier => {
+            const ids = asgn[tier.id] || [];
+            return (
+              <div key={tier.id} style={{ marginBottom:6 }} onClick={() => handleZoneClick(tier.id)}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
+                  <div style={{ width:4, height:14, borderRadius:2, background:tier.ac }}/>
+                  <span style={{ fontSize:12, fontWeight:700, color:tier.ac }}>{tier.label}</span>
+                  <span style={{ fontSize:9, color:"#4A5568" }}>({ids.length})</span>
+                </div>
+                <div data-zone={tier.id} style={{
+                  minHeight:28, borderRadius:6, padding:"2px 4px",
+                  border:`1px dashed ${dropZone===tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
+                  background: dropZone===tier.id ? "rgba(232,135,43,0.06)" : "transparent",
+                  transition:"background 0.1s, border-color 0.1s",
+                }}>
+                  {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
+                  {ids.map((id, idx) => (
+                    <div key={id}>
+                      {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
+                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
+                      )}
+                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                      {insertTarget?.zone === tier.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
+                        <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>{/* end board */}
       </div>{/* end main layout */}
     </div>
