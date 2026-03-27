@@ -161,11 +161,14 @@ function SectionToggle({ label, open, onToggle, color }) {
   );
 }
 
-const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey }) {
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange }) {
   const [powerOpen, setPowerOpen] = useState(true);
   const [recordsOpen, setRecordsOpen] = useState(true);
   const [winsOpen, setWinsOpen] = useState(true);
   useEffect(() => { if (collapseKey > 0) { setPowerOpen(false); setRecordsOpen(false); setWinsOpen(false); } }, [collapseKey]);
+  useEffect(() => { if (expandKey > 0) { setPowerOpen(true); setRecordsOpen(true); setWinsOpen(true); } }, [expandKey]);
+  const anyOpen = powerOpen || recordsOpen || winsOpen;
+  useEffect(() => { onOpenChange(tid, anyOpen); }, [tid, anyOpen, onOpenChange]);
   const t = tm[tid];
   if (!t) return null;
   const idx = compareIds.indexOf(tid);
@@ -364,6 +367,11 @@ function App() {
   const [compareOpen, setCompareOpen] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [collapseKey, setCollapseKey] = useState(0);
+  const [expandKey, setExpandKey] = useState(0);
+  const [cardOpenMap, setCardOpenMap] = useState({});
+  const handleCardOpenChange = useCallback((tid, anyOpen) => {
+    setCardOpenMap(p => p[tid] === anyOpen ? p : {...p, [tid]: anyOpen});
+  }, []);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
@@ -843,12 +851,26 @@ function App() {
                       Fill With Top Teams
                     </button>
                   )}
-                  {compareIds.length > 0 && (
-                    <button onClick={() => setCollapseKey(k => k+1)}
-                      style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
-                      Collapse All Team Cards
-                    </button>
-                  )}
+                  {compareIds.length > 0 && (() => {
+                    const allCollapsed = compareIds.every(id => cardOpenMap[id] === false);
+                    const allExpanded  = compareIds.every(id => cardOpenMap[id] !== false);
+                    return (
+                      <>
+                        {!allCollapsed && (
+                          <button onClick={() => setCollapseKey(k => k+1)}
+                            style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                            Collapse All Team Cards
+                          </button>
+                        )}
+                        {!allExpanded && (
+                          <button onClick={() => setExpandKey(k => k+1)}
+                            style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                            Expand All Team Cards
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
               {!compareOpen && compareIds.length > 0 && (
@@ -947,7 +969,7 @@ function App() {
                     {compareIds.map(id => (
                       <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
                         insertTarget={insertTarget} sendFromCompare={sendFromCompare}
-                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey}/>
+                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange}/>
                     ))}
                   </div>
                 </>
