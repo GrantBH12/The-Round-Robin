@@ -51,8 +51,25 @@ function St({ l, v }) {
   );
 }
 
+const parseWins = s => { const w = parseInt((s||'0-0').split('-')[0]); return isNaN(w) ? 0 : w; };
+const parseWinPct = s => { const [w,l]=(s||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?(w||0)/tot:0; };
+function getSortDisplay(t, field) {
+  if (!t) return '';
+  switch(field) {
+    case 'net': return t.record || '';
+    case 'wab': return t.wab != null ? String(t.wab) : '';
+    case 'winPct': { const [w,l]=(t.record||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?`${Math.round((w||0)/tot*100)}%`:''; }
+    case 'q1wins': return t.q1 || '';
+    case 'q2wins': return t.q2 || '';
+    case 'q3wins': return t.q3 || '';
+    case 'q4wins': return t.q4 || '';
+    case 'name': case 'conf': return t.record || '';
+    default: { const val = t[field]; return val != null ? `#${val}` : ''; }
+  }
+}
+
 // TeamCard defined OUTSIDE App — prevents React from remounting scroll containers
-const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone }) {
+const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone, poolSort }) {
   const t = tm[tid];
   if (!t) return null;
   const isSel = selected === tid;
@@ -74,10 +91,10 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        {inPool && <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
+        {inPool && <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
-        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
+        <span style={{ color:"#6B7A90", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>
       </div>
     </div>
   );
@@ -392,9 +409,6 @@ function App() {
     document.addEventListener("mouseup", onMouseUp);
   }, [asgn, moveTeam, tm]);
 
-  const parseWins = s => { const w = parseInt((s||'0-0').split('-')[0]); return isNaN(w) ? 0 : w; };
-  const parseWinPct = s => { const [w,l] = (s||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?(w||0)/tot:0; };
-
   const POOL_SORT_OPTS = [
     {field:'net',label:'NET',defDir:'asc'},{field:'kpi',label:'KPI',defDir:'asc'},
     {field:'sor',label:'SOR',defDir:'asc'},{field:'bpi',label:'BPI',defDir:'asc'},
@@ -554,7 +568,7 @@ function App() {
             transition:"background 0.1s",
           }}>
             {poolF.map(id => (
-              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool"/>
+              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool" poolSort={poolSort}/>
             ))}
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
