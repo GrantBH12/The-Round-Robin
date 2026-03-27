@@ -17,6 +17,7 @@ import re
 import sys
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,6 +31,13 @@ HEADERS = {
 
 BASE = "https://www.warrennolan.com"
 LOGO_BASE = "https://www.warrennolan.com/images/team/new/80x80"
+
+
+def safe_int(raw: str, default: int) -> int:
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return default
 
 
 def fetch_html(url: str) -> str:
@@ -71,8 +79,7 @@ def scrape_nitty_gritty(html: str) -> list[dict]:
             break
 
     if not data_table:
-        print("ERROR: Could not find the Nitty Gritty data table.", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("Could not find the Nitty Gritty data table.")
 
     teams = []
     for row in data_table.find_all("tr"):
@@ -116,11 +123,9 @@ def scrape_nitty_gritty(html: str) -> list[dict]:
                 break
 
         record = cells[3].get_text(strip=True)
-        try: sos = int(cells[4].get_text(strip=True))
-        except: sos = 999
+        sos = safe_int(cells[4].get_text(strip=True), 999)
         nc_record = cells[5].get_text(strip=True)
-        try: nc_sos = int(cells[6].get_text(strip=True))
-        except: nc_sos = 999
+        nc_sos = safe_int(cells[6].get_text(strip=True), 999)
 
         home = cells[7].get_text(strip=True)
         road = cells[8].get_text(strip=True)
@@ -130,10 +135,8 @@ def scrape_nitty_gritty(html: str) -> list[dict]:
         q3 = cells[12].get_text(strip=True)
         q4 = cells[13].get_text(strip=True)
 
-        try: avg_w = int(cells[14].get_text(strip=True))
-        except: avg_w = 0
-        try: avg_l = int(cells[15].get_text(strip=True))
-        except: avg_l = 0
+        avg_w = safe_int(cells[14].get_text(strip=True), 0)
+        avg_l = safe_int(cells[15].get_text(strip=True), 0)
 
         # Build logo URL from slug
         logo = f"{LOGO_BASE}/{slug}.png" if slug else ""
@@ -269,13 +272,25 @@ def main():
     parser.add_argument("--skip-sheets", action="store_true", help="Skip team sheet scraping")
     parser.add_argument("--delay", type=float, default=0.5, help="Delay between sheet requests (seconds)")
     args = parser.parse_args()
+    if args.top is not None and args.top <= 0:
+        parser.error("--top must be a positive integer")
+    if args.delay < 0:
+        parser.error("--delay must be non-negative")
 
     # Step 1: Scrape Nitty Gritty
     url = f"{BASE}/basketball/{args.year}/net-nitty"
     print(f"Step 1: Fetching Nitty Gritty from {url} ...")
-    html = fetch_html(url)
+    try:
+        html = fetch_html(url)
+    except requests.RequestException as e:
+        print(f"ERROR: Failed to fetch Nitty Gritty page: {e}", file=sys.stderr)
+        sys.exit(1)
     print("  Parsing table ...")
-    teams = scrape_nitty_gritty(html)
+    try:
+        teams = scrape_nitty_gritty(html)
+    except ValueError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
 
     if not teams:
         print("ERROR: No teams parsed.", file=sys.stderr)
@@ -340,10 +355,12 @@ def main():
         "teams": teams,
     }
 
-    with open(args.output, "w") as f:
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
 
-    print(f"\nWrote {len(teams)} teams to {args.output}")
+    print(f"\nWrote {len(teams)} teams to {output_path}")
 
 
 if __name__ == "__main__":
