@@ -854,20 +854,20 @@ function App() {
                   {compareIds.length > 0 && (() => {
                     const allCollapsed = compareIds.every(id => cardOpenMap[id] === false);
                     const allExpanded  = compareIds.every(id => cardOpenMap[id] !== false);
+                    const btnStyle = (active) => ({
+                      background: active ? "#4A6FA5" : "none",
+                      border: active ? "none" : "1px solid #2A3A50",
+                      borderRadius:4, color: active ? "#fff" : "#4A5568",
+                      fontSize:9, padding:"2px 8px", cursor: active ? "pointer" : "default",
+                    });
                     return (
                       <>
-                        {!allCollapsed && (
-                          <button onClick={() => setCollapseKey(k => k+1)}
-                            style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
-                            Collapse All Team Cards
-                          </button>
-                        )}
-                        {!allExpanded && (
-                          <button onClick={() => setExpandKey(k => k+1)}
-                            style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
-                            Expand All Team Cards
-                          </button>
-                        )}
+                        <button onClick={() => !allCollapsed && setCollapseKey(k => k+1)} style={btnStyle(!allCollapsed)}>
+                          Collapse All Team Cards
+                        </button>
+                        <button onClick={() => !allExpanded && setExpandKey(k => k+1)} style={btnStyle(!allExpanded)}>
+                          Expand All Team Cards
+                        </button>
                       </>
                     );
                   })()}
