@@ -941,7 +941,7 @@ function App() {
             const emptyCount = seed.max - ids.length;
             const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : color+"66"}`;
             // 6-slot lines: 4 per row so 5th/6th wrap; 4-slot lines: fill single row
-            const slotFlex = seed.max === 6 ? "0 0 calc(25% - 2px)" : "1";
+            const slotFlex = seed.max === 6 && ids.length > 4 ? "0 0 calc(25% - 2px)" : "1";
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
                 <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
