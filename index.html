@@ -168,7 +168,8 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
   useEffect(() => { if (collapseKey > 0) { setPowerOpen(false); setRecordsOpen(false); setWinsOpen(false); } }, [collapseKey]);
   useEffect(() => { if (expandKey > 0) { setPowerOpen(true); setRecordsOpen(true); setWinsOpen(true); } }, [expandKey]);
   const anyOpen = powerOpen || recordsOpen || winsOpen;
-  useEffect(() => { onOpenChange(tid, anyOpen); }, [tid, anyOpen, onOpenChange]);
+  const allOpen = powerOpen && recordsOpen && winsOpen;
+  useEffect(() => { onOpenChange(tid, anyOpen, allOpen); }, [tid, anyOpen, allOpen, onOpenChange]);
   const t = tm[tid];
   if (!t) return null;
   const idx = compareIds.indexOf(tid);
@@ -369,8 +370,12 @@ function App() {
   const [collapseKey, setCollapseKey] = useState(0);
   const [expandKey, setExpandKey] = useState(0);
   const [cardOpenMap, setCardOpenMap] = useState({});
-  const handleCardOpenChange = useCallback((tid, anyOpen) => {
-    setCardOpenMap(p => p[tid] === anyOpen ? p : {...p, [tid]: anyOpen});
+  const handleCardOpenChange = useCallback((tid, anyOpen, allOpen) => {
+    setCardOpenMap(p => {
+      const prev = p[tid];
+      if (prev && prev.any === anyOpen && prev.all === allOpen) return p;
+      return {...p, [tid]: {any: anyOpen, all: allOpen}};
+    });
   }, []);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
@@ -852,8 +857,8 @@ function App() {
                     </button>
                   )}
                   {compareIds.length > 0 && (() => {
-                    const allCollapsed = compareIds.every(id => cardOpenMap[id] === false);
-                    const allExpanded  = compareIds.every(id => cardOpenMap[id] !== false);
+                    const allCollapsed = compareIds.every(id => cardOpenMap[id]?.any === false);
+                    const allExpanded  = compareIds.every(id => cardOpenMap[id]?.all === true);
                     const btnStyle = (active) => ({
                       background: active ? "#4A6FA5" : "none",
                       border: active ? "none" : "1px solid #2A3A50",
