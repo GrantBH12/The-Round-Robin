@@ -481,10 +481,11 @@ function App() {
   const fillCompare = useCallback(() => {
     const slotsLeft = 8 - compareIds.length;
     if (slotsLeft <= 0) return;
-    const eligible = poolF.filter(id => !compareIds.includes(id));
+    const poolTeams = new Set(asgn[POOL] || []);
+    const eligible = poolF.filter(id => poolTeams.has(id) && !compareIds.includes(id));
     const toAdd = eligible.slice(0, slotsLeft);
     toAdd.forEach(id => moveTeam(id, COMPARE));
-  }, [compareIds, poolF, moveTeam]);
+  }, [compareIds, poolF, asgn, moveTeam]);
 
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
