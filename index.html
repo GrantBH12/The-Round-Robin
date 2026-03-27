@@ -889,7 +889,7 @@ function App() {
                             </div>
                             <div style={{ flex:2, minWidth:110, flexShrink:0, padding:"5px 8px", display:"flex", alignItems:"center", gap:3 }}>
                               {t.logo && <img src={t.logo} alt="" style={{ width:16, height:16, objectFit:"contain", flexShrink:0 }} onError={e=>e.target.style.display="none"}/>}
-                              <span style={{ fontSize:10, color:"#E2E8F0", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1 }}>{t.name}</span>
+                              <span style={{ fontSize:10, color:"#E2E8F0", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.name}</span>
                               <span style={{ fontSize:9, fontFamily:"monospace", color:"#6B7A90", flexShrink:0 }}>{t.record}</span>
                             </div>
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
