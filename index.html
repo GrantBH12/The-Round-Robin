@@ -95,6 +95,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
         {inPool && <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>}
+        {!inPool && t.record && <span style={{ color:"#E8872B", fontSize:10, fontFamily:"monospace", fontWeight:600 }}>{t.record}</span>}
       </div>
     </div>
   );
@@ -229,17 +230,23 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
         {winsOpen && (
           <div style={{ padding:"4px 2px 6px" }}>
             <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase" }}>Top Wins</div>
-            {kw.length>0 ? kw.slice(0,5).map((w,i) => (
-              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-              </div>
-            )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>—</div>}
+            {Array.from({length:5}).map((_,i) => {
+              const w = kw[i];
+              return w ? (
+                <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                  <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+                </div>
+              ) : <div key={i} style={{ fontSize:10, color:"#1A3050", padding:"1px 0" }}>—</div>;
+            })}
             <div style={{ fontSize:9, fontWeight:700, color:"#F87171", margin:"5px 0 3px", textTransform:"uppercase" }}>Losses</div>
-            {kl.length>0 ? kl.slice(0,5).map((l,i) => (
-              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-              </div>
-            )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>None</div>}
+            {Array.from({length:5}).map((_,i) => {
+              const l = kl[i];
+              return l ? (
+                <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                  <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+                </div>
+              ) : <div key={i} style={{ fontSize:10, color:"#1A3050", padding:"1px 0" }}>—</div>;
+            })}
           </div>
         )}
         <div style={{ flex:1, minHeight:8 }}/>
