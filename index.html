@@ -538,6 +538,15 @@ function App() {
       } else if (e.key === "Backspace" || e.key === "Delete") {
         const zone = Object.keys(asgn).find(k => asgn[k].includes(selected));
         if (zone && zone !== POOL) { moveTeam(selected, POOL); setSelected(null); }
+      } else {
+        const KEY_ZONE = {
+          "1":"seed1","2":"seed2","3":"seed3","4":"seed4","5":"seed5",
+          "6":"seed6","7":"seed7","8":"seed8","9":"seed9","0":"seed10",
+          "-":"seed11","=":"seed12","[":"seed13","]":"seed14","\\":"seed15","`":"seed16",
+          "f":"ffo","F":"ffo","n":"nfo","N":"nfo","a":"ac","A":"ac",
+        };
+        const target = KEY_ZONE[e.key];
+        if (target) { moveTeam(selected, target); setSelected(null); }
       }
     };
     window.addEventListener("keydown", onKey);
@@ -841,7 +850,7 @@ function App() {
         <div style={{ width: filtersOpen ? 200 : 28, flexShrink:0, borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", background:"var(--bg-page)", overflow:"hidden", transition:"width 0.18s ease" }}>
           <div onClick={() => setFiltersOpen(o => !o)} style={{ padding:"10px 0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", borderBottom:"1px solid var(--border)", flexShrink:0, gap:4 }}>
             <span style={{ fontSize:11, color: anyFilterActive ? "#E8872B" : "var(--text-muted)" }}>{filtersOpen ? "◀" : "▶"}</span>
-            {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Collapse</span>}
+            {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters · Collapse</span>}
             {filtersOpen && anyFilterActive && <button onClick={e => { e.stopPropagation(); clearFilters(); }} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0, marginLeft:4 }}>Clear</button>}
           </div>
           {filtersOpen && (
@@ -1007,7 +1016,7 @@ function App() {
                             </div>
                             {[t.q1,t.q2,t.q3,t.q4].map((v,i) => (
                               <div key={i} style={{ flex:1, padding:"5px 6px", minWidth:44 }}>
-                                <span style={{ fontSize:9, fontFamily:"monospace", color:"var(--text-secondary)" }}>{v||"—"}</span>
+                                <span style={{ fontSize:11, fontFamily:"monospace", color:"var(--text-secondary)" }}>{v||"—"}</span>
                               </div>
                             ))}
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
