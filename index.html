@@ -362,7 +362,7 @@ function App() {
   const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [collapseKey, setCollapseKey] = useState(0);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
@@ -751,7 +751,7 @@ function App() {
         <div style={{ width: filtersOpen ? 200 : 28, flexShrink:0, borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflow:"hidden", transition:"width 0.18s ease" }}>
           <div onClick={() => setFiltersOpen(o => !o)} style={{ padding:"10px 0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", borderBottom:"1px solid #1A3050", flexShrink:0, gap:4 }}>
             <span style={{ fontSize:11, color: anyFilterActive ? "#E8872B" : "#6B7A90" }}>{filtersOpen ? "◀" : "▶"}</span>
-            {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters</span>}
+            {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em" }}>Collapse</span>}
             {filtersOpen && anyFilterActive && <button onClick={e => { e.stopPropagation(); clearFilters(); }} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0, marginLeft:4 }}>Clear</button>}
           </div>
           {filtersOpen && (
@@ -829,7 +829,7 @@ function App() {
               {compareOpen && compareIds.length > 0 && (
                 <button onClick={e => { e.stopPropagation(); setCollapseKey(k => k+1); }}
                   style={{ marginLeft:"auto", background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
-                  Collapse All
+                  Collapse All Team Cards
                 </button>
               )}
               {!compareOpen && compareIds.length > 0 && (
@@ -866,7 +866,9 @@ function App() {
                       <div style={{ display:"flex", borderBottom:"1px solid #1A3050" }}>
                         <div style={{ width:44, flexShrink:0, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"right" }}>NET</div>
                         <div style={{ flex:2, minWidth:110, flexShrink:0, padding:"5px 8px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Team</div>
-                        <div style={{ flex:"0 0 110px", flexShrink:0, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em" }}>Quadrants</div>
+                        {["Q1","Q2","Q3","Q4"].map(q => (
+                          <div key={q} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", minWidth:44 }}>{q}</div>
+                        ))}
                         {["SOS","SOR","WAB","KPI","BPI","KenPom","T-Rank"].map(col => (
                           <div key={col} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"left", minWidth:50 }}>{col}</div>
                         ))}
@@ -889,16 +891,11 @@ function App() {
                               <span style={{ fontSize:10, color:"#E2E8F0", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.name}</span>
                               <span style={{ fontSize:9, fontFamily:"monospace", color:"#6B7A90", flexShrink:0 }}>{t.record}</span>
                             </div>
-                            <div style={{ flex:"0 0 110px", flexShrink:0, padding:"3px 6px" }}>
-                              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1px 4px" }}>
-                                {[["Q1",t.q1],["Q2",t.q2],["Q3",t.q3],["Q4",t.q4]].map(([l,v]) => (
-                                  <div key={l} style={{ display:"flex", gap:2, alignItems:"baseline" }}>
-                                    <span style={{ fontSize:8, color:"#4A5568", fontWeight:700 }}>{l}</span>
-                                    <span style={{ fontSize:9, fontFamily:"monospace", color:"#8694A8" }}>{v||"—"}</span>
-                                  </div>
-                                ))}
+                            {[t.q1,t.q2,t.q3,t.q4].map((v,i) => (
+                              <div key={i} style={{ flex:1, padding:"5px 6px", minWidth:44 }}>
+                                <span style={{ fontSize:9, fontFamily:"monospace", color:"#8694A8" }}>{v||"—"}</span>
                               </div>
-                            </div>
+                            ))}
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
                             <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
                             <Cell val={t.wab!=null?`#${t.wab}`:"—"} pct={barPct(t.wab,allWab,true)} best={t.wab===bestWab}/>
