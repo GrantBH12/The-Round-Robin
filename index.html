@@ -56,9 +56,9 @@ const parseWinPct = s => { const [w,l]=(s||'0-0').split('-').map(Number); const 
 function getSortDisplay(t, field) {
   if (!t) return '';
   switch(field) {
-    case 'net': return t.record || '';
+    case 'net': return t.net != null ? String(t.net) : '';
     case 'wab': return t.wab != null ? String(t.wab) : '';
-    case 'winPct': { const [w,l]=(t.record||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?`${Math.round((w||0)/tot*100)}%`:''; }
+    case 'winPct': return t.record || '';
     case 'q1wins': return t.q1 || '';
     case 'q2wins': return t.q2 || '';
     case 'q3wins': return t.q3 || '';
@@ -91,7 +91,6 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        {inPool && <span style={{ color: poolSort?.field==='net' ? "#E8872B" : "#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
         <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>
@@ -415,7 +414,7 @@ function App() {
     {field:'pom',label:'KenPom',defDir:'asc'},{field:'tRank',label:'T-Rank',defDir:'asc'},
     {field:'wab',label:'WAB',defDir:'desc'},{field:'sos',label:'SOS',defDir:'asc'},
     {field:'ncSos',label:'ncSOS',defDir:'asc'},{field:'name',label:'Name',defDir:'asc'},
-    {field:'conf',label:'Conf',defDir:'asc'},{field:'winPct',label:'Win%',defDir:'desc'},
+    {field:'conf',label:'Conf',defDir:'asc'},{field:'winPct',label:'Record',defDir:'desc'},
     {field:'q1wins',label:'Q1W',defDir:'desc'},{field:'q2wins',label:'Q2W',defDir:'desc'},
     {field:'q3wins',label:'Q3W',defDir:'desc'},{field:'q4wins',label:'Q4W',defDir:'desc'},
   ];
