@@ -530,14 +530,36 @@ function App() {
         e.preventDefault();
         if (poolIdx > 0) setSelected(poolF[poolIdx - 1]);
         else if (poolIdx === 0) setSelected(null);
-      } else if (e.key === "ArrowRight") {
+      } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         e.preventDefault();
-        if (cmpIdx >= 0) setSelected(compareIds[Math.min(cmpIdx + 1, compareIds.length - 1)]);
-        else if (compareIds.length > 0) setSelected(compareIds[0]);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (cmpIdx > 0) setSelected(compareIds[cmpIdx - 1]);
-        else if (cmpIdx === 0) setSelected(null);
+        const isRight = e.key === "ArrowRight";
+        const seedZone = SEEDS.find(s => (asgn[s.id]||[]).includes(selected));
+        if (seedZone) {
+          const zoneList = asgn[seedZone.id];
+          const idx = zoneList.indexOf(selected);
+          if (e.shiftKey) {
+            // Shift+arrow: reorder within seed line
+            if (isRight && idx < zoneList.length - 1) {
+              const beforeTid = idx + 2 < zoneList.length ? zoneList[idx + 2] : null;
+              moveTeam(selected, seedZone.id, beforeTid);
+            } else if (!isRight && idx > 0) {
+              moveTeam(selected, seedZone.id, zoneList[idx - 1]);
+            }
+          } else {
+            // Navigate within seed line
+            if (isRight && idx < zoneList.length - 1) setSelected(zoneList[idx + 1]);
+            else if (!isRight && idx > 0) setSelected(zoneList[idx - 1]);
+          }
+        } else {
+          // Compare navigation
+          if (isRight) {
+            if (cmpIdx >= 0) setSelected(compareIds[Math.min(cmpIdx + 1, compareIds.length - 1)]);
+            else if (compareIds.length > 0) setSelected(compareIds[0]);
+          } else {
+            if (cmpIdx > 0) setSelected(compareIds[cmpIdx - 1]);
+            else if (cmpIdx === 0) setSelected(null);
+          }
+        }
       } else if (e.key === "c" || e.key === "C") {
         if (compareIds.length < 8 && !compareIds.includes(selected)) {
           moveTeam(selected, COMPARE); setSelected(null);
