@@ -91,10 +91,10 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        {inPool && <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
+        {inPool && <span style={{ color: poolSort?.field==='net' ? "#E8872B" : "#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
         <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
-        <span style={{ color:"#6B7A90", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>
+        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>
       </div>
     </div>
   );
