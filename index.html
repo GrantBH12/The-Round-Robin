@@ -787,7 +787,7 @@ function App() {
             {[
               ["Click to select","Click any team card to select it (orange highlight). Then click a zone or seed line to place it there."],
               ["Drag","Drag a team directly from any zone to any other zone or seed line. Reorder within zones by dragging."],
-              ["Deselect","Click the selected team again, press Escape, or use the ✕ Deselect button in the header."],
+              ["Deselect","Click the selected team again or press Escape to deselect."],
               ["From Compare","Use the numbered seed buttons at the bottom of each compare card to send a team directly to a seed line."],
             ].map(([title, desc], i) => (
               <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
@@ -880,16 +880,6 @@ function App() {
               Include bubble tiers
             </label>
           </div>
-          {selected && <>
-            <button onClick={() => setSelected(null)} style={{ background:"#E8872B22", border:"1px solid #E8872B", borderRadius:5, color:"#E8872B", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
-              ✕ Deselect {tm[selected]?.name}
-            </button>
-            {findZone(selected) !== POOL && (
-              <button onClick={() => { moveTeam(selected, POOL); setSelected(null); }} style={{ background:"var(--bg-card)", border:"1px solid #4A6FA5", borderRadius:5, color:"#4A6FA5", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
-                ← Pool
-              </button>
-            )}
-          </>}
 
         </div>
       </div>
