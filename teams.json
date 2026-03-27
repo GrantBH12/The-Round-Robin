@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-26T08:45:41.221599+00:00",
+    "scrapedAt": "2026-03-27T08:43:16.656687+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -182,18 +182,18 @@
       "conf": "Big 12",
       "confRecord": "16-2",
       "net": 3,
-      "record": "34-2",
+      "record": "35-2",
       "sos": 10,
       "ncRecord": "13-0",
       "ncSos": 39,
       "home": "16-1",
       "road": "9-1",
-      "neutral": "9-0",
-      "q1": "17-2",
+      "neutral": "10-0",
+      "q1": "18-2",
       "q2": "8-0",
       "q3": "2-0",
       "q4": "7-0",
-      "avgNetWins": 89,
+      "avgNetWins": 87,
       "avgNetLosses": 20,
       "keyWins": [
         {
@@ -363,19 +363,19 @@
       "conf": "Big 12",
       "confRecord": "14-4",
       "net": 5,
-      "record": "30-6",
+      "record": "30-7",
       "sos": 24,
       "ncRecord": "12-1",
       "ncSos": 113,
       "home": "15-1",
       "road": "6-3",
-      "neutral": "9-2",
-      "q1": "11-6",
+      "neutral": "9-3",
+      "q1": "11-7",
       "q2": "9-0",
       "q3": "4-0",
       "q4": "6-0",
       "avgNetWins": 102,
-      "avgNetLosses": 12,
+      "avgNetLosses": 11,
       "keyWins": [
         {
           "opp": "Arkansas",
@@ -436,18 +436,18 @@
           "date": "01-24"
         },
         {
+          "opp": "Illinois",
+          "oppNet": 8,
+          "score": "55-65",
+          "site": "N",
+          "date": "03-26"
+        },
+        {
           "opp": "Iowa State",
           "oppNet": 6,
           "score": "67-70",
           "site": "A",
           "date": "02-16"
-        },
-        {
-          "opp": "Arizona",
-          "oppNet": 3,
-          "score": "74-79",
-          "site": "N",
-          "date": "03-14"
         }
       ],
       "kpi": 5,
@@ -659,20 +659,27 @@
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 8,
-      "record": "26-8",
+      "record": "27-8",
       "sos": 21,
       "ncRecord": "9-2",
       "ncSos": 41,
       "home": "14-3",
       "road": "8-2",
-      "neutral": "4-3",
-      "q1": "8-8",
+      "neutral": "5-3",
+      "q1": "9-8",
       "q2": "5-0",
       "q3": "8-0",
       "q4": "5-0",
-      "avgNetWins": 108,
+      "avgNetWins": 104,
       "avgNetLosses": 16,
       "keyWins": [
+        {
+          "opp": "Houston",
+          "oppNet": 5,
+          "score": "65-55",
+          "site": "N",
+          "date": "03-26"
+        },
         {
           "opp": "Purdue",
           "oppNet": 9,
@@ -700,13 +707,6 @@
           "score": "75-62",
           "site": "N",
           "date": "12-06"
-        },
-        {
-          "opp": "Iowa",
-          "oppNet": 27,
-          "score": "75-69",
-          "site": "A",
-          "date": "01-11"
         }
       ],
       "keyLosses": [
@@ -760,18 +760,18 @@
       "conf": "Big Ten",
       "confRecord": "13-7",
       "net": 9,
-      "record": "29-8",
+      "record": "30-8",
       "sos": 3,
       "ncRecord": "10-1",
       "ncSos": 34,
       "home": "12-5",
       "road": "8-3",
-      "neutral": "9-0",
-      "q1": "12-8",
+      "neutral": "10-0",
+      "q1": "13-8",
       "q2": "6-0",
       "q3": "8-0",
       "q4": "3-0",
-      "avgNetWins": 88,
+      "avgNetWins": 87,
       "avgNetLosses": 19,
       "keyWins": [
         {
@@ -1265,19 +1265,19 @@
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 14,
-      "record": "28-6",
+      "record": "28-7",
       "sos": 34,
       "ncRecord": "11-0",
       "ncSos": 306,
       "home": "16-2",
       "road": "7-3",
-      "neutral": "5-1",
-      "q1": "10-6",
+      "neutral": "5-2",
+      "q1": "10-7",
       "q2": "6-0",
       "q3": "6-0",
       "q4": "6-0",
       "avgNetWins": 118,
-      "avgNetLosses": 14,
+      "avgNetLosses": 16,
       "keyWins": [
         {
           "opp": "Illinois",
@@ -1331,6 +1331,13 @@
           "date": "02-17"
         },
         {
+          "opp": "Iowa",
+          "oppNet": 27,
+          "score": "71-77",
+          "site": "N",
+          "date": "03-26"
+        },
+        {
           "opp": "Purdue",
           "oppNet": 9,
           "score": "77-80",
@@ -1343,13 +1350,6 @@
           "score": "58-74",
           "site": "N",
           "date": "03-13"
-        },
-        {
-          "opp": "Illinois",
-          "oppNet": 8,
-          "score": "69-78",
-          "site": "H",
-          "date": "02-01"
         }
       ],
       "kpi": 20,
@@ -1366,19 +1366,19 @@
       "conf": "SEC",
       "confRecord": "13-5",
       "net": 15,
-      "record": "28-8",
+      "record": "28-9",
       "sos": 17,
       "ncRecord": "10-3",
       "ncSos": 27,
       "home": "17-1",
       "road": "5-5",
-      "neutral": "6-2",
-      "q1": "8-8",
+      "neutral": "6-3",
+      "q1": "8-9",
       "q2": "9-0",
       "q3": "5-0",
       "q4": "6-0",
       "avgNetWins": 100,
-      "avgNetLosses": 17,
+      "avgNetLosses": 15,
       "keyWins": [
         {
           "opp": "Vanderbilt",
@@ -2578,18 +2578,18 @@
       "conf": "Big Ten",
       "confRecord": "10-10",
       "net": 27,
-      "record": "23-12",
+      "record": "24-12",
       "sos": 39,
       "ncRecord": "10-1",
       "ncSos": 256,
       "home": "14-3",
       "road": "3-8",
-      "neutral": "6-1",
-      "q1": "7-9",
+      "neutral": "7-1",
+      "q1": "8-9",
       "q2": "4-1",
       "q3": "6-2",
       "q4": "6-0",
-      "avgNetWins": 136,
+      "avgNetWins": 131,
       "avgNetLosses": 39,
       "keyWins": [
         {
@@ -2598,6 +2598,13 @@
           "score": "73-72",
           "site": "N",
           "date": "03-22"
+        },
+        {
+          "opp": "Nebraska",
+          "oppNet": 14,
+          "score": "77-71",
+          "site": "N",
+          "date": "03-26"
         },
         {
           "opp": "Nebraska",
@@ -2619,13 +2626,6 @@
           "score": "74-61",
           "site": "H",
           "date": "01-03"
-        },
-        {
-          "opp": "Clemson",
-          "oppNet": 34,
-          "score": "67-61",
-          "site": "N",
-          "date": "03-20"
         }
       ],
       "keyLosses": [
@@ -4093,19 +4093,19 @@
       "conf": "SEC",
       "confRecord": "9-9",
       "net": 42,
-      "record": "20-14",
+      "record": "20-15",
       "sos": 23,
       "ncRecord": "8-4",
       "ncSos": 68,
       "home": "12-5",
       "road": "4-6",
-      "neutral": "4-3",
-      "q1": "9-9",
+      "neutral": "4-4",
+      "q1": "9-10",
       "q2": "1-4",
       "q3": "3-1",
       "q4": "7-0",
       "avgNetWins": 143,
-      "avgNetLosses": 37,
+      "avgNetLosses": 35,
       "keyWins": [
         {
           "opp": "Gonzaga",
