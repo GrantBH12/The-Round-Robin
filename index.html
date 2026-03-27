@@ -113,6 +113,171 @@ const POOL = "pool";
 const DRAG_THRESHOLD = 6;
 const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C","#3D5E8C","#304D73","#304D73","#2A4060","#2A4060","#7A5A3A","#7A5A3A","#606060","#606060","#505050"];
 
+// Returns 0.12–0.90 fill based on value's rank within vals array
+function barPct(val, vals, lowerIsBetter) {
+  const v = vals.filter(x => x != null && !isNaN(x));
+  if (v.length < 2 || val == null) return 0.55;
+  const min = Math.min(...v), max = Math.max(...v);
+  if (min === max) return 0.55;
+  const n = lowerIsBetter ? (max - val) / (max - min) : (val - min) / (max - min);
+  return 0.12 + n * 0.78;
+}
+
+function StatBar({ label, value, pct }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:6, padding:"2px 0" }}>
+      <span style={{ color:"#4A5568", fontSize:10, minWidth:30 }}>{label}</span>
+      <div style={{ flex:1, position:"relative", height:18, display:"flex", alignItems:"center" }}>
+        <div style={{ position:"absolute", left:0, top:1, bottom:1, width:`${Math.round(pct*100)}%`, background:"rgba(232,135,43,0.18)", borderRadius:3 }}/>
+        <span style={{ position:"relative", color:"#E8872B", fontFamily:"monospace", fontSize:11, fontWeight:700, paddingLeft:4 }}>{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function QTile({ label, val, em }) {
+  const parts = (val||'0-0').split('-');
+  const w = parseInt(parts[0])||0, l = parseInt(parts[1])||0;
+  return (
+    <div style={{ flex:1, background:"#081828", borderRadius:5, padding:"5px 7px" }}>
+      <div style={{ fontSize:9, fontWeight:700, color:"#4A5568", marginBottom:2, textTransform:"uppercase", letterSpacing:"0.04em" }}>{label}</div>
+      <div style={{ display:"flex", gap:3, alignItems:"baseline" }}>
+        <span style={{ fontSize:em?15:13, fontWeight:800, color:"#4ADE80", fontFamily:"monospace", lineHeight:1 }}>{w}</span>
+        <span style={{ fontSize:10, color:"#2A4A7A" }}>-</span>
+        <span style={{ fontSize:em?15:13, fontWeight:800, color:l>0?"#F87171":"#4A5568", fontFamily:"monospace", lineHeight:1 }}>{l}</span>
+      </div>
+    </div>
+  );
+}
+
+function SectionToggle({ label, open, onToggle, color }) {
+  return (
+    <div onClick={onToggle} style={{ display:"flex", alignItems:"center", gap:4, cursor:"pointer", padding:"5px 0 3px", userSelect:"none", borderTop:"1px solid #1A3050", marginTop:6 }}>
+      <span style={{ color:color||"#6B7A90", fontSize:9 }}>{open?"▾":"▸"}</span>
+      <span style={{ fontSize:9, fontWeight:700, color:color||"#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em" }}>{label}</span>
+    </div>
+  );
+}
+
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam }) {
+  const [powerOpen, setPowerOpen] = useState(false);
+  const [recordsOpen, setRecordsOpen] = useState(false);
+  const [winsOpen, setWinsOpen] = useState(false);
+  const t = tm[tid];
+  if (!t) return null;
+  const idx = compareIds.indexOf(tid);
+  const kw = t.keyWins||[], kl = t.keyLosses||[];
+  const sosList = compareIds.map(id => tm[id]?.sos).filter(v => v!=null);
+  const sorList = compareIds.map(id => tm[id]?.sor).filter(v => v!=null);
+  const wabList = compareIds.map(id => tm[id]?.wab).filter(v => v!=null);
+  const sosPct = barPct(t.sos, sosList, true);
+  const sorPct = barPct(t.sor, sorList, true);
+  const wabPct = barPct(t.wab, wabList, false);
+  return (
+    <div style={{ display:"flex", flexShrink:0 }}>
+      {insertTarget?.zone===COMPARE && insertTarget?.beforeTid===tid && (
+        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
+      )}
+      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
+        style={{ width:220, background:"#0D2240", border:"1px solid #2A4A7A", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab" }}>
+        {/* Header */}
+        <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10, paddingBottom:8, borderBottom:"1px solid #1A3050" }}>
+          {t.logo && <img src={t.logo} alt="" style={{ width:34, height:34, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:13, lineHeight:1.2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.name}</div>
+            <div style={{ color:"#4A5568", fontSize:10, marginTop:1 }}>{t.conf} · {t.confRecord}</div>
+          </div>
+          <div style={{ textAlign:"right", flexShrink:0 }}>
+            <div style={{ background:"rgba(232,135,43,0.12)", border:"1px solid rgba(232,135,43,0.35)", borderRadius:4, padding:"1px 5px", display:"inline-block", marginBottom:2 }}>
+              <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:12, fontWeight:800 }}>#{t.net}</span>
+            </div>
+            <div style={{ color:"#8694A8", fontSize:12, fontWeight:700 }}>{t.record}</div>
+          </div>
+        </div>
+        {/* Resume Metrics */}
+        <div style={{ marginBottom:8 }}>
+          <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:3 }}>Resume</div>
+          <StatBar label="SOS" value={t.sos!=null?`#${t.sos}`:"—"} pct={sosPct}/>
+          <StatBar label="SOR" value={t.sor!=null?`#${t.sor}`:"—"} pct={sorPct}/>
+          <StatBar label="WAB" value={t.wab!=null?String(t.wab):"—"} pct={wabPct}/>
+        </div>
+        {/* Quadrant Records */}
+        <div style={{ marginBottom:6 }}>
+          <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Quadrants</div>
+          <div style={{ display:"flex", gap:4, marginBottom:4 }}><QTile label="Q1" val={t.q1} em={true}/><QTile label="Q2" val={t.q2} em={false}/></div>
+          <div style={{ display:"flex", gap:4 }}><QTile label="Q3" val={t.q3} em={false}/><QTile label="Q4" val={t.q4} em={false}/></div>
+        </div>
+        {/* Power Ratings */}
+        <SectionToggle label="Power Ratings" open={powerOpen} onToggle={() => setPowerOpen(o=>!o)} color="#4A6FA5"/>
+        {powerOpen && (
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"3px 8px", fontSize:11, padding:"4px 2px 6px" }}>
+            {[["KPI",t.kpi],["BPI",t.bpi],["KenPom",t.pom],["T-Rank",t.tRank]].map(([l,v]) => (
+              <div key={l} style={{ display:"flex", justifyContent:"space-between" }}>
+                <span style={{ color:"#4A5568" }}>{l}</span>
+                <span style={{ color:"#E8872B", fontFamily:"monospace" }}>{v!=null?`#${v}`:"—"}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Other Records */}
+        <SectionToggle label="Other Records" open={recordsOpen} onToggle={() => setRecordsOpen(o=>!o)}/>
+        {recordsOpen && (
+          <div style={{ display:"flex", flexDirection:"column", gap:2, fontSize:11, padding:"4px 2px 6px" }}>
+            {[["NC Rec",t.ncRecord],["Home",t.home],["Road",t.road],["Neutral",t.neutral],["Avg W",t.avgNetWins!=null?`#${t.avgNetWins}`:null],["Avg L",t.avgNetLosses!=null?`#${t.avgNetLosses}`:null]].map(([l,v]) => (
+              <St key={l} l={l} v={v||"—"}/>
+            ))}
+          </div>
+        )}
+        {/* Key Wins / Losses */}
+        <SectionToggle label="Key Wins / Losses" open={winsOpen} onToggle={() => setWinsOpen(o=>!o)} color="#8694A8"/>
+        {winsOpen && (
+          <div style={{ padding:"4px 2px 6px" }}>
+            <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase" }}>Top Wins</div>
+            {kw.length>0 ? kw.slice(0,5).map((w,i) => (
+              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
+              </div>
+            )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>—</div>}
+            <div style={{ fontSize:9, fontWeight:700, color:"#F87171", margin:"5px 0 3px", textTransform:"uppercase" }}>Losses</div>
+            {kl.length>0 ? kl.slice(0,5).map((l,i) => (
+              <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
+              </div>
+            )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>None</div>}
+          </div>
+        )}
+        <div style={{ flex:1, minHeight:8 }}/>
+        {/* Action buttons */}
+        <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid #1A3050", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
+          <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
+            {SEEDS.map(s => (
+              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
+                style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:asgn[s.id].length>=s.max?"#1A3050":"#8694A8", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
+                {s.num}
+              </button>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:3 }}>
+            {EXTRA_TIERS.map(et => (
+              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                style={{ background:"#081828", border:`1px solid ${et.ac}44`, borderRadius:3, color:et.ac, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                {et.label.split(" ").map(w=>w[0]).join("")}
+              </button>
+            ))}
+            <button onClick={() => moveTeam(tid, POOL)}
+              style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:"#6B7A90", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+              ← Pool
+            </button>
+          </div>
+        </div>
+      </div>
+      {insertTarget?.zone===COMPARE && !insertTarget?.beforeTid && insertTarget?.afterTid===tid && idx===compareIds.length-1 && (
+        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginLeft:4, minHeight:40 }}/>
+      )}
+    </div>
+  );
+});
+
 function App() {
   const teams = useMemo(() => REAL_TEAMS, []);
   const tm = useMemo(() => Object.fromEntries(teams.map(t => [t.id, t])), [teams]);
@@ -676,109 +841,82 @@ function App() {
                 </div>
               )}
             </div>
-            {compareOpen && (
-              <div
-                data-zone={COMPARE}
-                onClick={() => handleZoneClick(COMPARE)}
-                style={{
-                  minHeight:100, borderRadius:6,
-                  border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A3050"}`,
-                  background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
-                  transition:"background 0.1s, border-color 0.1s",
-                  padding: compareIds.length===0 ? "0" : "8px",
-                  display:"flex", alignItems: compareIds.length===0 ? "center" : "flex-start",
-                  justifyContent: compareIds.length===0 ? "center" : "flex-start",
-                  overflowX:"auto", gap:8,
-                }}>
-                {compareIds.length===0 && (
-                  <span style={{ fontSize:11, color:"#1A3050" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>
-                )}
-                {compareIds.map((tid, idx) => {
-                  const t = tm[tid];
-                  if (!t) return null;
-                  const kw = t.keyWins||[];
-                  const kl = t.keyLosses||[];
-                  return (
-                    <div key={tid} style={{ display:"flex", flexShrink:0 }}>
-                      {insertTarget?.zone === COMPARE && insertTarget?.beforeTid === tid && (
-                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
-                      )}
-                      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
-                        style={{ width:195, background:"#0D2240", border:"1px solid #2A4A7A", borderRadius:8, padding:"12px 10px", display:"flex", flexDirection:"column", cursor:"grab" }}>
-                        <div style={{ textAlign:"center", marginBottom:8, borderBottom:"1px solid #1A3050", paddingBottom:8 }}>
-                          {t.logo && <img src={t.logo} alt="" style={{ width:48, height:48, objectFit:"contain", marginBottom:4, display:"block", margin:"0 auto 4px" }} onError={e => e.target.style.display="none"}/>}
-                          <div style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:11 }}>#{t.net}</div>
-                          <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:14, lineHeight:1.2 }}>{t.name}</div>
-                          <div style={{ color:"#4A5568", fontSize:10, marginTop:2 }}>{t.conf} ({t.confRecord})</div>
-                          <div style={{ color:"#8694A8", fontSize:12, fontWeight:700, marginTop:3 }}>{t.record}</div>
-                        </div>
-                        <div style={{ display:"flex", flexDirection:"column", gap:3, fontSize:11, marginBottom:8 }}>
-                          <St l="SOS" v={`#${t.sos}`}/>
-                          <St l="NC Rec" v={t.ncRecord}/>
-                          <St l="Home" v={t.home}/>
-                          <St l="Road" v={t.road}/>
-                          <St l="Neutral" v={t.neutral}/>
-                          <St l="Avg W" v={`#${t.avgNetWins}`}/>
-                          <St l="Avg L" v={`#${t.avgNetLosses}`}/>
-                        </div>
-                        <div style={{ background:"#081828", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11 }}>
-                          <St l="Q1" v={t.q1}/><St l="Q2" v={t.q2}/>
-                          <St l="Q3" v={t.q3}/><St l="Q4" v={t.q4}/>
-                        </div>
-                        <div style={{ background:"#0A1E35", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11, border:"1px solid #1A3050" }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", marginBottom:1, textTransform:"uppercase", letterSpacing:"0.05em" }}>Rankings</div>
-                          <St l="KPI" v={t.kpi!=null?`#${t.kpi}`:"—"}/><St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
-                          <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/><St l="BPI" v={t.bpi!=null?`#${t.bpi}`:"—"}/>
-                          <St l="KenPom" v={t.pom!=null?`#${t.pom}`:"—"}/><St l="T-Rank" v={t.tRank!=null?`#${t.tRank}`:"—"}/>
-                        </div>
-                        <div style={{ marginBottom:6 }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Top Wins</div>
-                          {kw.length>0 ? kw.map((w,i) => (
-                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                              <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>—</div>}
-                        </div>
-                        <div style={{ marginBottom:8 }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#F87171", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Losses</div>
-                          {kl.length>0 ? kl.map((l,i) => (
-                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                              <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>None</div>}
-                        </div>
-                        <div style={{ flex:1 }}/>
-                        <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid #1A3050", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
-                          <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
-                            {SEEDS.map(s => (
-                              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
-                                style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:asgn[s.id].length>=s.max?"#1A3050":"#8694A8", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
-                                {s.num}
-                              </button>
-                            ))}
-                          </div>
-                          <div style={{ display:"flex", gap:3 }}>
-                            {EXTRA_TIERS.map(et => (
-                              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
-                                style={{ background:"#081828", border:`1px solid ${et.ac}44`, borderRadius:3, color:et.ac, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                                {et.label.split(" ").map(w=>w[0]).join("")}
-                              </button>
-                            ))}
-                            <button onClick={() => moveTeam(tid, POOL)}
-                              style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:"#6B7A90", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                              ← Pool
-                            </button>
-                          </div>
-                        </div>
+            {compareOpen && (() => {
+              const allNet = compareIds.map(id => tm[id]?.net).filter(v => v!=null);
+              const allSos = compareIds.map(id => tm[id]?.sos).filter(v => v!=null);
+              const allSor = compareIds.map(id => tm[id]?.sor).filter(v => v!=null);
+              const allWab = compareIds.map(id => tm[id]?.wab).filter(v => v!=null);
+              const allQ1  = compareIds.map(id => parseWins(tm[id]?.q1));
+              const bestNet = allNet.length ? Math.min(...allNet) : null;
+              const bestSos = allSos.length ? Math.min(...allSos) : null;
+              const bestSor = allSor.length ? Math.min(...allSor) : null;
+              const bestWab = allWab.length ? Math.max(...allWab) : null;
+              const bestQ1  = allQ1.length  ? Math.max(...allQ1)  : null;
+              return (
+                <>
+                  {/* Summary table — shown when 2+ teams */}
+                  {compareIds.length >= 2 && (
+                    <div style={{ marginBottom:10, background:"#081828", borderRadius:6, border:"1px solid #1A3050", overflow:"hidden" }}>
+                      <div style={{ display:"flex", borderBottom:"1px solid #1A3050" }}>
+                        <div style={{ width:130, flexShrink:0, padding:"5px 8px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Team</div>
+                        {["NET","Record","Q1","SOS","SOR","WAB"].map(col => (
+                          <div key={col} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"right", minWidth:54 }}>{col}</div>
+                        ))}
                       </div>
-                      {insertTarget?.zone === COMPARE && !insertTarget?.beforeTid && insertTarget?.afterTid === tid && idx === compareIds.length-1 && (
-                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginLeft:4, minHeight:40 }}/>
-                      )}
+                      {compareIds.map(id => {
+                        const t = tm[id]; if (!t) return null;
+                        const q1W = parseWins(t.q1);
+                        const Cell = ({ val, pct, best }) => (
+                          <div style={{ flex:1, position:"relative", padding:"5px 6px", minWidth:54, display:"flex", alignItems:"center", justifyContent:"flex-end" }}>
+                            <div style={{ position:"absolute", left:0, top:2, bottom:2, width:`${Math.round(pct*100)}%`, background:best?"rgba(232,135,43,0.18)":"rgba(74,111,165,0.10)", borderRadius:2 }}/>
+                            <span style={{ position:"relative", fontSize:10, fontFamily:"monospace", color:best?"#E8872B":"#8694A8", fontWeight:best?700:400 }}>{val}</span>
+                          </div>
+                        );
+                        return (
+                          <div key={id} style={{ display:"flex", borderBottom:"1px solid #0A1E35", alignItems:"center" }}>
+                            <div style={{ width:130, flexShrink:0, padding:"5px 8px", display:"flex", alignItems:"center", gap:5 }}>
+                              {t.logo && <img src={t.logo} alt="" style={{ width:16, height:16, objectFit:"contain", flexShrink:0 }} onError={e=>e.target.style.display="none"}/>}
+                              <span style={{ fontSize:10, color:"#E2E8F0", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.name}</span>
+                            </div>
+                            <Cell val={`#${t.net}`} pct={barPct(t.net,allNet,true)} best={t.net===bestNet}/>
+                            <div style={{ flex:1, padding:"5px 6px", minWidth:54, textAlign:"right" }}>
+                              <span style={{ fontSize:10, fontFamily:"monospace", color:"#8694A8" }}>{t.record}</span>
+                            </div>
+                            <Cell val={t.q1||"—"} pct={barPct(q1W,allQ1,false)} best={q1W===bestQ1}/>
+                            <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
+                            <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
+                            <Cell val={t.wab!=null?String(t.wab):"—"} pct={barPct(t.wab,allWab,false)} best={t.wab===bestWab}/>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  )}
+                  {/* Drop zone with redesigned cards */}
+                  <div
+                    data-zone={COMPARE}
+                    onClick={() => handleZoneClick(COMPARE)}
+                    style={{
+                      minHeight:100, borderRadius:6,
+                      border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A3050"}`,
+                      background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
+                      transition:"background 0.1s, border-color 0.1s",
+                      padding: compareIds.length===0 ? "0" : "8px",
+                      display:"flex", alignItems: compareIds.length===0 ? "center" : "flex-start",
+                      justifyContent: compareIds.length===0 ? "center" : "flex-start",
+                      overflowX:"auto", gap:8,
+                    }}>
+                    {compareIds.length===0 && (
+                      <span style={{ fontSize:11, color:"#1A3050" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>
+                    )}
+                    {compareIds.map(id => (
+                      <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
+                        insertTarget={insertTarget} sendFromCompare={sendFromCompare}
+                        handleMouseDown={handleMouseDown} moveTeam={moveTeam}/>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,#1A3050)", margin:"12px 0 8px", borderRadius:1 }}/>
