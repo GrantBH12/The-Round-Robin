@@ -195,6 +195,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
         <div style={{ marginBottom:8 }}>
           <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:3 }}>Key Resume Metrics</div>
           <St l="SOS" v={t.sos!=null?`#${t.sos}`:"—"}/>
+          <St l="ncSOS" v={t.ncSos!=null?`#${t.ncSos}`:"—"}/>
           <St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
           <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/>
         </div>
@@ -813,11 +814,6 @@ function App() {
               </div>
             </div>
           )}
-          {!filtersOpen && anyFilterActive && (
-            <div style={{ display:"flex", justifyContent:"center", paddingTop:6 }}>
-              <div style={{ width:6, height:6, borderRadius:"50%", background:"#E8872B" }}/>
-            </div>
-          )}
         </div>
 
         {/* Board */}
@@ -870,6 +866,7 @@ function App() {
                       <div style={{ display:"flex", borderBottom:"1px solid #1A3050" }}>
                         <div style={{ width:44, flexShrink:0, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"right" }}>NET</div>
                         <div style={{ flex:2, minWidth:110, flexShrink:0, padding:"5px 8px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Team</div>
+                        <div style={{ flex:"0 0 110px", flexShrink:0, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em" }}>Quadrants</div>
                         {["SOS","SOR","WAB","KPI","BPI","KenPom","T-Rank"].map(col => (
                           <div key={col} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"left", minWidth:50 }}>{col}</div>
                         ))}
@@ -878,7 +875,7 @@ function App() {
                         const t = tm[id]; if (!t) return null;
                         const Cell = ({ val, pct, best }) => (
                           <div style={{ flex:1, position:"relative", padding:"5px 6px", minWidth:50, display:"flex", alignItems:"center", justifyContent:"flex-start" }}>
-                            <div style={{ position:"absolute", left:0, top:2, bottom:2, width:`${Math.round(pct*100)}%`, background:best?"rgba(232,135,43,0.18)":"rgba(74,111,165,0.10)", borderRadius:2 }}/>
+                            <div style={{ position:"absolute", left:0, top:2, bottom:2, width:`${Math.round(pct*100)}%`, background:best?"rgba(232,135,43,0.26)":"rgba(74,111,165,0.18)", borderRadius:2 }}/>
                             <span style={{ position:"relative", zIndex:1, fontSize:10, fontFamily:"monospace", color:best?"#E8872B":"#8694A8", fontWeight:best?700:400 }}>{val}</span>
                           </div>
                         );
@@ -891,6 +888,16 @@ function App() {
                               {t.logo && <img src={t.logo} alt="" style={{ width:16, height:16, objectFit:"contain", flexShrink:0 }} onError={e=>e.target.style.display="none"}/>}
                               <span style={{ fontSize:10, color:"#E2E8F0", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.name}</span>
                               <span style={{ fontSize:9, fontFamily:"monospace", color:"#6B7A90", flexShrink:0 }}>{t.record}</span>
+                            </div>
+                            <div style={{ flex:"0 0 110px", flexShrink:0, padding:"3px 6px" }}>
+                              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1px 4px" }}>
+                                {[["Q1",t.q1],["Q2",t.q2],["Q3",t.q3],["Q4",t.q4]].map(([l,v]) => (
+                                  <div key={l} style={{ display:"flex", gap:2, alignItems:"baseline" }}>
+                                    <span style={{ fontSize:8, color:"#4A5568", fontWeight:700 }}>{l}</span>
+                                    <span style={{ fontSize:9, fontFamily:"monospace", color:"#8694A8" }}>{v||"—"}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
                             <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
