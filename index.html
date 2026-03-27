@@ -546,13 +546,12 @@ function App() {
             <div style={{ display:"flex", gap:3, flexWrap:"wrap", marginTop:6 }}>
               {POOL_SORT_OPTS.map(opt => {
                 const active = poolSort.field === opt.field;
-                const arrow = active ? (poolSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
                 return (
                   <button key={opt.field} onClick={() => setPoolSort(p => p.field === opt.field ? { field:opt.field, dir:p.dir==='asc'?'desc':'asc' } : { field:opt.field, dir:opt.defDir })}
                     style={{ background: active ? "#E8872B22" : "#0D2240", border:`1px solid ${active ? "#E8872B" : "#1A3050"}`,
                       borderRadius:4, color: active ? "#E8872B" : "#6B7A90", fontSize:9, padding:"2px 6px",
                       cursor:"pointer", fontWeight: active ? 700 : 400, whiteSpace:"nowrap" }}>
-                    {opt.label}{arrow}
+                    {opt.label}<span style={{ opacity: active ? 1 : 0, marginLeft:2 }}>{poolSort.dir==='asc'?'▲':'▼'}</span>
                   </button>
                 );
               })}
