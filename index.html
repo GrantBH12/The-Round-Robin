@@ -173,6 +173,7 @@ function App() {
     setMetricRanges({net:[1,400],sos:[1,400],kpi:[1,400],sor:[1,400],wab:[1,400],bpi:[1,400],pom:[1,400],tRank:[1,400]});
   };
   const [selected, setSelected] = useState(null);
+  const [poolSort, setPoolSort] = useState({ field: 'net', dir: 'asc' });
   const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
@@ -195,13 +196,7 @@ function App() {
       const n = {};
       for (const k in p) n[k] = p[k].filter(x => x !== tid);
       if (target === POOL) {
-        const teamNet = tm[tid]?.net ?? 999;
-        const pool = n[POOL];
-        let idx = pool.length;
-        for (let i = 0; i < pool.length; i++) {
-          if ((tm[pool[i]]?.net ?? 999) > teamNet) { idx = i; break; }
-        }
-        pool.splice(idx, 0, tid);
+        n[POOL].push(tid);
       } else if (beforeTid && n[target].includes(beforeTid)) {
         const idx = n[target].indexOf(beforeTid);
         n[target].splice(idx, 0, tid);
@@ -397,6 +392,20 @@ function App() {
     document.addEventListener("mouseup", onMouseUp);
   }, [asgn, moveTeam, tm]);
 
+  const parseWins = s => { const w = parseInt((s||'0-0').split('-')[0]); return isNaN(w) ? 0 : w; };
+  const parseWinPct = s => { const [w,l] = (s||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?(w||0)/tot:0; };
+
+  const POOL_SORT_OPTS = [
+    {field:'net',label:'NET',defDir:'asc'},{field:'kpi',label:'KPI',defDir:'asc'},
+    {field:'sor',label:'SOR',defDir:'asc'},{field:'bpi',label:'BPI',defDir:'asc'},
+    {field:'pom',label:'KenPom',defDir:'asc'},{field:'tRank',label:'T-Rank',defDir:'asc'},
+    {field:'wab',label:'WAB',defDir:'desc'},{field:'sos',label:'SOS',defDir:'asc'},
+    {field:'ncSos',label:'ncSOS',defDir:'asc'},{field:'name',label:'Name',defDir:'asc'},
+    {field:'conf',label:'Conf',defDir:'asc'},{field:'winPct',label:'Win%',defDir:'desc'},
+    {field:'q1wins',label:'Q1W',defDir:'desc'},{field:'q2wins',label:'Q2W',defDir:'desc'},
+    {field:'q3wins',label:'Q3W',defDir:'desc'},{field:'q4wins',label:'Q4W',defDir:'desc'},
+  ];
+
   const poolF = useMemo(() => {
     let ids = asgn[POOL] || [];
     if (confFs.size > 0) ids = ids.filter(id => confFs.has(tm[id]?.conf));
@@ -414,8 +423,21 @@ function App() {
         return val >= mn && val <= mx;
       });
     });
-    return ids;
-  }, [asgn, confFs, search, tm, metricRanges]);
+    const { field, dir } = poolSort;
+    return [...ids].sort((a, b) => {
+      const ta = tm[a]; const tb = tm[b];
+      if (field === 'name') { const va=ta?.name||''; const vb=tb?.name||''; return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va); }
+      if (field === 'conf') { const va=ta?.conf||''; const vb=tb?.conf||''; return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va); }
+      let va, vb;
+      if (field === 'winPct') { va=parseWinPct(ta?.record); vb=parseWinPct(tb?.record); }
+      else if (field === 'q1wins') { va=parseWins(ta?.q1); vb=parseWins(tb?.q1); }
+      else if (field === 'q2wins') { va=parseWins(ta?.q2); vb=parseWins(tb?.q2); }
+      else if (field === 'q3wins') { va=parseWins(ta?.q3); vb=parseWins(tb?.q3); }
+      else if (field === 'q4wins') { va=parseWins(ta?.q4); vb=parseWins(tb?.q4); }
+      else { va=ta?.[field]??999; vb=tb?.[field]??999; }
+      return dir==='asc' ? va-vb : vb-va;
+    });
+  }, [asgn, confFs, search, tm, metricRanges, poolSort]);
 
   const totalPlaced = SEEDS.reduce((s,sd) => s+(asgn[sd.id]?.length||0), 0) + EXTRA_TIERS.reduce((s,t) => s+(asgn[t.id]?.length||0), 0);
   const compareIds = asgn[COMPARE] || [];
@@ -465,8 +487,8 @@ function App() {
               </button>
               <button onClick={() => {
                 const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-                n[COMPARE]=[]; n[POOL]=teams.map(t => t.id).sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
-                setAsgn(n); setSelected(null);
+                n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
+                setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
                 try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
               }} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:11, padding:"6px 14px", cursor:"pointer", fontWeight:700 }}>
                 Reset
@@ -507,6 +529,20 @@ function App() {
                 <button onClick={() => { setSearch(""); clearFilters(); }}
                   style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#6B7A90", fontSize:13, cursor:"pointer", lineHeight:1, padding:"0 2px" }}>×</button>
               )}
+            </div>
+            <div style={{ display:"flex", gap:3, flexWrap:"wrap", marginTop:6 }}>
+              {POOL_SORT_OPTS.map(opt => {
+                const active = poolSort.field === opt.field;
+                const arrow = active ? (poolSort.dir === 'asc' ? ' ▲' : ' ▼') : '';
+                return (
+                  <button key={opt.field} onClick={() => setPoolSort(p => p.field === opt.field ? { field:opt.field, dir:p.dir==='asc'?'desc':'asc' } : { field:opt.field, dir:opt.defDir })}
+                    style={{ background: active ? "#E8872B22" : "#0D2240", border:`1px solid ${active ? "#E8872B" : "#1A3050"}`,
+                      borderRadius:4, color: active ? "#E8872B" : "#6B7A90", fontSize:9, padding:"2px 6px",
+                      cursor:"pointer", fontWeight: active ? 700 : 400, whiteSpace:"nowrap" }}>
+                    {opt.label}{arrow}
+                  </button>
+                );
+              })}
             </div>
             <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>
               {anyFilterActive || search ? `${poolF.length} of ${teams.length}` : `${poolF.length} teams`}
