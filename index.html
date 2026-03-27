@@ -140,7 +140,7 @@ function App() {
           for (const k in saved) {
             if (!Array.isArray(saved[k])) { valid = false; break; }
             for (const id of saved[k]) {
-              if (!allIds.has(id)) { valid = false; break; }
+              if (!allIds.has(id) || usedIds.has(id)) { valid = false; break; }
               usedIds.add(id);
             }
           }
@@ -221,7 +221,7 @@ function App() {
       }
       return n;
     });
-  }, [tm]);
+  }, []);
 
   const autoSeed = useCallback(() => {
     // Always work from the full 128-team list regardless of current board state
@@ -488,7 +488,7 @@ function App() {
               Bracketology Hub — The Round Robin
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
-              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const diff = Date.now() - d; const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
+              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
             </p>
           </div>
         </div>
@@ -571,7 +571,7 @@ function App() {
             ))}
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
-            Data sourced from <a href="https://warrennolan.com" target="_blank" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
+            Data sourced from <a href="https://warrennolan.com" target="_blank" rel="noopener noreferrer" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
           </div>
         </div>
 
