@@ -939,10 +939,7 @@ function App() {
             const ids = asgn[seed.id] || [];
             const color = SEED_COLORS[si] || "#555";
             const emptyCount = seed.max - ids.length;
-            // Border style varies by seed group: 1-4 thick dashed, 5-8 thick dotted, 9-12 thin dashed, 13-16 thin dotted
-            const bw = si < 8 ? "2px" : "1px";
-            const bs = (si < 4 || si >= 8 && si < 12) ? "dashed" : "dotted";
-            const zoneBorder = `${bw} ${bs} ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : color+"55"}`;
+            const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : color+"66"}`;
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
                 <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
@@ -955,7 +952,7 @@ function App() {
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
                     {ids.map((id, idx) => (
-                      <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
+                      <div key={id} style={{ flex:1, minWidth:120 }}>
                         {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                         )}
@@ -966,7 +963,7 @@ function App() {
                       </div>
                     ))}
                     {emptyCount > 0 && Array.from({length:emptyCount}).map((_,i) => (
-                      <div key={`e-${i}`} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320, height:34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}77`, margin:1 }}>{isSel ? "+" : ""}</div>
+                      <div key={`e-${i}`} style={{ flex:1, minWidth:120, height:34, borderRadius:5, border:`1px solid ${color}33`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
                   </div>
                   <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
