@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Round Robin Bracketology Hub</title>
+<title>The Bracketology Nest</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #081828; overflow: hidden; }
@@ -26,7 +26,7 @@ const DATA_URL = "https://grantbh12.github.io/The-Round-Robin/teams.json";
 function LoadingScreen() {
   return (
     <div style={{ minHeight:"100vh", background:"#081828", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column" }}>
-      <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>The Round Robin Bracketology Hub</h1>
+      <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>The Bracketology Nest</h1>
       <p style={{ color:"#4A5568", fontSize:13, marginTop:8, fontFamily:"'Segoe UI',system-ui,sans-serif" }}>Loading team data...</p>
     </div>
   );
@@ -483,9 +483,10 @@ function App() {
       {/* Header */}
       <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <img src="logo.png" alt="The Bracketology Nest" style={{ height:44, width:"auto", objectFit:"contain", flexShrink:0 }}/>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-              Bracketology Hub — The Round Robin
+              The Bracketology Nest
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
               {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
