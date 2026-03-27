@@ -938,6 +938,11 @@ function App() {
           {SEEDS.map((seed, si) => {
             const ids = asgn[seed.id] || [];
             const color = SEED_COLORS[si] || "#555";
+            const emptyCount = seed.max - ids.length;
+            // Border style varies by seed group: 1-4 thick dashed, 5-8 thick dotted, 9-12 thin dashed, 13-16 thin dotted
+            const bw = si < 8 ? "2px" : "1px";
+            const bs = (si < 4 || si >= 8 && si < 12) ? "dashed" : "dotted";
+            const zoneBorder = `${bw} ${bs} ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : color+"55"}`;
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
                 <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
@@ -945,11 +950,10 @@ function App() {
                   <div data-zone={seed.id} style={{
                     flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
                     borderRadius:6, padding:"2px 4px",
-                    border:`1px dashed ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
+                    border: zoneBorder,
                     background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
-                    {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
                     {ids.map((id, idx) => (
                       <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
                         {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
@@ -961,8 +965,8 @@ function App() {
                         )}
                       </div>
                     ))}
-                    {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
-                      <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
+                    {emptyCount > 0 && Array.from({length:emptyCount}).map((_,i) => (
+                      <div key={`e-${i}`} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320, height:34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}77`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
                   </div>
                   <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
