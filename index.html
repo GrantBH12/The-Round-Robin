@@ -285,7 +285,7 @@ function App() {
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
-    if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
+    // Seed rows are uncapped for manual placement
     if (zoneId === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
     moveTeam(selected, zoneId);
     setSelected(null);
@@ -367,9 +367,8 @@ function App() {
         const insert = dragRef.current.insertRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
-          const atMax = seed
-            ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
-            : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
+          // Seed rows are uncapped for manual placement; only compare zone has a cap
+          const atMax = !seed && targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid);
           if (!atMax) {
             let beforeTid = null;
             if (insert && insert.zone === targetZone) {
@@ -463,8 +462,8 @@ function App() {
               style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
             Include Bubble Tiers
           </label>
-          <button onClick={autoSeed} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:10, padding:"4px 12px", cursor:"pointer", fontWeight:600 }}>
-            Auto-seed
+          <button onClick={autoSeed} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:13, padding:"7px 18px", cursor:"pointer", fontWeight:600 }}>
+            Auto-Seed NET Bracket
           </button>
           {selected && <>
             <button onClick={() => setSelected(null)} style={{ background:"#E8872B22", border:"1px solid #E8872B", borderRadius:5, color:"#E8872B", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
@@ -481,7 +480,7 @@ function App() {
             n[COMPARE]=[]; n[POOL]=teams.map(t => t.id).sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
             setAsgn(n); setSelected(null);
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-          }} style={{ background:"transparent", border:"1px solid #1A3050", borderRadius:5, color:"#6B7A90", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
+          }} style={{ background:"transparent", border:"1px solid #1A3050", borderRadius:5, color:"#6B7A90", fontSize:13, padding:"6px 16px", cursor:"pointer" }}>
             Reset
           </button>
         </div>
