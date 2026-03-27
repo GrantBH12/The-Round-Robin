@@ -478,6 +478,14 @@ function App() {
     moveTeam(tid, target);
   }, [moveTeam]);
 
+  const fillCompare = useCallback(() => {
+    const slotsLeft = 8 - compareIds.length;
+    if (slotsLeft <= 0) return;
+    const eligible = poolF.filter(id => !compareIds.includes(id));
+    const toAdd = eligible.slice(0, slotsLeft);
+    toAdd.forEach(id => moveTeam(id, COMPARE));
+  }, [compareIds, poolF, moveTeam]);
+
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -826,11 +834,21 @@ function App() {
               <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
               <span style={{ fontSize:13, fontWeight:700, color:"#4A6FA5" }}>Compare Resumes</span>
               <span style={{ fontSize:9, color:"#4A5568" }}>{compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 · click to expand`}</span>
-              {compareOpen && compareIds.length > 0 && (
-                <button onClick={e => { e.stopPropagation(); setCollapseKey(k => k+1); }}
-                  style={{ marginLeft:"auto", background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
-                  Collapse All Team Cards
-                </button>
+              {compareOpen && (
+                <div style={{ marginLeft:"auto", display:"flex", gap:6 }} onClick={e => e.stopPropagation()}>
+                  {compareIds.length < 8 && poolF.length > 0 && (
+                    <button onClick={fillCompare}
+                      style={{ background:"rgba(74,111,165,0.12)", border:"1px solid #2A4A7A", borderRadius:4, color:"#4A6FA5", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                      Fill With Top Teams
+                    </button>
+                  )}
+                  {compareIds.length > 0 && (
+                    <button onClick={() => setCollapseKey(k => k+1)}
+                      style={{ background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                      Collapse All Team Cards
+                    </button>
+                  )}
+                </div>
               )}
               {!compareOpen && compareIds.length > 0 && (
                 <div style={{ display:"flex", gap:4, marginLeft:4 }}>
@@ -944,7 +962,8 @@ function App() {
             const ids = asgn[seed.id] || [];
             const color = SEED_COLORS[si] || "#555";
             const emptyCount = seed.max - ids.length;
-            const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : color+"66"}`;
+            const isFull = ids.length >= seed.max;
+            const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : isFull ? color+"66" : "transparent"}`;
             // 6-slot lines: 4 per row so 5th/6th wrap; 4-slot lines: fill single row
             const slotFlex = seed.max === 6 && ids.length > 4 ? "0 0 calc(25% - 2px)" : "1";
             return (
