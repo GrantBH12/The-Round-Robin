@@ -159,10 +159,11 @@ function SectionToggle({ label, open, onToggle, color }) {
   );
 }
 
-const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam }) {
-  const [powerOpen, setPowerOpen] = useState(false);
-  const [recordsOpen, setRecordsOpen] = useState(false);
-  const [winsOpen, setWinsOpen] = useState(false);
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey }) {
+  const [powerOpen, setPowerOpen] = useState(true);
+  const [recordsOpen, setRecordsOpen] = useState(true);
+  const [winsOpen, setWinsOpen] = useState(true);
+  useEffect(() => { if (collapseKey > 0) { setPowerOpen(false); setRecordsOpen(false); setWinsOpen(false); } }, [collapseKey]);
   const t = tm[tid];
   if (!t) return null;
   const idx = compareIds.indexOf(tid);
@@ -178,7 +179,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
       {insertTarget?.zone===COMPARE && insertTarget?.beforeTid===tid && (
         <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
       )}
-      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
+      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }} onClick={e => e.stopPropagation()}
         style={{ width:220, background:"#0D2240", border:"1px solid #2A4A7A", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab" }}>
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10, paddingBottom:8, borderBottom:"1px solid #1A3050" }}>
@@ -199,7 +200,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
           <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:3 }}>Resume</div>
           <StatBar label="SOS" value={t.sos!=null?`#${t.sos}`:"—"} pct={sosPct}/>
           <StatBar label="SOR" value={t.sor!=null?`#${t.sor}`:"—"} pct={sorPct}/>
-          <StatBar label="WAB" value={t.wab!=null?String(t.wab):"—"} pct={wabPct}/>
+          <StatBar label="WAB" value={t.wab!=null?`#${t.wab}`:"—"} pct={wabPct}/>
         </div>
         {/* Quadrant Records */}
         <div style={{ marginBottom:6 }}>
@@ -220,7 +221,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
           </div>
         )}
         {/* Other Records */}
-        <SectionToggle label="Other Records" open={recordsOpen} onToggle={() => setRecordsOpen(o=>!o)}/>
+        <SectionToggle label="Other Resume Metrics" open={recordsOpen} onToggle={() => setRecordsOpen(o=>!o)}/>
         {recordsOpen && (
           <div style={{ display:"flex", flexDirection:"column", gap:2, fontSize:11, padding:"4px 2px 6px" }}>
             {[["NC Rec",t.ncRecord],["Home",t.home],["Road",t.road],["Neutral",t.neutral],["Avg W",t.avgNetWins!=null?`#${t.avgNetWins}`:null],["Avg L",t.avgNetLosses!=null?`#${t.avgNetLosses}`:null]].map(([l,v]) => (
@@ -358,6 +359,7 @@ function App() {
   const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
+  const [collapseKey, setCollapseKey] = useState(0);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
@@ -832,6 +834,12 @@ function App() {
               <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
               <span style={{ fontSize:13, fontWeight:700, color:"#4A6FA5" }}>Compare Resumes</span>
               <span style={{ fontSize:9, color:"#4A5568" }}>{compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 · click to expand`}</span>
+              {compareOpen && compareIds.length > 0 && (
+                <button onClick={e => { e.stopPropagation(); setCollapseKey(k => k+1); }}
+                  style={{ marginLeft:"auto", background:"none", border:"1px solid #2A3A50", borderRadius:4, color:"#4A5568", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                  Collapse All
+                </button>
+              )}
               {!compareOpen && compareIds.length > 0 && (
                 <div style={{ display:"flex", gap:4, marginLeft:4 }}>
                   {compareIds.slice(0,4).map(id => (
@@ -885,7 +893,7 @@ function App() {
                             <Cell val={t.q1||"—"} pct={barPct(q1W,allQ1,false)} best={q1W===bestQ1}/>
                             <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
                             <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
-                            <Cell val={t.wab!=null?String(t.wab):"—"} pct={barPct(t.wab,allWab,false)} best={t.wab===bestWab}/>
+                            <Cell val={t.wab!=null?`#${t.wab}`:"—"} pct={barPct(t.wab,allWab,false)} best={t.wab===bestWab}/>
                           </div>
                         );
                       })}
@@ -911,7 +919,7 @@ function App() {
                     {compareIds.map(id => (
                       <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
                         insertTarget={insertTarget} sendFromCompare={sendFromCompare}
-                        handleMouseDown={handleMouseDown} moveTeam={moveTeam}/>
+                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey}/>
                     ))}
                   </div>
                 </>
