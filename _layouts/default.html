@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% if page.title %}{{ page.title }} · The Round Robin{% else %}The Round Robin{% endif %}</title>
   <meta name="description" content="{{ page.description | default: site.description }}">
-  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="{{ site.baseurl }}/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/main.css">
 </head>
 <body>
   <nav>
-    <a href="/" class="nav-logo">
-      <img src="/assets/img/logo-01.png" alt="The Round Robin" height="36">
+    <a href="{{ site.baseurl }}/" class="nav-logo">
+      <img src="{{ site.baseurl }}/assets/img/logo-01.png" alt="The Round Robin" height="36">
     </a>
     <div class="nav-links">
-      <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}">Home</a>
-      <a href="/bracket/" class="nav-link {% if page.url contains 'bracket' %}active{% endif %}">Bracket Tool</a>
-      <a href="/predictions/" class="nav-link {% if page.url contains 'predictions' %}active{% endif %}">My Predictions</a>
-      <a href="/about/" class="nav-link {% if page.url contains 'about' %}active{% endif %}">About</a>
+      <a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}">Home</a>
+      <a href="{{ site.baseurl }}/bracket/" class="nav-link {% if page.url contains 'bracket' %}active{% endif %}">Bracket Tool</a>
+      <a href="{{ site.baseurl }}/predictions/" class="nav-link {% if page.url contains 'predictions' %}active{% endif %}">My Predictions</a>
+      <a href="{{ site.baseurl }}/about/" class="nav-link {% if page.url contains 'about' %}active{% endif %}">About</a>
     </div>
   </nav>
 

@@ -1,7 +1,7 @@
 title: The Round Robin
 description: Bracket tools and picks built around real resume data.
-url: "https://theroundrobin.blog"
-baseurl: ""
+url: "https://grantbh12.github.io"
+baseurl: "/The-Round-Robin"
 
 defaults:
   - scope:
