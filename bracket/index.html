@@ -2,14 +2,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Round Robin Bracketology Hub</title>
+<title>The Bracketology Nest</title>
 <style>
+  :root {
+    --bg-page:#081828; --bg-sidebar:#0A1E35; --bg-card:#0D2240; --bg-ghost:#1A3050;
+    --border:#1A3050; --border-strong:#2A4A7A;
+    --text-primary:#E2E8F0; --text-secondary:#8694A8; --text-muted:#6B7A90;
+    --text-faint:#4A5568; --text-ghost:#1A3050;
+    --accent-green:#4ADE80; --accent-red:#F87171;
+  }
+  :root.light {
+    --bg-page:#F5F7FA; --bg-sidebar:#E2E6EC; --bg-card:#FFFFFF; --bg-ghost:#CBD1DB;
+    --border:#C5CDD8; --border-strong:#8FA4BC;
+    --text-primary:#0D2240; --text-secondary:#1E3A60; --text-muted:#4A6285;
+    --text-faint:#6B7A90; --text-ghost:#A8B5C2;
+    --accent-green:#16A34A; --accent-red:#DC2626;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #081828; overflow: hidden; }
+  body { background: var(--bg-page); overflow: hidden; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #081828; }
-  ::-webkit-scrollbar-thumb { background: #1A3050; border-radius: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg-page); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  input:focus { border-color: #E8872B !important; }
 </style>
 </head>
 <body>
@@ -24,18 +40,18 @@ const DATA_URL = "https://grantbh12.github.io/The-Round-Robin/teams.json";
 
 function LoadingScreen() {
   return (
-    <div style={{ minHeight:"100vh", background:"#081828", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column" }}>
-      <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>The Round Robin Bracketology Hub</h1>
-      <p style={{ color:"#4A5568", fontSize:13, marginTop:8, fontFamily:"'Segoe UI',system-ui,sans-serif" }}>Loading team data...</p>
+    <div style={{ minHeight:"100vh", background:"var(--bg-page)", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column" }}>
+      <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>The Bracketology Nest</h1>
+      <p style={{ color:"var(--text-faint)", fontSize:13, marginTop:8, fontFamily:"'Segoe UI',system-ui,sans-serif" }}>Loading team data...</p>
     </div>
   );
 }
 
 function ErrorScreen({ error, onRetry }) {
   return (
-    <div style={{ minHeight:"100vh", background:"#081828", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
-      <h1 style={{ fontSize:20, color:"#F87171", marginBottom:8 }}>Failed to load data</h1>
-      <p style={{ color:"#4A5568", fontSize:12, marginBottom:16 }}>{error}</p>
+    <div style={{ minHeight:"100vh", background:"var(--bg-page)", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+      <h1 style={{ fontSize:20, color:"var(--accent-red)", marginBottom:8 }}>Failed to load data</h1>
+      <p style={{ color:"var(--text-faint)", fontSize:12, marginBottom:16 }}>{error}</p>
       <button onClick={onRetry} style={{ background:"#E8872B", border:"none", borderRadius:6, color:"#fff", fontSize:13, padding:"8px 20px", cursor:"pointer" }}>Retry</button>
     </div>
   );
@@ -44,14 +60,31 @@ function ErrorScreen({ error, onRetry }) {
 function St({ l, v }) {
   return (
     <div style={{ display:"flex", justifyContent:"space-between" }}>
-      <span style={{ color:"#4A5568" }}>{l}</span>
+      <span style={{ color:"var(--text-faint)" }}>{l}</span>
       <span style={{ color:"#E8872B", fontFamily:"monospace" }}>{v}</span>
     </div>
   );
 }
 
+const parseWins = s => { const w = parseInt((s||'0-0').split('-')[0]); return isNaN(w) ? 0 : w; };
+const parseWinPct = s => { const [w,l]=(s||'0-0').split('-').map(Number); const tot=(w||0)+(l||0); return tot>0?(w||0)/tot:0; };
+function getSortDisplay(t, field) {
+  if (!t) return '';
+  switch(field) {
+    case 'net': return t.net != null ? String(t.net) : '';
+    case 'wab': return t.wab != null ? String(t.wab) : '';
+    case 'winPct': return t.record || '';
+    case 'q1wins': return t.q1 || '';
+    case 'q2wins': return t.q2 || '';
+    case 'q3wins': return t.q3 || '';
+    case 'q4wins': return t.q4 || '';
+    case 'name': case 'conf': return t.record || '';
+    default: { const val = t[field]; return val != null ? `#${val}` : ''; }
+  }
+}
+
 // TeamCard defined OUTSIDE App — prevents React from remounting scroll containers
-const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone }) {
+const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone, poolSort }) {
   const t = tm[tid];
   if (!t) return null;
   const isSel = selected === tid;
@@ -61,9 +94,10 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
     <div
       data-card={tid}
       onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
+      onClick={e => e.stopPropagation()}
       style={{
-        background: isSel ? "rgba(232,135,43,0.15)" : "#0D2240",
-        border: `1.5px solid ${isSel ? "#E8872B" : "#1A3050"}`,
+        background: isSel ? "rgba(232,135,43,0.15)" : "var(--bg-card)",
+        border: `1.5px solid ${isSel ? "#E8872B" : "var(--border)"}`,
         borderRadius:6, padding:"5px 8px",
         cursor: isDragging ? "grabbing" : "grab",
         userSelect:"none", marginBottom:3, transition: isDragging ? "none" : "all 0.12s",
@@ -73,10 +107,10 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
     >
       <div style={{ display:"flex", alignItems:"center", gap:6, fontSize:12 }}>
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        {inPool && <span style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:10, minWidth:22, textAlign:"right" }}>{t.net}</span>}
-        <span style={{ color:"#E2E8F0", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
-        <span style={{ color:"#4A5568", fontSize:9 }}>{t.conf}</span>
-        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{t.record}</span>
+        <span style={{ color:"var(--text-primary)", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
+        <span style={{ color:"var(--text-faint)", fontSize:9 }}>{t.conf}</span>
+        {inPool && <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace" }}>{getSortDisplay(t, poolSort?.field || 'net')}</span>}
+        {!inPool && t.record && <span style={{ color:"#E8872B", fontSize:10, fontFamily:"monospace", fontWeight:600 }}>{t.record}</span>}
       </div>
     </div>
   );
@@ -87,14 +121,186 @@ let DATA_SCRAPED_AT = "";
 
 const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:(i===10||i===15)?6:4}));
 const EXTRA_TIERS = [
-  {id:"ffo",label:"First Four Out",ac:"#8B4444"},
-  {id:"nfo",label:"Next Four Out",ac:"#6B3A3A"},
-  {id:"ac",label:"Also Considered",ac:"#555B6E"},
+  {id:"ffo",label:"First Four Out",ac:"#8B4444",acLight:"#C0392B"},
+  {id:"nfo",label:"Next Four Out",ac:"#6B3A3A",acLight:"#A93226"},
+  {id:"ac",label:"Also Considered",ac:"#555B6E",acLight:"#3D4F6E"},
 ];
 const COMPARE = "compare";
 const POOL = "pool";
 const DRAG_THRESHOLD = 6;
 const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C","#3D5E8C","#304D73","#304D73","#2A4060","#2A4060","#7A5A3A","#7A5A3A","#606060","#606060","#505050"];
+const SEED_COLORS_LIGHT = ["#E8872B","#D97A28","#B05520","#9A4020","#3A5C90","#305080","#305080","#26426A","#26426A","#1E3458","#1E3458","#6B4A2A","#6B4A2A","#484848","#484848","#383838"];
+
+// Returns 0.12–0.90 fill based on value's rank within vals array
+function barPct(val, vals, lowerIsBetter) {
+  const v = vals.filter(x => x != null && !isNaN(x));
+  if (v.length < 2 || val == null) return 0.55;
+  const min = Math.min(...v), max = Math.max(...v);
+  if (min === max) return 0.55;
+  const n = lowerIsBetter ? (max - val) / (max - min) : (val - min) / (max - min);
+  return 0.12 + n * 0.78;
+}
+
+function StatBar({ label, value, pct }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", gap:6, padding:"2px 0" }}>
+      <span style={{ color:"var(--text-faint)", fontSize:10, minWidth:30 }}>{label}</span>
+      <div style={{ flex:1, position:"relative", height:18, display:"flex", alignItems:"center" }}>
+        <div style={{ position:"absolute", left:0, top:1, bottom:1, width:`${Math.round(pct*100)}%`, background:"rgba(232,135,43,0.18)", borderRadius:3 }}/>
+        <span style={{ position:"relative", color:"#E8872B", fontFamily:"monospace", fontSize:11, fontWeight:700, paddingLeft:4 }}>{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function QTile({ label, val, em }) {
+  const parts = (val||'0-0').split('-');
+  const w = parseInt(parts[0])||0, l = parseInt(parts[1])||0;
+  return (
+    <div style={{ flex:1, background:"var(--bg-page)", borderRadius:5, padding:"5px 7px" }}>
+      <div style={{ fontSize:9, fontWeight:700, color:"var(--text-faint)", marginBottom:2, textTransform:"uppercase", letterSpacing:"0.04em" }}>{label}</div>
+      <div style={{ display:"flex", gap:3, alignItems:"baseline" }}>
+        <span style={{ fontSize:em?15:13, fontWeight:800, color:"var(--text-primary)", fontFamily:"monospace", lineHeight:1 }}>{w}</span>
+        <span style={{ fontSize:10, color:"var(--border-strong)" }}>-</span>
+        <span style={{ fontSize:em?15:13, fontWeight:800, color:"var(--text-secondary)", fontFamily:"monospace", lineHeight:1 }}>{l}</span>
+      </div>
+    </div>
+  );
+}
+
+function SectionToggle({ label, open, onToggle, color }) {
+  return (
+    <div onClick={onToggle} style={{ display:"flex", alignItems:"center", gap:4, cursor:"pointer", padding:"5px 0 3px", userSelect:"none", borderTop:"1px solid var(--border)", marginTop:6 }}>
+      <span style={{ color:color||"var(--text-muted)", fontSize:9 }}>{open?"▾":"▸"}</span>
+      <span style={{ fontSize:9, fontWeight:700, color:color||"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>{label}</span>
+    </div>
+  );
+}
+
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange, selected, darkMode }) {
+  const [powerOpen, setPowerOpen] = useState(true);
+  const [recordsOpen, setRecordsOpen] = useState(true);
+  const [winsOpen, setWinsOpen] = useState(true);
+  useEffect(() => { if (collapseKey > 0) { setPowerOpen(false); setRecordsOpen(false); setWinsOpen(false); } }, [collapseKey]);
+  useEffect(() => { if (expandKey > 0) { setPowerOpen(true); setRecordsOpen(true); setWinsOpen(true); } }, [expandKey]);
+  const anyOpen = powerOpen || recordsOpen || winsOpen;
+  const allOpen = powerOpen && recordsOpen && winsOpen;
+  useEffect(() => { onOpenChange(tid, anyOpen, allOpen); }, [tid, anyOpen, allOpen, onOpenChange]);
+  const t = tm[tid];
+  if (!t) return null;
+  const idx = compareIds.indexOf(tid);
+  const kw = t.keyWins||[], kl = t.keyLosses||[];
+  return (
+    <div style={{ display:"flex", flexShrink:0 }}>
+      {insertTarget?.zone===COMPARE && insertTarget?.beforeTid===tid && (
+        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
+      )}
+      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }} onClick={e => e.stopPropagation()}
+        style={{ width:220, background: selected===tid ? "rgba(232,135,43,0.15)" : "var(--bg-card)", border: selected===tid ? "1.5px solid #E8872B" : "1px solid var(--border-strong)", boxShadow: selected===tid ? "0 0 0 1px #E8872B" : "none", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab", transition:"all 0.12s" }}>
+        {/* Header */}
+        <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10, paddingBottom:8, borderBottom:"1px solid var(--border)" }}>
+          {t.logo && <img src={t.logo} alt="" style={{ width:34, height:34, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ color:"var(--text-primary)", fontWeight:800, fontSize:13, lineHeight:1.2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{t.name}</div>
+            <div style={{ color:"var(--text-faint)", fontSize:10, marginTop:1 }}>{t.conf} · {t.confRecord}</div>
+          </div>
+          <div style={{ textAlign:"right", flexShrink:0 }}>
+            <div style={{ background:"rgba(232,135,43,0.12)", border:"1px solid rgba(232,135,43,0.35)", borderRadius:4, padding:"1px 5px", display:"inline-block", marginBottom:2 }}>
+              <span style={{ color:"#E8872B", fontFamily:"monospace", fontSize:12, fontWeight:800 }}>#{t.net}</span>
+            </div>
+            <div style={{ color:"var(--text-secondary)", fontSize:12, fontWeight:700 }}>{t.record}</div>
+          </div>
+        </div>
+        {/* Resume Metrics */}
+        <div style={{ marginBottom:8 }}>
+          <div style={{ fontSize:9, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:3 }}>Key Resume Metrics</div>
+          <St l="SOS" v={t.sos!=null?`#${t.sos}`:"—"}/>
+          <St l="ncSOS" v={t.ncSos!=null?`#${t.ncSos}`:"—"}/>
+          <St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
+          <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/>
+        </div>
+        {/* Quadrant Records */}
+        <div style={{ marginBottom:6 }}>
+          <div style={{ fontSize:9, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Quadrants</div>
+          <div style={{ display:"flex", gap:4, marginBottom:4 }}><QTile label="Q1" val={t.q1} em={true}/><QTile label="Q2" val={t.q2} em={false}/></div>
+          <div style={{ display:"flex", gap:4 }}><QTile label="Q3" val={t.q3} em={false}/><QTile label="Q4" val={t.q4} em={false}/></div>
+        </div>
+        {/* Power Ratings */}
+        <SectionToggle label="Power Ratings" open={powerOpen} onToggle={() => setPowerOpen(o=>!o)} color="#4A6FA5"/>
+        {powerOpen && (
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"3px 8px", fontSize:11, padding:"4px 2px 6px" }}>
+            {[["KPI",t.kpi],["BPI",t.bpi],["KenPom",t.pom],["T-Rank",t.tRank]].map(([l,v]) => (
+              <div key={l} style={{ display:"flex", justifyContent:"space-between" }}>
+                <span style={{ color:"var(--text-faint)" }}>{l}</span>
+                <span style={{ color:"#E8872B", fontFamily:"monospace" }}>{v!=null?`#${v}`:"—"}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Other Records */}
+        <SectionToggle label="Other Resume Metrics" open={recordsOpen} onToggle={() => setRecordsOpen(o=>!o)}/>
+        {recordsOpen && (
+          <div style={{ display:"flex", flexDirection:"column", gap:2, fontSize:11, padding:"4px 2px 6px" }}>
+            {[["NC Rec",t.ncRecord],["Home",t.home],["Road",t.road],["Neutral",t.neutral],["Avg W",t.avgNetWins!=null?`#${t.avgNetWins}`:null],["Avg L",t.avgNetLosses!=null?`#${t.avgNetLosses}`:null]].map(([l,v]) => (
+              <St key={l} l={l} v={v||"—"}/>
+            ))}
+          </div>
+        )}
+        {/* Key Wins / Losses */}
+        <SectionToggle label="Key Wins / Losses" open={winsOpen} onToggle={() => setWinsOpen(o=>!o)} color="var(--text-secondary)"/>
+        {winsOpen && (
+          <div style={{ padding:"4px 2px 6px" }}>
+            <div style={{ fontSize:9, fontWeight:700, color:"var(--accent-green)", marginBottom:3, textTransform:"uppercase" }}>Top Wins</div>
+            {Array.from({length:5}).map((_,i) => {
+              const w = kw[i];
+              return w ? (
+                <div key={i} style={{ fontSize:10, color:"var(--text-secondary)", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                  <span style={{ color:"var(--accent-green)", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"var(--text-faint)"}}>{w.score}</span>
+                </div>
+              ) : <div key={i} style={{ fontSize:10, color:"var(--text-ghost)", padding:"1px 0" }}>—</div>;
+            })}
+            <div style={{ fontSize:9, fontWeight:700, color:"var(--accent-red)", margin:"5px 0 3px", textTransform:"uppercase" }}>Losses</div>
+            {Array.from({length:5}).map((_,i) => {
+              const l = kl[i];
+              return l ? (
+                <div key={i} style={{ fontSize:10, color:"var(--text-secondary)", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                  <span style={{ color:"var(--accent-red)", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"var(--text-faint)"}}>{l.score}</span>
+                </div>
+              ) : <div key={i} style={{ fontSize:10, color:"var(--text-ghost)", padding:"1px 0" }}>—</div>;
+            })}
+          </div>
+        )}
+        <div style={{ flex:1, minHeight:8 }}/>
+        {/* Action buttons */}
+        <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid var(--border)", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
+          <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
+            {SEEDS.map(s => (
+              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
+                style={{ background:"var(--bg-page)", border:"1px solid var(--border)", borderRadius:3, color:asgn[s.id].length>=s.max?"var(--text-ghost)":"var(--text-secondary)", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
+                {s.num}
+              </button>
+            ))}
+          </div>
+          <div style={{ display:"flex", gap:3 }}>
+            {EXTRA_TIERS.map(et => { const c = darkMode ? et.ac : et.acLight; return (
+              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
+                style={{ background:"var(--bg-page)", border:`1px solid ${c}44`, borderRadius:3, color:c, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+                {et.label.split(" ").map(w=>w[0]).join("")}
+              </button>
+            );})}
+            <button onClick={() => moveTeam(tid, POOL)}
+              style={{ background:"var(--bg-page)", border:"1px solid var(--border)", borderRadius:3, color:"var(--text-muted)", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
+              ← Pool
+            </button>
+          </div>
+        </div>
+      </div>
+      {insertTarget?.zone===COMPARE && !insertTarget?.beforeTid && insertTarget?.afterTid===tid && idx===compareIds.length-1 && (
+        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginLeft:4, minHeight:40 }}/>
+      )}
+    </div>
+  );
+});
 
 function App() {
   const teams = useMemo(() => REAL_TEAMS, []);
@@ -123,7 +329,7 @@ function App() {
           for (const k in saved) {
             if (!Array.isArray(saved[k])) { valid = false; break; }
             for (const id of saved[k]) {
-              if (!allIds.has(id)) { valid = false; break; }
+              if (!allIds.has(id) || usedIds.has(id)) { valid = false; break; }
               usedIds.add(id);
             }
           }
@@ -172,9 +378,43 @@ function App() {
     setMetricRanges({net:[1,400],sos:[1,400],kpi:[1,400],sor:[1,400],wab:[1,400],bpi:[1,400],pom:[1,400],tRank:[1,400]});
   };
   const [selected, setSelected] = useState(null);
+  const [poolSort, setPoolSort] = useState({ field: 'net', dir: 'asc' });
   const [includeBubbleTiers, setIncludeBubbleTiers] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [helpOpen, setHelpOpen] = useState(false);
+  useEffect(() => {
+    if (!helpOpen) return;
+    const onKey = e => { if (e.key === "Escape") setHelpOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [helpOpen]);
+  const [collapseKey, setCollapseKey] = useState(0);
+  const [expandKey, setExpandKey] = useState(0);
+  const [cardOpenMap, setCardOpenMap] = useState({});
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("bracketology-theme");
+    const isLight = saved === "light";
+    if (isLight) document.documentElement.classList.add("light");
+    return !isLight;
+  });
+  const toggleMode = useCallback(() => {
+    setDarkMode(d => {
+      const next = !d;
+      document.documentElement.classList.toggle("light", !next);
+      localStorage.setItem("bracketology-theme", next ? "dark" : "light");
+      return next;
+    });
+  }, []);
+  const seedColors = darkMode ? SEED_COLORS : SEED_COLORS_LIGHT;
+  const handleCardOpenChange = useCallback((tid, anyOpen, allOpen) => {
+    setCardOpenMap(p => {
+      const prev = p[tid];
+      if (prev && prev.any === anyOpen && prev.all === allOpen) return p;
+      return {...p, [tid]: {any: anyOpen, all: allOpen}};
+    });
+  }, []);
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
@@ -194,13 +434,7 @@ function App() {
       const n = {};
       for (const k in p) n[k] = p[k].filter(x => x !== tid);
       if (target === POOL) {
-        const teamNet = tm[tid]?.net ?? 999;
-        const pool = n[POOL];
-        let idx = pool.length;
-        for (let i = 0; i < pool.length; i++) {
-          if ((tm[pool[i]]?.net ?? 999) > teamNet) { idx = i; break; }
-        }
-        pool.splice(idx, 0, tid);
+        n[POOL].push(tid);
       } else if (beforeTid && n[target].includes(beforeTid)) {
         const idx = n[target].indexOf(beforeTid);
         n[target].splice(idx, 0, tid);
@@ -209,7 +443,7 @@ function App() {
       }
       return n;
     });
-  }, [tm]);
+  }, []);
 
   const autoSeed = useCallback(() => {
     // Always work from the full 128-team list regardless of current board state
@@ -276,16 +510,82 @@ function App() {
   }, [toastMsg]);
 
   useEffect(() => {
-    if (!selected) return;
-    const onKey = e => { if (e.key === "Escape") setSelected(null); };
+    const onKey = e => {
+      const tag = e.target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (e.key === "Escape") { if (helpOpen) { setHelpOpen(false); return; } setSelected(null); return; }
+      if (!selected) {
+        // No selection: arrows start selecting from pool/compare
+        if (e.key === "ArrowDown" && poolF.length > 0) { e.preventDefault(); setSelected(poolF[0]); }
+        if (e.key === "ArrowRight" && compareIds.length > 0) { e.preventDefault(); setSelected(compareIds[0]); }
+        return;
+      }
+      const poolIdx = poolF.indexOf(selected);
+      const cmpIdx = compareIds.indexOf(selected);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (poolIdx >= 0) setSelected(poolF[Math.min(poolIdx + 1, poolF.length - 1)]);
+        else if (poolF.length > 0) setSelected(poolF[0]);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (poolIdx > 0) setSelected(poolF[poolIdx - 1]);
+        else if (poolIdx === 0) setSelected(null);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        const isRight = e.key === "ArrowRight";
+        const seedZone = SEEDS.find(s => (asgn[s.id]||[]).includes(selected));
+        if (seedZone) {
+          const zoneList = asgn[seedZone.id];
+          const idx = zoneList.indexOf(selected);
+          if (e.shiftKey) {
+            // Shift+arrow: reorder within seed line
+            if (isRight && idx < zoneList.length - 1) {
+              const beforeTid = idx + 2 < zoneList.length ? zoneList[idx + 2] : null;
+              moveTeam(selected, seedZone.id, beforeTid);
+            } else if (!isRight && idx > 0) {
+              moveTeam(selected, seedZone.id, zoneList[idx - 1]);
+            }
+          } else {
+            // Navigate within seed line
+            if (isRight && idx < zoneList.length - 1) setSelected(zoneList[idx + 1]);
+            else if (!isRight && idx > 0) setSelected(zoneList[idx - 1]);
+          }
+        } else {
+          // Compare navigation
+          if (isRight) {
+            if (cmpIdx >= 0) setSelected(compareIds[Math.min(cmpIdx + 1, compareIds.length - 1)]);
+            else if (compareIds.length > 0) setSelected(compareIds[0]);
+          } else {
+            if (cmpIdx > 0) setSelected(compareIds[cmpIdx - 1]);
+            else if (cmpIdx === 0) setSelected(null);
+          }
+        }
+      } else if (e.key === "c" || e.key === "C") {
+        if (compareIds.length < 8 && !compareIds.includes(selected)) {
+          moveTeam(selected, COMPARE); setSelected(null);
+        }
+      } else if (e.key === "Backspace" || e.key === "Delete") {
+        const zone = Object.keys(asgn).find(k => asgn[k].includes(selected));
+        if (zone && zone !== POOL) { moveTeam(selected, POOL); setSelected(null); }
+      } else {
+        const KEY_ZONE = {
+          "1":"seed1","2":"seed2","3":"seed3","4":"seed4","5":"seed5",
+          "6":"seed6","7":"seed7","8":"seed8","9":"seed9","0":"seed10",
+          "-":"seed11","=":"seed12","[":"seed13","]":"seed14","\\":"seed15","`":"seed16",
+          "f":"ffo","F":"ffo","n":"nfo","N":"nfo","a":"ac","A":"ac",
+        };
+        const target = KEY_ZONE[e.key];
+        if (target) { moveTeam(selected, target); setSelected(null); }
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected]);
+  }, [selected, helpOpen, poolF, compareIds, asgn, moveTeam]);
 
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
     const seed = SEEDS.find(s => s.id === zoneId);
-    if (seed && asgn[zoneId].length >= seed.max && !asgn[zoneId].includes(selected)) return;
+    // Seed rows are uncapped for manual placement
     if (zoneId === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
     moveTeam(selected, zoneId);
     setSelected(null);
@@ -294,6 +594,15 @@ function App() {
   const sendFromCompare = useCallback((tid, target) => {
     moveTeam(tid, target);
   }, [moveTeam]);
+
+  const fillCompare = useCallback(() => {
+    const slotsLeft = 8 - compareIds.length;
+    if (slotsLeft <= 0) return;
+    const poolTeams = new Set(asgn[POOL] || []);
+    const eligible = poolF.filter(id => poolTeams.has(id) && !compareIds.includes(id));
+    const toAdd = eligible.slice(0, slotsLeft);
+    toAdd.forEach(id => moveTeam(id, COMPARE));
+  }, [compareIds, poolF, asgn, moveTeam]);
 
   const handleMouseDown = useCallback((e, tid) => {
     if (e.button !== 0) return;
@@ -367,9 +676,8 @@ function App() {
         const insert = dragRef.current.insertRef;
         if (targetZone) {
           const seed = SEEDS.find(s => s.id === targetZone);
-          const atMax = seed
-            ? (asgn[targetZone].length >= seed.max && !asgn[targetZone].includes(tid))
-            : (targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid));
+          // Seed rows are uncapped for manual placement; only compare zone has a cap
+          const atMax = !seed && targetZone === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(tid);
           if (!atMax) {
             let beforeTid = null;
             if (insert && insert.zone === targetZone) {
@@ -397,6 +705,17 @@ function App() {
     document.addEventListener("mouseup", onMouseUp);
   }, [asgn, moveTeam, tm]);
 
+  const POOL_SORT_OPTS = [
+    {field:'net',label:'NET',defDir:'asc'},{field:'kpi',label:'KPI',defDir:'asc'},
+    {field:'sor',label:'SOR',defDir:'asc'},{field:'bpi',label:'BPI',defDir:'asc'},
+    {field:'pom',label:'KenPom',defDir:'asc'},{field:'tRank',label:'T-Rank',defDir:'asc'},
+    {field:'wab',label:'WAB',defDir:'desc'},{field:'sos',label:'SOS',defDir:'asc'},
+    {field:'ncSos',label:'ncSOS',defDir:'asc'},{field:'name',label:'Name',defDir:'asc'},
+    {field:'conf',label:'Conf',defDir:'asc'},{field:'winPct',label:'Record',defDir:'desc'},
+    {field:'q1wins',label:'Q1W',defDir:'desc'},{field:'q2wins',label:'Q2W',defDir:'desc'},
+    {field:'q3wins',label:'Q3W',defDir:'desc'},{field:'q4wins',label:'Q4W',defDir:'desc'},
+  ];
+
   const poolF = useMemo(() => {
     let ids = asgn[POOL] || [];
     if (confFs.size > 0) ids = ids.filter(id => confFs.has(tm[id]?.conf));
@@ -414,21 +733,34 @@ function App() {
         return val >= mn && val <= mx;
       });
     });
-    return ids;
-  }, [asgn, confFs, search, tm, metricRanges]);
+    const { field, dir } = poolSort;
+    return [...ids].sort((a, b) => {
+      const ta = tm[a]; const tb = tm[b];
+      if (field === 'name') { const va=ta?.name||''; const vb=tb?.name||''; return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va); }
+      if (field === 'conf') { const va=ta?.conf||''; const vb=tb?.conf||''; return dir==='asc'?va.localeCompare(vb):vb.localeCompare(va); }
+      let va, vb;
+      if (field === 'winPct') { va=parseWinPct(ta?.record); vb=parseWinPct(tb?.record); }
+      else if (field === 'q1wins') { va=parseWins(ta?.q1); vb=parseWins(tb?.q1); }
+      else if (field === 'q2wins') { va=parseWins(ta?.q2); vb=parseWins(tb?.q2); }
+      else if (field === 'q3wins') { va=parseWins(ta?.q3); vb=parseWins(tb?.q3); }
+      else if (field === 'q4wins') { va=parseWins(ta?.q4); vb=parseWins(tb?.q4); }
+      else { va=ta?.[field]??999; vb=tb?.[field]??999; }
+      return dir==='asc' ? va-vb : vb-va;
+    });
+  }, [asgn, confFs, search, tm, metricRanges, poolSort]);
 
   const totalPlaced = SEEDS.reduce((s,sd) => s+(asgn[sd.id]?.length||0), 0) + EXTRA_TIERS.reduce((s,t) => s+(asgn[t.id]?.length||0), 0);
   const compareIds = asgn[COMPARE] || [];
   const isSel = !!selected;
 
   return (
-    <div style={{ minHeight:"100vh", background:"#081828", color:"#E2E8F0", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+    <div style={{ minHeight:"100vh", background:"var(--bg-page)", color:"var(--text-primary)", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
 
       {/* Ghost — pure DOM, never triggers React re-render */}
       <div ref={ghostRef} style={{
         display:"none", position:"fixed", pointerEvents:"none", zIndex:9999,
-        background:"#1A3050", border:"1.5px solid #E8872B", borderRadius:6,
-        padding:"5px 10px", fontSize:12, color:"#E2E8F0", whiteSpace:"nowrap",
+        background:"var(--bg-ghost)", border:"1.5px solid #E8872B", borderRadius:6,
+        padding:"5px 10px", fontSize:12, color:"var(--text-primary)", whiteSpace:"nowrap",
         boxShadow:"0 4px 20px rgba(0,0,0,0.5)",
       }}/>
 
@@ -436,8 +768,8 @@ function App() {
       {toastMsg && (
         <div style={{
           position:"fixed", bottom:24, left:"50%", transform:"translateX(-50%)",
-          background:"#1A3050", border:"1px solid #E8872B", borderRadius:8,
-          padding:"10px 20px", fontSize:12, color:"#E2E8F0",
+          background:"var(--bg-ghost)", border:"1px solid #E8872B", borderRadius:8,
+          padding:"10px 20px", fontSize:12, color:"var(--text-primary)",
           boxShadow:"0 4px 20px rgba(0,0,0,0.5)", zIndex:10000,
           pointerEvents:"none", whiteSpace:"nowrap",
         }}>
@@ -445,47 +777,133 @@ function App() {
         </div>
       )}
 
+      {/* Help Modal */}
+      {helpOpen && (
+        <div onClick={() => setHelpOpen(false)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:20000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:"var(--bg-sidebar)", border:"1px solid var(--border)", borderRadius:10, padding:"24px 28px", maxWidth:580, width:"100%", maxHeight:"82vh", overflowY:"auto", position:"relative", boxShadow:"0 8px 40px rgba(0,0,0,0.45)", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+            <button onClick={() => setHelpOpen(false)} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", color:"var(--text-muted)", fontSize:18, cursor:"pointer", lineHeight:1, padding:0 }}>✕</button>
+            <h2 style={{ margin:"0 0 4px", fontSize:17, fontWeight:800, background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>The Bracketology Nest</h2>
+            <p style={{ color:"var(--text-faint)", fontSize:11, margin:"0 0 20px" }}>Interactive bracket prediction &amp; resume comparison tool for college basketball</p>
+            <p style={{ color:"var(--text-secondary)", fontSize:12, lineHeight:1.6, margin:"0 0 20px", padding:"10px 14px", background:"var(--bg-card)", borderRadius:6, borderLeft:"3px solid #E8872B" }}>
+              Build your bracket by placing teams from the pool into seed lines 1–16, compare team resumes side by side, and track bubble teams in the tier zones below the bracket. Your bracket auto-saves in the browser between sessions.
+            </p>
+
+            {/* Zones */}
+            {[["ZONES",null],
+              ["Team Pool","All unplaced teams. Sort by any metric, search by name or conference, and use the filter panel to narrow the list. Drag or click-select to move teams."],
+              ["Compare Resumes","Place up to 8 teams side by side for a detailed resume comparison. A summary table with bars appears automatically when 2 or more teams are loaded."],
+              ["Bracket Seedlines 1–16","The 68-team field. Each seed line holds 4 teams; seeds 11 and 16 hold 6 (First Four play-in games). You can exceed the cap manually."],
+              ["First Four Out","Bubble tracking zone for teams just outside the field."],
+              ["Next Four Out","Teams a step further from the bubble."],
+              ["Also Considered","Additional bubble-watch zone for teams worth monitoring."],
+            ].map(([title, desc], i) => i === 0
+              ? <div key={i} style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>{title}</div>
+              : <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                  <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+                </div>
+            )}
+
+            {/* Moving Teams */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Moving Teams</div>
+            {[
+              ["Click to select","Click any team card to select it (orange highlight). Then click a zone or seed line to place it there."],
+              ["Drag","Drag a team directly from any zone to any other zone or seed line. Reorder within zones by dragging."],
+              ["Deselect","Click the selected team again or press Escape to deselect."],
+              ["From Compare","Use the numbered seed buttons at the bottom of each compare card to send a team directly to a seed line."],
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+              </div>
+            ))}
+
+            {/* Filters */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Filters</div>
+            {[
+              ["Search","Find teams by name, conference, or NET ranking. The clear × button resets search and all filters."],
+              ["Conference pills","Filter the pool to one or more conferences. Multiple selections are combined (OR)."],
+              ["Ranking sliders","Narrow the pool by ranking range across NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank."],
+              ["Collapse","Click the arrow button to collapse the filter panel horizontally and give seedlines more room."],
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+              </div>
+            ))}
+
+            {/* Keyboard Shortcuts */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Keyboard Shortcuts</div>
+            <div style={{ fontSize:10, color:"var(--text-faint)", marginBottom:8 }}>Shortcuts work when a team is selected (orange highlight). Use arrow keys to select without clicking.</div>
+            {[
+              ["↑ / ↓","Navigate up/down in the pool list"],
+              ["← / →","Navigate left/right through compare cards, or between teams within a seed line"],
+              ["Shift + ← / →","Reorder the selected team one slot left/right within its seed line"],
+              ["1 – 9","Place selected team on seed line 1–9"],
+              ["0","Seed line 10"],
+              ["- = [ ] \\ `","Seed lines 11–16 (in order)"],
+              ["c","Move to Compare Resumes"],
+              ["f","First Four Out"],
+              ["n","Next Four Out"],
+              ["a","Also Considered"],
+              ["Backspace / Delete","Return selected team to pool"],
+              ["Escape","Deselect / close this panel"],
+            ].map(([key, action], i) => (
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"5px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <code style={{ fontSize:11, fontFamily:"monospace", color:"#E8872B", background:"rgba(232,135,43,0.10)", border:"1px solid rgba(232,135,43,0.25)", borderRadius:4, padding:"2px 7px", minWidth:120, flexShrink:0, display:"inline-block", textAlign:"center" }}>{key}</code>
+                <span style={{ fontSize:11, color:"var(--text-secondary)" }}>{action}</span>
+              </div>
+            ))}
+
+            <div style={{ marginTop:20, paddingTop:14, borderTop:"1px solid var(--border)", fontSize:10, color:"var(--text-faint)", textAlign:"center" }}>
+              Data sourced from <a href="https://warrennolan.com" target="_blank" rel="noopener noreferrer" style={{ color:"#4A6FA5" }}>WarrenNolan.com</a> · Not affiliated with the NCAA · © 2026 The Round Robin
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <div style={{ padding:"10px 18px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
+      <div style={{ padding:"10px 18px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
         <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          <img src="logo.png" alt="The Bracketology Nest" style={{ height:44, width:"auto", objectFit:"contain", flexShrink:0 }}/>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-              Bracketology Hub — The Round Robin
+              The Bracketology Nest
             </h1>
-            <p style={{ margin:"2px 0 0", fontSize:10, color:"#4A5568" }}>
-              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const diff = Date.now() - d; const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
+            <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
+              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
             </p>
           </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:3, marginRight:4 }}>
-            <button onClick={autoSeed} style={{ background:"transparent", border:"1px solid #1A3050", borderRadius:5, color:"#6B7A90", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
-              Auto-seed
-            </button>
-            <label style={{ display:"flex", alignItems:"center", gap:4, fontSize:9, color:"#8694A8", cursor:"pointer", userSelect:"none" }}>
+          <button onClick={toggleMode} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+            style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+            {darkMode ? "☀" : "🌙"}
+          </button>
+          <button onClick={() => setHelpOpen(true)} title="Help"
+            style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+            ?
+          </button>
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"stretch", gap:4 }}>
+            <div style={{ display:"flex", gap:6 }}>
+              <button onClick={autoSeed} style={{ background:"#4A6FA5", border:"none", borderRadius:5, color:"#fff", fontSize:11, padding:"6px 14px", cursor:"pointer", fontWeight:600, flex:1 }}>
+                Auto Seed Using Net Rankings
+              </button>
+              <button onClick={() => {
+                const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
+                n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
+                setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
+                try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
+              }} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:11, padding:"6px 14px", cursor:"pointer", fontWeight:700 }}>
+                Reset
+              </button>
+            </div>
+            <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:10, color:"var(--text-muted)", cursor:"pointer", userSelect:"none", paddingLeft:2 }}>
               <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)} style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
               Include bubble tiers
             </label>
           </div>
-          {selected && <>
-            <button onClick={() => setSelected(null)} style={{ background:"#E8872B22", border:"1px solid #E8872B", borderRadius:5, color:"#E8872B", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
-              ✕ Deselect {tm[selected]?.name}
-            </button>
-            {findZone(selected) !== POOL && (
-              <button onClick={() => { moveTeam(selected, POOL); setSelected(null); }} style={{ background:"#1A305088", border:"1px solid #4A6FA5", borderRadius:5, color:"#4A6FA5", fontSize:10, padding:"3px 10px", cursor:"pointer" }}>
-                ← Pool
-              </button>
-            )}
-          </>}
-          <button onClick={() => {
-            const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-            n[COMPARE]=[]; n[POOL]=teams.map(t => t.id).sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
-            setAsgn(n); setSelected(null);
-            try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-          }} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:10, padding:"3px 10px", cursor:"pointer", fontWeight:600 }}>
-            Reset
-          </button>
+
         </div>
       </div>
 
@@ -493,20 +911,32 @@ function App() {
       <div style={{ display:"flex", height:"calc(100vh - 66px)", overflow:"hidden" }}>
 
         {/* Pool sidebar */}
-        <div style={{ flex:"0 0 260px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#0A1E35" }}>
-          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
+        <div style={{ flex:"0 0 260px", borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", background:"var(--bg-sidebar)" }}>
+          <div style={{ padding:"8px 10px", borderBottom:"1px solid var(--border)" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Team Pool</div>
             <div style={{ position:"relative" }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, conf, or NET..."
-                style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"#0D2240", border:"1px solid #1A3050", borderRadius:5, color:"#E2E8F0", fontSize:12, outline:"none" }}
-                onFocus={e => e.target.style.borderColor="#E8872B"}
-                onBlur={e => e.target.style.borderColor="#1A3050"}
+                style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-primary)", fontSize:12, outline:"none" }}
               />
               {(search || anyFilterActive) && (
                 <button onClick={() => { setSearch(""); clearFilters(); }}
-                  style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"#6B7A90", fontSize:13, cursor:"pointer", lineHeight:1, padding:"0 2px" }}>×</button>
+                  style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"var(--text-muted)", fontSize:13, cursor:"pointer", lineHeight:1, padding:"0 2px" }}>×</button>
               )}
             </div>
-            <div style={{ fontSize:9, color:"#4A5568", marginTop:4 }}>
+            <div style={{ display:"flex", gap:3, flexWrap:"wrap", marginTop:6 }}>
+              {POOL_SORT_OPTS.map(opt => {
+                const active = poolSort.field === opt.field;
+                return (
+                  <button key={opt.field} onClick={() => setPoolSort(p => p.field === opt.field ? { field:opt.field, dir:p.dir==='asc'?'desc':'asc' } : { field:opt.field, dir:opt.defDir })}
+                    style={{ background: active ? "#E8872B22" : "var(--bg-card)", border:`1px solid ${active ? "#E8872B" : "var(--border)"}`,
+                      borderRadius:4, color: active ? "#E8872B" : "var(--text-muted)", fontSize:9, padding:"2px 6px",
+                      cursor:"pointer", fontWeight: active ? 700 : 400, whiteSpace:"nowrap" }}>
+                    {opt.label}<span style={{ opacity: active ? 1 : 0, marginLeft:2 }}>{poolSort.dir==='asc'?'▲':'▼'}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{ fontSize:9, color:"var(--text-faint)", marginTop:4 }}>
               {anyFilterActive || search ? `${poolF.length} of ${teams.length}` : `${poolF.length} teams`}
             </div>
           </div>
@@ -516,103 +946,239 @@ function App() {
             transition:"background 0.1s",
           }}>
             {poolF.map(id => (
-              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool"/>
+              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool" poolSort={poolSort}/>
             ))}
           </div>
-          <div style={{ padding:"8px 10px", borderTop:"1px solid #1A3050", fontSize:9, color:"#4A5568", lineHeight:1.5 }}>
-            Data sourced from <a href="https://warrennolan.com" target="_blank" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
+          <div style={{ padding:"8px 10px", borderTop:"1px solid var(--border)", fontSize:9, color:"var(--text-faint)", lineHeight:1.5 }}>
+            Data sourced from <a href="https://warrennolan.com" target="_blank" rel="noopener noreferrer" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with the NCAA or any institution · For informational purposes only · © 2026 The Round Robin
           </div>
         </div>
 
-        {/* Filter panel */}
-        <div style={{ flex:"0 0 200px", borderRight:"1px solid #1A3050", display:"flex", flexDirection:"column", background:"#081828", overflowY:"auto" }}>
-          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <span style={{ fontSize:11, fontWeight:700, color:"#8694A8", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters</span>
-            {anyFilterActive && <button onClick={clearFilters} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0 }}>Clear all</button>}
+        {/* Filter panel — horizontally collapsible */}
+        <div style={{ width: filtersOpen ? 200 : 28, flexShrink:0, borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", background:"var(--bg-page)", overflow:"hidden", transition:"width 0.18s ease" }}>
+          <div onClick={() => setFiltersOpen(o => !o)} style={{ padding:"10px 0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", borderBottom:"1px solid var(--border)", flexShrink:0, gap:4 }}>
+            <span style={{ fontSize:11, color: anyFilterActive ? "#E8872B" : "var(--text-muted)" }}>{filtersOpen ? "◀" : "▶"}</span>
+            {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters · Collapse</span>}
+            {filtersOpen && anyFilterActive && <button onClick={e => { e.stopPropagation(); clearFilters(); }} style={{ background:"none", border:"none", color:"#E8872B", fontSize:9, cursor:"pointer", padding:0, marginLeft:4 }}>Clear</button>}
           </div>
-          {/* Conference pills */}
-          <div style={{ padding:"8px 10px", borderBottom:"1px solid #1A3050" }}>
-            <div style={{ fontSize:9, color:"#4A5568", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em" }}>Conference</div>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
-              {allConfs.filter(c => c !== "All").map(c => {
-                const active = confFs.has(c);
-                return (
-                  <button key={c} onClick={() => setConfFs(p => { const n = new Set(p); n.has(c) ? n.delete(c) : n.add(c); return n; })} style={{
-                    background: active ? "#E8872B" : "#0D2240",
-                    border:`1px solid ${active ? "#E8872B" : "#1A3050"}`,
-                    borderRadius:4, color: active ? "#fff" : "#6B7A90",
-                    fontSize:10, padding:"3px 7px", cursor:"pointer", fontWeight: active ? 700 : 400,
-                    transition:"all 0.1s",
-                  }}>{c}</button>
-                );
-              })}
-            </div>
-          </div>
-          {/* Metric range sliders */}
-          <div style={{ padding:"8px 10px", display:"flex", flexDirection:"column", gap:10 }}>
-            <div style={{ fontSize:9, color:"#4A5568", textTransform:"uppercase", letterSpacing:"0.06em" }}>Rankings</div>
-            {METRICS.map(({key, label}) => {
-              const [mn, mx] = metricRanges[key];
-              const isDefault = mn === 1 && mx === 400;
-              return (
-                <div key={key}>
-                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
-                    <span style={{ fontSize:9, color: isDefault ? "#4A5568" : "#E8872B", fontWeight: isDefault ? 400 : 600 }}>{label}</span>
-                    <span style={{ fontSize:9, color:"#8694A8", fontFamily:"monospace" }}>
-                      {isDefault ? "any" : `#${mn} – #${mx}`}
-                    </span>
-                  </div>
-                  <div 
-                    onMouseDown={e => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const pct = (e.clientX - rect.left) / rect.width;
-                      const val = Math.round(1 + pct * 399);
-                      const [cmn, cmx] = metricRanges[key];
-                      const distMin = Math.abs(val - cmn);
-                      const distMax = Math.abs(val - cmx);
-                      const moveMin = distMin <= distMax;
-                      const onMove = mv => {
-                        const p2 = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
-                        const v2 = Math.round(1 + p2 * 399);
-                        setMetricRanges(p => {
-                          const [a, b] = p[key];
-                          return {...p, [key]: moveMin ? [Math.min(v2, b-1), b] : [a, Math.max(v2, a+1)]};
-                        });
-                      };
-                      const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
-                      document.addEventListener("mousemove", onMove);
-                      document.addEventListener("mouseup", onUp);
-                      onMove(e);
-                    }}
-                    style={{ position:"relative", height:24, marginTop:4, cursor:"ew-resize" }}
-                  >
-                    {/* Track */}
-                    <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"#1A3050", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
-                    {/* Active range */}
-                    <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none",
-                      left: `${((mn-1)/399)*100}%`, right: `${((400-mx)/399)*100}%` }}/>
-                    {/* Min thumb */}
-                    <div style={{ position:"absolute", top:"50%", left:`${((mn-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
-                    {/* Max thumb */}
-                    <div style={{ position:"absolute", top:"50%", left:`${((mx-1)/399)*100}%`, transform:"translate(-50%,-50%)",
-                      width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid #081828",
-                      boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
-                  </div>
+          {filtersOpen && (
+            <div style={{ overflowY:"auto", flex:1 }}>
+              <div style={{ padding:"8px 10px", borderBottom:"1px solid var(--border)" }}>
+                <div style={{ fontSize:9, color:"var(--text-faint)", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.06em" }}>Conference</div>
+                <div style={{ display:"flex", flexWrap:"wrap", gap:3 }}>
+                  {allConfs.filter(c => c !== "All").map(c => {
+                    const active = confFs.has(c);
+                    return (
+                      <button key={c} onClick={() => setConfFs(p => { const n = new Set(p); n.has(c) ? n.delete(c) : n.add(c); return n; })} style={{
+                        background: active ? "#E8872B" : "var(--bg-card)",
+                        border:`1px solid ${active ? "#E8872B" : "var(--border)"}`,
+                        borderRadius:4, color: active ? "#fff" : "var(--text-muted)",
+                        fontSize:10, padding:"3px 7px", cursor:"pointer", fontWeight: active ? 700 : 400,
+                        transition:"all 0.1s",
+                      }}>{c}</button>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+              <div style={{ padding:"8px 10px", display:"flex", flexDirection:"column", gap:10 }}>
+                <div style={{ fontSize:9, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Rankings</div>
+                {METRICS.map(({key, label}) => {
+                  const [mn, mx] = metricRanges[key];
+                  const isDefault = mn === 1 && mx === 400;
+                  return (
+                    <div key={key}>
+                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
+                        <span style={{ fontSize:9, color: isDefault ? "var(--text-faint)" : "#E8872B", fontWeight: isDefault ? 400 : 600 }}>{label}</span>
+                        <span style={{ fontSize:9, color:"var(--text-secondary)", fontFamily:"monospace" }}>{isDefault ? "any" : `#${mn}–#${mx}`}</span>
+                      </div>
+                      <div
+                        onMouseDown={e => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const [cmn, cmx] = metricRanges[key];
+                          const pct = (e.clientX - rect.left) / rect.width;
+                          const val = Math.round(1 + pct * 399);
+                          const moveMin = Math.abs(val - cmn) <= Math.abs(val - cmx);
+                          const onMove = mv => {
+                            const p2 = Math.max(0, Math.min(1, (mv.clientX - rect.left) / rect.width));
+                            const v2 = Math.round(1 + p2 * 399);
+                            setMetricRanges(p => { const [a, b] = p[key]; return {...p, [key]: moveMin ? [Math.min(v2, b-1), b] : [a, Math.max(v2, a+1)]}; });
+                          };
+                          const onUp = () => { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); };
+                          document.addEventListener("mousemove", onMove);
+                          document.addEventListener("mouseup", onUp);
+                          onMove(e);
+                        }}
+                        style={{ position:"relative", height:24, marginTop:4, cursor:"ew-resize" }}
+                      >
+                        <div style={{ position:"absolute", top:"50%", left:0, right:0, height:3, background:"var(--border)", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none" }}/>
+                        <div style={{ position:"absolute", top:"50%", height:3, background:"#E8872B", borderRadius:2, transform:"translateY(-50%)", pointerEvents:"none", left:`${((mn-1)/399)*100}%`, right:`${((400-mx)/399)*100}%` }}/>
+                        <div style={{ position:"absolute", top:"50%", left:`${((mn-1)/399)*100}%`, transform:"translate(-50%,-50%)", width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid var(--bg-page)", boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
+                        <div style={{ position:"absolute", top:"50%", left:`${((mx-1)/399)*100}%`, transform:"translate(-50%,-50%)", width:13, height:13, borderRadius:"50%", background:"#E8872B", border:"2px solid var(--bg-page)", boxShadow:"0 0 0 1.5px #E8872B", pointerEvents:"none" }}/>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Board */}
-        <div ref={boardScrollRef} style={{ flex:"1 1 62%", overflowY:"auto", padding:"10px 14px 10px 8px" }}>
+        <div ref={boardScrollRef} style={{ flex:1, overflowY:"auto", padding:"10px 14px 10px 8px" }}>
+
+
+          {/* Collapsible Compare */}
+          <div style={{ marginBottom:16 }}>
+            <div onClick={() => setCompareOpen(o => !o)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:compareOpen?8:0, userSelect:"none" }}>
+              <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
+              <span style={{ fontSize:13, fontWeight:700, color:"#4A6FA5" }}>Compare Resumes</span>
+              <span style={{ fontSize:9, color:"var(--text-faint)" }}>{compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 · click to expand`}</span>
+              {compareOpen && (
+                <div style={{ marginLeft:"auto", display:"flex", gap:6 }} onClick={e => e.stopPropagation()}>
+                  {compareIds.length < 8 && poolF.length > 0 && (
+                    <button onClick={fillCompare}
+                      style={{ background:"rgba(74,111,165,0.12)", border:"1px solid #2A4A7A", borderRadius:4, color:"#4A6FA5", fontSize:9, padding:"2px 8px", cursor:"pointer" }}>
+                      Fill With Top Teams
+                    </button>
+                  )}
+                  {compareIds.length > 0 && (() => {
+                    const allCollapsed = compareIds.every(id => cardOpenMap[id]?.any === false);
+                    const allExpanded  = compareIds.every(id => cardOpenMap[id]?.all === true);
+                    const btnStyle = (active) => ({
+                      background: active ? "#4A6FA5" : "none",
+                      border: active ? "none" : "1px solid var(--border)",
+                      borderRadius:4, color: active ? "#fff" : "var(--text-faint)",
+                      fontSize:9, padding:"2px 8px", cursor: active ? "pointer" : "default",
+                    });
+                    return (
+                      <>
+                        <button onClick={() => !allCollapsed && setCollapseKey(k => k+1)} style={btnStyle(!allCollapsed)}>
+                          Collapse All Team Cards
+                        </button>
+                        <button onClick={() => !allExpanded && setExpandKey(k => k+1)} style={btnStyle(!allExpanded)}>
+                          Expand All Team Cards
+                        </button>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+              {!compareOpen && compareIds.length > 0 && (
+                <div style={{ display:"flex", gap:4, marginLeft:4 }}>
+                  {compareIds.slice(0,4).map(id => (
+                    <span key={id} style={{ fontSize:9, color:"var(--text-secondary)", background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:3, padding:"1px 5px" }}>{tm[id]?.name}</span>
+                  ))}
+                  {compareIds.length > 4 && <span style={{ fontSize:9, color:"var(--text-faint)" }}>+{compareIds.length-4}</span>}
+                </div>
+              )}
+            </div>
+            {compareOpen && (() => {
+              const allNet  = compareIds.map(id => tm[id]?.net).filter(v => v!=null);
+              const allSos  = compareIds.map(id => tm[id]?.sos).filter(v => v!=null);
+              const allSor  = compareIds.map(id => tm[id]?.sor).filter(v => v!=null);
+              const allWab  = compareIds.map(id => tm[id]?.wab).filter(v => v!=null);
+              const allKpi  = compareIds.map(id => tm[id]?.kpi).filter(v => v!=null);
+              const allBpi  = compareIds.map(id => tm[id]?.bpi).filter(v => v!=null);
+              const allPom  = compareIds.map(id => tm[id]?.pom).filter(v => v!=null);
+              const allTrk  = compareIds.map(id => tm[id]?.tRank).filter(v => v!=null);
+              const bestNet = allNet.length ? Math.min(...allNet) : null;
+              const bestSos = allSos.length ? Math.min(...allSos) : null;
+              const bestSor = allSor.length ? Math.min(...allSor) : null;
+              const bestWab = allWab.length ? Math.min(...allWab) : null;
+              const bestKpi = allKpi.length ? Math.min(...allKpi) : null;
+              const bestBpi = allBpi.length ? Math.min(...allBpi) : null;
+              const bestPom = allPom.length ? Math.min(...allPom) : null;
+              const bestTrk = allTrk.length ? Math.min(...allTrk) : null;
+              return (
+                <>
+                  {/* Summary table — shown when 2+ teams */}
+                  {compareIds.length >= 2 && (
+                    <div style={{ marginBottom:10, background:"var(--bg-page)", borderRadius:6, border:"1px solid var(--border)", overflow:"hidden" }}>
+                      <div style={{ display:"flex", borderBottom:"1px solid var(--border)" }}>
+                        <div style={{ width:44, flexShrink:0, padding:"5px 6px", fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"right" }}>NET</div>
+                        <div style={{ flex:2, minWidth:110, flexShrink:0, padding:"5px 8px", fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Team</div>
+                        {["Q1","Q2","Q3","Q4"].map(q => (
+                          <div key={q} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.04em", minWidth:44 }}>{q}</div>
+                        ))}
+                        {["SOS","SOR","WAB","KPI","BPI","KenPom","T-Rank"].map(col => (
+                          <div key={col} style={{ flex:1, padding:"5px 6px", fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.04em", textAlign:"left", minWidth:50 }}>{col}</div>
+                        ))}
+                      </div>
+                      {compareIds.map(id => {
+                        const t = tm[id]; if (!t) return null;
+                        const Cell = ({ val, pct, best }) => (
+                          <div style={{ flex:1, position:"relative", padding:"5px 6px", minWidth:50, display:"flex", alignItems:"center", justifyContent:"flex-start" }}>
+                            <div style={{ position:"absolute", left:0, top:2, bottom:2, width:`${Math.round(pct*100)}%`, background:best?"rgba(232,135,43,0.26)":"rgba(74,111,165,0.18)", borderRadius:2 }}/>
+                            <span style={{ position:"relative", zIndex:1, fontSize:10, fontFamily:"monospace", color:best?"#E8872B":"var(--text-secondary)", fontWeight:best?700:400 }}>{val}</span>
+                          </div>
+                        );
+                        return (
+                          <div key={id} style={{ display:"flex", borderBottom:"1px solid var(--bg-sidebar)", alignItems:"center" }}>
+                            <div style={{ width:44, flexShrink:0, padding:"5px 6px", textAlign:"right" }}>
+                              <span style={{ fontSize:10, fontFamily:"monospace", color:t.net===bestNet?"#E8872B":"var(--text-secondary)", fontWeight:t.net===bestNet?700:400 }}>{t.net!=null?`#${t.net}`:"—"}</span>
+                            </div>
+                            <div style={{ flex:2, minWidth:110, flexShrink:0, padding:"5px 8px", display:"flex", alignItems:"center", gap:3 }}>
+                              {t.logo && <img src={t.logo} alt="" style={{ width:16, height:16, objectFit:"contain", flexShrink:0 }} onError={e=>e.target.style.display="none"}/>}
+                              <span style={{ fontSize:10, color:"var(--text-primary)", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{t.name}</span>
+                              <span style={{ fontSize:9, fontFamily:"monospace", color:"var(--text-muted)", flexShrink:0 }}>{t.record}</span>
+                            </div>
+                            {[t.q1,t.q2,t.q3,t.q4].map((v,i) => (
+                              <div key={i} style={{ flex:1, padding:"5px 6px", minWidth:44 }}>
+                                <span style={{ fontSize:11, fontFamily:"monospace", color:"var(--text-secondary)" }}>{v||"—"}</span>
+                              </div>
+                            ))}
+                            <Cell val={t.sos!=null?`#${t.sos}`:"—"} pct={barPct(t.sos,allSos,true)} best={t.sos===bestSos}/>
+                            <Cell val={t.sor!=null?`#${t.sor}`:"—"} pct={barPct(t.sor,allSor,true)} best={t.sor===bestSor}/>
+                            <Cell val={t.wab!=null?`#${t.wab}`:"—"} pct={barPct(t.wab,allWab,true)} best={t.wab===bestWab}/>
+                            <Cell val={t.kpi!=null?`#${t.kpi}`:"—"} pct={barPct(t.kpi,allKpi,true)} best={t.kpi===bestKpi}/>
+                            <Cell val={t.bpi!=null?`#${t.bpi}`:"—"} pct={barPct(t.bpi,allBpi,true)} best={t.bpi===bestBpi}/>
+                            <Cell val={t.pom!=null?`#${t.pom}`:"—"} pct={barPct(t.pom,allPom,true)} best={t.pom===bestPom}/>
+                            <Cell val={t.tRank!=null?`#${t.tRank}`:"—"} pct={barPct(t.tRank,allTrk,true)} best={t.tRank===bestTrk}/>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Drop zone with redesigned cards */}
+                  <div
+                    data-zone={COMPARE}
+                    onClick={() => handleZoneClick(COMPARE)}
+                    style={{
+                      minHeight:100, borderRadius:6,
+                      border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "var(--border)"}`,
+                      background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
+                      transition:"background 0.1s, border-color 0.1s",
+                      padding: compareIds.length===0 ? "0" : "8px",
+                      display:"flex", alignItems: compareIds.length===0 ? "center" : "flex-start",
+                      justifyContent: compareIds.length===0 ? "center" : "flex-start",
+                      overflowX:"auto", gap:8,
+                    }}>
+                    {compareIds.length===0 && (
+                      <span style={{ fontSize:11, color:"var(--text-ghost)" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>
+                    )}
+                    {compareIds.map(id => (
+                      <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
+                        insertTarget={insertTarget} sendFromCompare={sendFromCompare}
+                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange} selected={selected} darkMode={darkMode}/>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+
+          <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,var(--border))", margin:"0 0 8px", borderRadius:1 }}/>
+          <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Bracket Seedlines</div>
 
           {/* Seed lines 1-16 */}
           {SEEDS.map((seed, si) => {
             const ids = asgn[seed.id] || [];
-            const color = SEED_COLORS[si] || "#555";
+            const color = seedColors[si] || "#555";
+            const emptyCount = seed.max - ids.length;
+            const isFull = ids.length >= seed.max;
+            const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : isFull ? color+"66" : "transparent"}`;
+            // 6-slot lines: 4 per row so 5th/6th wrap; 4-slot lines: fill single row
+            const slotFlex = seed.max === 6 && ids.length > 4 ? "0 0 calc(25% - 2px)" : "1";
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
                 <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
@@ -620,13 +1186,12 @@ function App() {
                   <div data-zone={seed.id} style={{
                     flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
                     borderRadius:6, padding:"2px 4px",
-                    border:`1px dashed ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
+                    border: zoneBorder,
                     background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
-                    {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : `${seed.max} slots`}</span>}
                     {ids.map((id, idx) => (
-                      <div key={id} style={{ flex:"0 0 auto", minWidth:180, maxWidth:320 }}>
+                      <div key={id} style={{ flex:slotFlex, minWidth:120 }}>
                         {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                         )}
@@ -636,17 +1201,17 @@ function App() {
                         )}
                       </div>
                     ))}
-                    {ids.length < seed.max && ids.length > 0 && Array.from({length:Math.min(2,seed.max-ids.length)}).map((_,i) => (
-                      <div key={`e-${i}`} style={{ width:80, height:24, borderRadius:4, border:"1px dashed #1A3050", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:"#1A3050", margin:1 }}>{isSel?"+":" "}</div>
+                    {emptyCount > 0 && Array.from({length:emptyCount}).map((_,i) => (
+                      <div key={`e-${i}`} style={{ flex:slotFlex, minWidth:120, height:34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
                   </div>
-                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
+                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "var(--text-faint)", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
                 </div>
               </div>
             );
           })}
 
-          <div style={{ height:1, background:"#1A3050", margin:"10px 0" }} />
+          <div style={{ height:1, background:"var(--border)", margin:"10px 0" }} />
 
           {/* Extra tiers */}
           {EXTRA_TIERS.map(tier => {
@@ -654,17 +1219,17 @@ function App() {
             return (
               <div key={tier.id} style={{ marginBottom:6 }} onClick={() => handleZoneClick(tier.id)}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:3 }}>
-                  <div style={{ width:4, height:14, borderRadius:2, background:tier.ac }}/>
-                  <span style={{ fontSize:12, fontWeight:700, color:tier.ac }}>{tier.label}</span>
-                  <span style={{ fontSize:9, color:"#4A5568" }}>({ids.length})</span>
+                  <div style={{ width:4, height:14, borderRadius:2, background:darkMode?tier.ac:tier.acLight }}/>
+                  <span style={{ fontSize:12, fontWeight:700, color:darkMode?tier.ac:tier.acLight }}>{tier.label}</span>
+                  <span style={{ fontSize:9, color:"var(--text-faint)" }}>({ids.length})</span>
                 </div>
                 <div data-zone={tier.id} style={{
                   minHeight:28, borderRadius:6, padding:"2px 4px",
-                  border:`1px dashed ${dropZone===tier.id ? "#E8872B" : isSel ? "#E8872B44" : "#1A3050"}`,
+                  border:`1px dashed ${dropZone===tier.id ? "#E8872B" : isSel ? "#E8872B44" : "var(--border)"}`,
                   background: dropZone===tier.id ? "rgba(232,135,43,0.06)" : "transparent",
                   transition:"background 0.1s, border-color 0.1s",
                 }}>
-                  {ids.length === 0 && <span style={{ fontSize:10, color:"#1A3050", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
+                  {ids.length === 0 && <span style={{ fontSize:10, color:"var(--text-ghost)", padding:"4px 8px" }}>{isSel ? "Click to place" : "—"}</span>}
                   {ids.map((id, idx) => (
                     <div key={id}>
                       {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
@@ -680,128 +1245,6 @@ function App() {
               </div>
             );
           })}
-
-          <div style={{ height:1, background:"#1A3050", margin:"10px 0" }} />
-
-          {/* Collapsible Compare */}
-          <div style={{ marginBottom:16 }}>
-            <div onClick={() => setCompareOpen(o => !o)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:compareOpen?8:0, userSelect:"none" }}>
-              <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
-              <span style={{ fontSize:13, fontWeight:700, color:"#4A6FA5" }}>Compare Resumes</span>
-              <span style={{ fontSize:9, color:"#4A5568" }}>{compareOpen ? `${compareIds.length}/8` : `${compareIds.length}/8 · click to expand`}</span>
-              {!compareOpen && compareIds.length > 0 && (
-                <div style={{ display:"flex", gap:4, marginLeft:4 }}>
-                  {compareIds.slice(0,4).map(id => (
-                    <span key={id} style={{ fontSize:9, color:"#8694A8", background:"#0D2240", border:"1px solid #1A3050", borderRadius:3, padding:"1px 5px" }}>{tm[id]?.name}</span>
-                  ))}
-                  {compareIds.length > 4 && <span style={{ fontSize:9, color:"#4A5568" }}>+{compareIds.length-4}</span>}
-                </div>
-              )}
-            </div>
-            {compareOpen && (
-              <div
-                data-zone={COMPARE}
-                onClick={() => handleZoneClick(COMPARE)}
-                style={{
-                  minHeight:100, borderRadius:6,
-                  border:`1px dashed ${dropZone===COMPARE ? "#4A6FA5" : isSel ? "#4A6FA544" : "#1A3050"}`,
-                  background: dropZone===COMPARE ? "rgba(74,111,165,0.08)" : isSel ? "rgba(74,111,165,0.03)" : "transparent",
-                  transition:"background 0.1s, border-color 0.1s",
-                  padding: compareIds.length===0 ? "0" : "8px",
-                  display:"flex", alignItems: compareIds.length===0 ? "center" : "flex-start",
-                  justifyContent: compareIds.length===0 ? "center" : "flex-start",
-                  overflowX:"auto", gap:8,
-                }}>
-                {compareIds.length===0 && (
-                  <span style={{ fontSize:11, color:"#1A3050" }}>{isSel ? "Click to add to compare" : "Drag or select a team to compare"}</span>
-                )}
-                {compareIds.map((tid, idx) => {
-                  const t = tm[tid];
-                  if (!t) return null;
-                  const kw = t.keyWins||[];
-                  const kl = t.keyLosses||[];
-                  return (
-                    <div key={tid} style={{ display:"flex", flexShrink:0 }}>
-                      {insertTarget?.zone === COMPARE && insertTarget?.beforeTid === tid && (
-                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
-                      )}
-                      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }}
-                        style={{ width:195, background:"#0D2240", border:"1px solid #2A4A7A", borderRadius:8, padding:"12px 10px", display:"flex", flexDirection:"column", cursor:"grab" }}>
-                        <div style={{ textAlign:"center", marginBottom:8, borderBottom:"1px solid #1A3050", paddingBottom:8 }}>
-                          {t.logo && <img src={t.logo} alt="" style={{ width:48, height:48, objectFit:"contain", marginBottom:4, display:"block", margin:"0 auto 4px" }} onError={e => e.target.style.display="none"}/>}
-                          <div style={{ color:"#6B7A90", fontFamily:"monospace", fontSize:11 }}>#{t.net}</div>
-                          <div style={{ color:"#E2E8F0", fontWeight:800, fontSize:14, lineHeight:1.2 }}>{t.name}</div>
-                          <div style={{ color:"#4A5568", fontSize:10, marginTop:2 }}>{t.conf} ({t.confRecord})</div>
-                          <div style={{ color:"#8694A8", fontSize:12, fontWeight:700, marginTop:3 }}>{t.record}</div>
-                        </div>
-                        <div style={{ display:"flex", flexDirection:"column", gap:3, fontSize:11, marginBottom:8 }}>
-                          <St l="SOS" v={`#${t.sos}`}/>
-                          <St l="NC Rec" v={t.ncRecord}/>
-                          <St l="Home" v={t.home}/>
-                          <St l="Road" v={t.road}/>
-                          <St l="Neutral" v={t.neutral}/>
-                          <St l="Avg W" v={`#${t.avgNetWins}`}/>
-                          <St l="Avg L" v={`#${t.avgNetLosses}`}/>
-                        </div>
-                        <div style={{ background:"#081828", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11 }}>
-                          <St l="Q1" v={t.q1}/><St l="Q2" v={t.q2}/>
-                          <St l="Q3" v={t.q3}/><St l="Q4" v={t.q4}/>
-                        </div>
-                        <div style={{ background:"#0A1E35", borderRadius:5, padding:"6px 8px", marginBottom:8, display:"flex", flexDirection:"column", gap:3, fontSize:11, border:"1px solid #1A3050" }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#6B7A90", marginBottom:1, textTransform:"uppercase", letterSpacing:"0.05em" }}>Rankings</div>
-                          <St l="KPI" v={t.kpi!=null?`#${t.kpi}`:"—"}/><St l="SOR" v={t.sor!=null?`#${t.sor}`:"—"}/>
-                          <St l="WAB" v={t.wab!=null?`#${t.wab}`:"—"}/><St l="BPI" v={t.bpi!=null?`#${t.bpi}`:"—"}/>
-                          <St l="KenPom" v={t.pom!=null?`#${t.pom}`:"—"}/><St l="T-Rank" v={t.tRank!=null?`#${t.tRank}`:"—"}/>
-                        </div>
-                        <div style={{ marginBottom:6 }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#4ADE80", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Top Wins</div>
-                          {kw.length>0 ? kw.map((w,i) => (
-                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                              <span style={{ color:"#4ADE80", fontFamily:"monospace", fontSize:9 }}>#{w.oppNet}</span>{" "}{w.site==="A"?"@ ":w.site==="N"?"v ":""}{w.opp} <span style={{color:"#4A5568"}}>{w.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>—</div>}
-                        </div>
-                        <div style={{ marginBottom:8 }}>
-                          <div style={{ fontSize:9, fontWeight:700, color:"#F87171", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" }}>Losses</div>
-                          {kl.length>0 ? kl.map((l,i) => (
-                            <div key={i} style={{ fontSize:10, color:"#8694A8", padding:"1px 0", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
-                              <span style={{ color:"#F87171", fontFamily:"monospace", fontSize:9 }}>#{l.oppNet}</span>{" "}{l.site==="A"?"@ ":l.site==="N"?"v ":""}{l.opp} <span style={{color:"#4A5568"}}>{l.score}</span>
-                            </div>
-                          )) : <div style={{ fontSize:9, color:"#2A4A7A" }}>None</div>}
-                        </div>
-                        <div style={{ flex:1 }}/>
-                        <div onClick={e => e.stopPropagation()} style={{ borderTop:"1px solid #1A3050", paddingTop:6, display:"flex", flexDirection:"column", gap:4 }}>
-                          <div style={{ display:"flex", gap:3, flexWrap:"wrap" }}>
-                            {SEEDS.map(s => (
-                              <button key={s.id} onClick={() => sendFromCompare(tid, s.id)} disabled={asgn[s.id].length>=s.max}
-                                style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:asgn[s.id].length>=s.max?"#1A3050":"#8694A8", fontSize:9, padding:"3px 5px", cursor:asgn[s.id].length>=s.max?"not-allowed":"pointer", minWidth:20, textAlign:"center" }}>
-                                {s.num}
-                              </button>
-                            ))}
-                          </div>
-                          <div style={{ display:"flex", gap:3 }}>
-                            {EXTRA_TIERS.map(et => (
-                              <button key={et.id} onClick={() => sendFromCompare(tid, et.id)}
-                                style={{ background:"#081828", border:`1px solid ${et.ac}44`, borderRadius:3, color:et.ac, fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                                {et.label.split(" ").map(w=>w[0]).join("")}
-                              </button>
-                            ))}
-                            <button onClick={() => moveTeam(tid, POOL)}
-                              style={{ background:"#081828", border:"1px solid #1A3050", borderRadius:3, color:"#6B7A90", fontSize:9, padding:"3px 5px", cursor:"pointer", flex:1, textAlign:"center" }}>
-                              ← Pool
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      {insertTarget?.zone === COMPARE && !insertTarget?.beforeTid && insertTarget?.afterTid === tid && idx === compareIds.length-1 && (
-                        <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginLeft:4, minHeight:40 }}/>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
         </div>{/* end board */}
       </div>{/* end main layout */}
     </div>
