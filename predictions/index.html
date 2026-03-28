@@ -3,10 +3,191 @@ layout: default
 title: My Predictions
 ---
 <div class="page-header">
-  <h1>My <span>Predictions</span></h1>
-  <p>My current bracketology — updated as the season develops. Seed assignments based on resume metrics, not gut feel.</p>
+  <h1>Final 2026 <span>Forecast</span></h1>
+  <p>Men's College Basketball · Updated through conference tournament week. All games outside the American and Big Ten included — no seedline contingencies remain.</p>
 </div>
 
-<div class="page-content">
-  <p>Predictions coming soon. Check back after Selection Sunday.</p>
+<div class="predictions-body">
+
+  <div class="bracket-grid">
+
+    <div class="seed-group">
+      <div class="seed-num s1">1</div>
+      <div class="seed-teams">Duke · Michigan · Arizona · Florida</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s2">2</div>
+      <div class="seed-teams">Houston · Iowa State · UConn · Purdue</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s3">3</div>
+      <div class="seed-teams">Gonzaga · Michigan State · Illinois · Vanderbilt</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s4">4</div>
+      <div class="seed-teams">Virginia · Nebraska · Arkansas · Alabama</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s5">5</div>
+      <div class="seed-teams">St. John's · Kansas · Texas Tech · Wisconsin</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s6">6</div>
+      <div class="seed-teams">North Carolina · Tennessee · Louisville · BYU</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s7">7</div>
+      <div class="seed-teams">Miami (FL) · Utah State · Clemson · Kentucky</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s8">8</div>
+      <div class="seed-teams">Saint Mary's · Villanova · UCLA · Ohio State</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s9">9</div>
+      <div class="seed-teams">Saint Louis · Georgia · TCU · Iowa</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s10">10</div>
+      <div class="seed-teams">NC State · UCF · Texas A&amp;M · Miami (OH)</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s11">11</div>
+      <div class="seed-teams">Missouri · VCU · Santa Clara · SMU · Texas · McNeese State</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s12">12</div>
+      <div class="seed-teams">South Florida/Wichita State · Akron · Northern Iowa · High Point</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s13">13</div>
+      <div class="seed-teams">California Baptist · Hofstra · North Dakota State · Hawai'i</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s14">14</div>
+      <div class="seed-teams">Pennsylvania · Troy · Wright State · Kennesaw State</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s15">15</div>
+      <div class="seed-teams">Idaho · Tennessee State · Furman · Queens</div>
+    </div>
+    <div class="seed-group">
+      <div class="seed-num s16">16</div>
+      <div class="seed-teams">Siena · Howard · Long Island · UMBC · Lehigh · Prairie View A&amp;M</div>
+    </div>
+
+  </div>
+
+  <div class="bubble-section">
+    <div class="bubble-card last-four-in">
+      <div class="bubble-label">Last Four In</div>
+      <div class="bubble-teams">Missouri · Santa Clara · SMU · Texas</div>
+    </div>
+    <div class="bubble-card first-four-out">
+      <div class="bubble-label">First Four Out</div>
+      <div class="bubble-teams">Auburn · Oklahoma · San Diego State · Indiana</div>
+    </div>
+    <div class="bubble-card next-four-out">
+      <div class="bubble-label">Next Four Out</div>
+      <div class="bubble-teams">Virginia Tech · Seton Hall · New Mexico · California</div>
+    </div>
+    <div class="bubble-card third-four-out">
+      <div class="bubble-label">Also Considered</div>
+      <div class="bubble-teams">Cincinnati · Oklahoma St. · Stanford · West Virginia</div>
+    </div>
+  </div>
+
 </div>
+
+<style>
+.predictions-body { padding: 36px; max-width: 860px; }
+
+.bracket-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 40px; }
+
+.seed-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: border-color .15s;
+}
+.seed-group:hover { border-color: rgba(255,119,4,0.25); }
+
+.seed-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fd);
+  font-weight: 900;
+  font-size: 14px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.s1  { background: #E8872B; }
+.s2  { background: #D07828; }
+.s3  { background: #4A6FA5; }
+.s4  { background: #3D5E8C; }
+.s5  { background: #3D5E8C; }
+.s6  { background: #304D73; }
+.s7  { background: #304D73; }
+.s8  { background: #2A4060; }
+.s9  { background: #2A4060; }
+.s10 { background: #254060; }
+.s11 { background: #6B4A2A; }
+.s12 { background: #6B4A2A; }
+.s13 { background: #555; }
+.s14 { background: #555; }
+.s15 { background: #484848; }
+.s16 { background: #3A3A3A; }
+
+.seed-teams {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+.bubble-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.bubble-card {
+  padding: 16px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+
+.bubble-label {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.bubble-teams {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.last-four-in  .bubble-label { color: #E8872B; }
+.first-four-out .bubble-label { color: #8B4444; }
+.next-four-out  .bubble-label { color: #6B3A3A; }
+.third-four-out .bubble-label { color: var(--muted); }
+</style>
