@@ -1,0 +1,20 @@
+title: The Round Robin
+description: Bracket tools and picks built around real resume data.
+url: "https://theroundrobin.blog"
+baseurl: ""
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+exclude:
+  - scrape_nitty_gritty.py
+  - "*.bak"
+  - "*.save"
+
+keep_files:
+  - bracket
+  - teams.json
+  - favicon.ico
