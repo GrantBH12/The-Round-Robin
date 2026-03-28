@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-27T08:43:16.656687+00:00",
+    "scrapedAt": "2026-03-28T08:31:48.411341+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -15,18 +15,18 @@
       "conf": "ACC",
       "confRecord": "17-1",
       "net": 1,
-      "record": "34-2",
+      "record": "35-2",
       "sos": 9,
       "ncRecord": "12-1",
       "ncSos": 9,
       "home": "15-0",
       "road": "10-1",
-      "neutral": "9-1",
-      "q1": "18-2",
+      "neutral": "10-1",
+      "q1": "19-2",
       "q2": "6-0",
       "q3": "3-0",
       "q4": "7-0",
-      "avgNetWins": 89,
+      "avgNetWins": 87,
       "avgNetLosses": 21,
       "keyWins": [
         {
@@ -95,18 +95,18 @@
       "conf": "Big Ten",
       "confRecord": "19-1",
       "net": 2,
-      "record": "33-3",
+      "record": "34-3",
       "sos": 1,
       "ncRecord": "10-1",
       "ncSos": 7,
       "home": "14-1",
       "road": "11-0",
-      "neutral": "8-2",
-      "q1": "18-3",
+      "neutral": "9-2",
+      "q1": "19-3",
       "q2": "5-0",
       "q3": "6-0",
       "q4": "4-0",
-      "avgNetWins": 70,
+      "avgNetWins": 68,
       "avgNetLosses": 11,
       "keyWins": [
         {
@@ -464,14 +464,14 @@
       "conf": "Big 12",
       "confRecord": "12-6",
       "net": 6,
-      "record": "29-7",
+      "record": "29-8",
       "sos": 28,
       "ncRecord": "13-0",
       "ncSos": 129,
       "home": "16-1",
       "road": "5-5",
-      "neutral": "8-1",
-      "q1": "9-7",
+      "neutral": "8-2",
+      "q1": "9-8",
       "q2": "10-0",
       "q3": "3-0",
       "q4": "7-0",
@@ -544,11 +544,11 @@
           "date": "01-13"
         },
         {
-          "opp": "Texas Tech",
-          "oppNet": 19,
-          "score": "73-82",
-          "site": "H",
-          "date": "02-28"
+          "opp": "Tennessee",
+          "oppNet": 20,
+          "score": "62-76",
+          "site": "N",
+          "date": "03-27"
         }
       ],
       "kpi": 14,
@@ -861,18 +861,18 @@
       "conf": "Big East",
       "confRecord": "17-3",
       "net": 10,
-      "record": "31-5",
+      "record": "32-5",
       "sos": 52,
       "ncRecord": "10-1",
       "ncSos": 11,
       "home": "15-2",
       "road": "9-2",
-      "neutral": "7-1",
-      "q1": "8-3",
+      "neutral": "8-1",
+      "q1": "9-3",
       "q2": "11-1",
       "q3": "7-1",
       "q4": "5-0",
-      "avgNetWins": 105,
+      "avgNetWins": 102,
       "avgNetLosses": 42,
       "keyWins": [
         {
@@ -890,6 +890,13 @@
           "date": "11-28"
         },
         {
+          "opp": "Michigan State",
+          "oppNet": 11,
+          "score": "67-63",
+          "site": "N",
+          "date": "03-27"
+        },
+        {
           "opp": "Saint John's",
           "oppNet": 16,
           "score": "72-40",
@@ -902,13 +909,6 @@
           "score": "61-56",
           "site": "A",
           "date": "12-02"
-        },
-        {
-          "opp": "BYU",
-          "oppNet": 23,
-          "score": "86-84",
-          "site": "N",
-          "date": "11-15"
         }
       ],
       "keyLosses": [
@@ -962,19 +962,19 @@
       "conf": "Big Ten",
       "confRecord": "15-5",
       "net": 11,
-      "record": "27-7",
+      "record": "27-8",
       "sos": 20,
       "ncRecord": "10-1",
       "ncSos": 58,
       "home": "15-2",
       "road": "6-4",
-      "neutral": "6-1",
-      "q1": "11-6",
+      "neutral": "6-2",
+      "q1": "11-7",
       "q2": "4-1",
       "q3": "8-0",
       "q4": "4-0",
       "avgNetWins": 98,
-      "avgNetLosses": 22,
+      "avgNetLosses": 20,
       "keyWins": [
         {
           "opp": "Illinois",
@@ -1042,11 +1042,11 @@
           "date": "01-02"
         },
         {
-          "opp": "Michigan",
-          "oppNet": 2,
-          "score": "80-90",
-          "site": "A",
-          "date": "03-08"
+          "opp": "Connecticut",
+          "oppNet": 10,
+          "score": "63-67",
+          "site": "N",
+          "date": "03-27"
         }
       ],
       "kpi": 13,
@@ -1467,19 +1467,19 @@
       "conf": "Big East",
       "confRecord": "18-2",
       "net": 16,
-      "record": "30-6",
+      "record": "30-7",
       "sos": 62,
       "ncRecord": "7-4",
       "ncSos": 38,
       "home": "15-2",
       "road": "9-1",
-      "neutral": "6-3",
-      "q1": "6-5",
+      "neutral": "6-4",
+      "q1": "6-6",
       "q2": "12-0",
       "q3": "9-1",
       "q4": "3-0",
       "avgNetWins": 93,
-      "avgNetLosses": 30,
+      "avgNetLosses": 25,
       "keyWins": [
         {
           "opp": "Connecticut",
@@ -1669,19 +1669,19 @@
       "conf": "SEC",
       "confRecord": "13-5",
       "net": 18,
-      "record": "25-9",
+      "record": "25-10",
       "sos": 5,
       "ncRecord": "10-3",
       "ncSos": 3,
       "home": "12-3",
       "road": "7-3",
-      "neutral": "6-3",
-      "q1": "8-7",
+      "neutral": "6-4",
+      "q1": "8-8",
       "q2": "10-2",
       "q3": "5-0",
       "q4": "2-0",
       "avgNetWins": 83,
-      "avgNetLosses": 23,
+      "avgNetLosses": 21,
       "keyWins": [
         {
           "opp": "Illinois",
@@ -1871,18 +1871,18 @@
       "conf": "SEC",
       "confRecord": "11-7",
       "net": 20,
-      "record": "24-11",
+      "record": "25-11",
       "sos": 12,
       "ncRecord": "10-3",
       "ncSos": 62,
       "home": "14-3",
       "road": "5-5",
-      "neutral": "5-3",
-      "q1": "7-10",
+      "neutral": "6-3",
+      "q1": "8-10",
       "q2": "7-1",
       "q3": "3-0",
       "q4": "7-0",
-      "avgNetWins": 113,
+      "avgNetWins": 109,
       "avgNetLosses": 26,
       "keyWins": [
         {
@@ -1891,6 +1891,13 @@
           "score": "76-73",
           "site": "N",
           "date": "11-25"
+        },
+        {
+          "opp": "Iowa State",
+          "oppNet": 6,
+          "score": "76-62",
+          "site": "N",
+          "date": "03-27"
         },
         {
           "opp": "Virginia",
@@ -1912,13 +1919,6 @@
           "score": "83-62",
           "site": "H",
           "date": "12-16"
-        },
-        {
-          "opp": "Alabama",
-          "oppNet": 18,
-          "score": "79-73",
-          "site": "A",
-          "date": "01-24"
         }
       ],
       "keyLosses": [
