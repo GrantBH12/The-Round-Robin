@@ -498,3 +498,28 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+/* HERO SPLIT LAYOUT */
+.hero {
+  padding: 72px var(--pad) 64px;
+  max-width: var(--max);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 48px;
+}
+
+.hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.hero-right img {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  display: block;
+  opacity: 0.92;
+}
