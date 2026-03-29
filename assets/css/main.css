@@ -571,3 +571,9 @@ footer {
   z-index: 1;
   display: block !important;
 }
+
+/* EXPAND BRACKET BG TO FULL WIDTH */
+.hero-bg {
+  right: 0 !important;
+  width: 100% !important;
+}
