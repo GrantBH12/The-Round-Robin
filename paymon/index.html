@@ -130,7 +130,7 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 .team-row {
   display: flex; align-items: center; gap: 5px;
-  padding: 5px 8px; background: var(--bg-card); border: 1px solid var(--border);
+  padding: 5px 8px 5px 14px; background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 6px; min-width: 0;
 }
 .team-row.tg-E { border-left: 2.5px solid #D85A30; }
@@ -345,7 +345,7 @@ function renderTeams() {
 
   let html = "";
   Object.keys(grouped).sort((a,b) => a-b).forEach(seed => {
-    html += `<div class="seed-section"><div class="seed-header">Seed ${seed}</div><div class="team-grid">`;
+    html += `<div class="seed-section"><div class="seed-header">Projected Seed ${seed}</div><div class="team-grid">`;
     grouped[seed].forEach(t => {
       const pts = calcPoints(t.predictedSeed, t.actualSeed);
       const tgCls = t.region ? ` tg-${t.region}` : "";
@@ -354,8 +354,8 @@ function renderTeams() {
       html += `<div class="team-row${tgCls}" id="row-${t.id}">
         <span class="seed-pip">${t.predictedSeed}</span>
         <span class="team-name" title="${t.name}">${t.name}</span>
-        <input class="seed-input" type="number" min="1" max="16" placeholder="seed"
-          value="${t.actualSeed ?? ''}" data-id="${t.id}"
+        <input class="seed-input" type="number" min="1" max="16"
+          value="${t.actualSeed ?? ''}" placeholder="Actual" data-id="${t.id}"
           oninput="onInput(this)"
           onkeydown="if(event.key==='Enter'){const a=Array.from(document.querySelectorAll('.seed-input'));const i=a.indexOf(this);if(i<a.length-1)a[i+1].focus();}">
         <span class="pts-badge ${ptsCls}" id="pts-${t.id}">${ptsText}</span>

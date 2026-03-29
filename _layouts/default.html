@@ -13,12 +13,12 @@
 <body>
   <nav>
     <a href="{{ site.baseurl }}/" class="nav-logo">
-      <img src="{{ site.baseurl }}/assets/img/logo-01.png" alt="The Round Robin" height="44">
+      <img src="{{ site.baseurl }}/assets/img/logo-01.png" alt="The Round Robin" height="52">
     </a>
     <div class="nav-links">
       <a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}">Home</a>
       <a href="{{ site.baseurl }}/bracket/" class="nav-link {% if page.url contains 'bracket' %}active{% endif %}">The Nest</a>
-      <a href="{{ site.baseurl }}/paymon/" class="nav-link {% if page.url contains 'paymon' %}active{% endif %}">Score</a>
+      <a href="{{ site.baseurl }}/paymon/" class="nav-link {% if page.url contains 'paymon' %}active{% endif %}">Paymon Score Calculator</a>
       <a href="{{ site.baseurl }}/predictions/" class="nav-link {% if page.url contains 'predictions' %}active{% endif %}">My Picks</a>
       <a href="{{ site.baseurl }}/about/" class="nav-link {% if page.url contains 'about' %}active{% endif %}">About</a>
     </div>
@@ -31,6 +31,7 @@
   <footer>
     <span class="footer-logo">The Round Robin</span>
     <span>theroundrobin.blog</span>
+    <a href="mailto:grant@theroundrobin.blog" style="color:inherit;text-decoration:none;">Email Me</a>
     <span>Not affiliated with the NCAA</span>
   </footer>
 </body>

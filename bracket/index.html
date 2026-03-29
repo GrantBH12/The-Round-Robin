@@ -870,7 +870,7 @@ function App() {
           </a>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-              The Bracketology Nest
+              The Nest Bracket Studio
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
               {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
@@ -878,6 +878,17 @@ function App() {
           </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center" }}>
+          <a href="../paymon/" style={{ background:"none", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-muted)", fontSize:11, fontWeight:700, padding:"6px 12px", cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", letterSpacing:"0.04em" }}>
+            Paymon Score →
+          </a>
+          <button onClick={() => {
+            const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
+            n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
+            setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
+            try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
+          }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:5, color:"#fff", fontSize:13, padding:"8px 24px", cursor:"pointer", fontWeight:700, letterSpacing:"0.03em" }}>
+            Reset
+          </button>
           <button onClick={toggleMode} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
             style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             {darkMode ? "☀" : "🌙"}
@@ -886,26 +897,6 @@ function App() {
             style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             ?
           </button>
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"stretch", gap:4 }}>
-            <div style={{ display:"flex", gap:6 }}>
-              <button onClick={autoSeed} style={{ background:"#4A6FA5", border:"none", borderRadius:5, color:"#fff", fontSize:11, padding:"6px 14px", cursor:"pointer", fontWeight:600, flex:1 }}>
-                Auto Seed Using Net Rankings
-              </button>
-              <button onClick={() => {
-                const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-                n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
-                setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
-                try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-              }} style={{ background:"linear-gradient(135deg,#E8872B,#C06128)", border:"none", borderRadius:5, color:"#fff", fontSize:11, padding:"6px 14px", cursor:"pointer", fontWeight:700 }}>
-                Reset
-              </button>
-            </div>
-            <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:10, color:"var(--text-muted)", cursor:"pointer", userSelect:"none", paddingLeft:2 }}>
-              <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)} style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
-              Include bubble tiers
-            </label>
-          </div>
-
         </div>
       </div>
 
@@ -1170,7 +1161,18 @@ function App() {
           </div>
 
           <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,var(--border))", margin:"0 0 8px", borderRadius:1 }}/>
-          <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Bracket Seedlines</div>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Bracket Seedlines</div>
+            <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+              <label style={{ display:"flex", alignItems:"center", gap:4, fontSize:10, color:"var(--text-muted)", cursor:"pointer", userSelect:"none" }}>
+                <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)} style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
+                Bubble
+              </label>
+              <button onClick={autoSeed} style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:4, color:"var(--text-muted)", fontSize:10, fontWeight:700, padding:"3px 8px", cursor:"pointer", letterSpacing:"0.04em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+                Auto-Seed by NET
+              </button>
+            </div>
+          </div>
 
           {/* Seed lines 1-16 */}
           {SEEDS.map((seed, si) => {

@@ -23,8 +23,8 @@ layout: default
       <line x1="160" y1="300" x2="240" y2="300"/>
       <!-- Round 3 connector -->
       <line x1="240" y1="100" x2="240" y2="300"/>
-      <!-- Final Four advance to center -->
-      <line x1="240" y1="200" x2="300" y2="200"/>
+      <!-- Left finalist arrives higher -->
+      <line x1="240" y1="155" x2="286" y2="155"/>
 
       <!-- RIGHT SIDE: opens right, advances left to center (mirror) -->
       <!-- Round 1 (4 games) -->
@@ -45,17 +45,19 @@ layout: default
       <line x1="360" y1="300" x2="440" y2="300"/>
       <!-- Round 3 connector -->
       <line x1="360" y1="100" x2="360" y2="300"/>
-      <!-- Final Four advance to center -->
-      <line x1="300" y1="200" x2="360" y2="200"/>
+      <!-- Right finalist arrives lower -->
+      <line x1="314" y1="245" x2="360" y2="245"/>
     </g>
-    <!-- Championship line (slightly brighter) -->
+    <!-- Championship game: floating center line, unconnected to either finalist -->
     <g stroke="#FF7704" stroke-width="2" fill="none" opacity="0.13">
-      <line x1="240" y1="200" x2="360" y2="200"/>
+      <line x1="268" y1="200" x2="332" y2="200"/>
     </g>
+    <!-- Logo watermark -->
+    <image href="{{ site.baseurl }}/assets/img/logo-01.png" x="170" y="90" width="260" height="220" opacity="0.18" style="mix-blend-mode:screen"/>
   </svg>
 
   <div class="hero">
-    <h1>Every Team.<br><span>Every Metric.</span><br>Every Round.</h1>
+    <h1>Every Team.<br>Every Metric.<br><span>Every Round.</span></h1>
     <p>Bracketology built on the same data the committee uses — nothing more, nothing less.</p>
     <div class="hero-actions">
       <a href="{{ site.baseurl }}/bracket/" class="btn-primary">Open The Nest →</a>
@@ -71,7 +73,7 @@ layout: default
       <div class="hc-top">
         <div class="hc-icon">[ ]</div>
         <div class="hc-label">Bracket Software</div>
-        <div class="hc-title">The Nest</div>
+        <div class="hc-title">The Nest Bracket Studio</div>
         <div class="hc-desc">16 years of bracketology process, finally in one tool. Built on live Warren Nolan NET data — designed for efficiency, usability, and objectivity.</div>
       </div>
       <div class="hc-bottom">

@@ -409,9 +409,12 @@ nav {
 
 /* BRACKET */
 .bracket-wrap {
-  max-width: var(--max);
+  max-width: 1000px;
   padding: 36px var(--pad);
 }
+.bracket-layout { display: flex; gap: 28px; align-items: flex-start; }
+.bracket-layout .bracket-grid { flex: 1; min-width: 0; margin-bottom: 0; }
+.bubble-sidebar { flex: 0 0 176px; display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
 .bracket-grid { display: flex; flex-direction: column; gap: 5px; margin-bottom: 28px; }
 
 .seed-group {
@@ -444,6 +447,7 @@ nav {
   grid-template-columns: repeat(4, 1fr);
   gap: 2px 12px;
 }
+.seed-teams-col-6 { grid-template-columns: repeat(3, 1fr); }
 
 .team-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .team-name { font-family: var(--fd); font-weight: 700; font-size: 13px; color: var(--text); }
