@@ -545,3 +545,29 @@ footer {
   position: relative;
   z-index: 1;
 }
+
+/* FIX HERO LAYOUT */
+.hero-wrap {
+  position: relative !important;
+  overflow: hidden;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-bg {
+  position: absolute !important;
+  top: 0;
+  right: -5%;
+  height: 100%;
+  width: 55%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero {
+  padding: 72px var(--pad) 64px !important;
+  max-width: var(--max);
+  position: relative !important;
+  z-index: 1;
+  display: block !important;
+}
