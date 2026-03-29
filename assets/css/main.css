@@ -29,6 +29,12 @@ body {
 
 main { flex: 1; }
 
+/* ACCESSIBILITY: keyboard focus visibility */
+:where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid #E8872B;
+  outline-offset: 2px;
+}
+
 /* NAV */
 nav {
   background: var(--bg);
@@ -516,4 +522,3 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
-
