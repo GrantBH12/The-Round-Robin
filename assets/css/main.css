@@ -414,7 +414,7 @@ nav {
 }
 .bracket-layout { display: flex; gap: 28px; align-items: flex-start; }
 .bracket-layout .bracket-grid { flex: 1; min-width: 0; margin-bottom: 0; }
-.bubble-sidebar { flex: 0 0 176px; display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
+.bubble-sidebar { flex: 0 0 210px; display: flex; flex-direction: column; gap: 10px; padding-top: 2px; }
 .bracket-grid { display: flex; flex-direction: column; gap: 5px; margin-bottom: 28px; }
 
 .seed-group {
@@ -470,7 +470,7 @@ nav {
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
-.bubble-card { padding: 14px 16px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); }
+.bubble-card { padding: 18px 20px; border-radius: 6px; border: 1px solid var(--border); background: var(--card); }
 .bubble-label {
   font-family: var(--fd);
   font-weight: 800;
