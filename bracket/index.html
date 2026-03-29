@@ -116,7 +116,6 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
   );
 });
 
-let REAL_TEAMS = [];
 let DATA_SCRAPED_AT = "";
 
 const SEEDS = Array.from({length:16},(_,i)=>({id:`seed${i+1}`,label:`${i+1}`,num:i+1,max:(i===10||i===15)?6:4}));
@@ -302,8 +301,7 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
   );
 });
 
-function App() {
-  const teams = useMemo(() => REAL_TEAMS, []);
+function App({ teams }) {
   const tm = useMemo(() => Object.fromEntries(teams.map(t => [t.id, t])), [teams]);
   const allConfs = useMemo(() => ["All", ...[...new Set(teams.map(t => t.conf))].sort()], [teams]);
 
@@ -1262,13 +1260,13 @@ function Root() {
     setError(null);
     fetch(DATA_URL)
       .then(r => { if (!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
-      .then(data => { REAL_TEAMS = data.teams; DATA_SCRAPED_AT = data.meta?.scrapedAt||""; setTeams(data.teams); })
+      .then(data => { DATA_SCRAPED_AT = data.meta?.scrapedAt||""; setTeams(data.teams); })
       .catch(e => setError(e.message));
   }, []);
   useEffect(() => { loadData(); }, [loadData]);
   if (error) return <ErrorScreen error={error} onRetry={loadData}/>;
   if (!teams) return <LoadingScreen/>;
-  return <App/>;
+  return <App teams={teams}/>;
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
