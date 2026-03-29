@@ -523,3 +523,25 @@ footer {
   display: block;
   opacity: 0.92;
 }
+
+/* HERO BRACKET BACKGROUND */
+.hero-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 60%;
+  pointer-events: none;
+}
+
+.hero {
+  padding: 72px var(--pad) 64px;
+  max-width: var(--max);
+  position: relative;
+  z-index: 1;
+}
