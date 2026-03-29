@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paymon Score Calculator · The Round Robin</title>
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-page:#081828; --bg-card:#0D2240; --bg-ghost:#1A3050;
+  --border:#1A3050; --border-strong:#2A4A7A;
+  --text-primary:#E2E8F0; --text-secondary:#8694A8; --text-muted:#6B7A90;
+  --text-faint:#4A5568;
+  --green:#4ADE80; --blue:#60A5FA; --amber:#FBBF24;
+  --orange:#FF7704;
+  --fd:'Barlow Condensed',sans-serif;
+  --fb:'Barlow',sans-serif;
+}
+:root.light {
+  --bg-page:#F5F7FA; --bg-card:#FFFFFF; --bg-ghost:#CBD1DB;
+  --border:#C5CDD8; --border-strong:#8FA4BC;
+  --text-primary:#0D2240; --text-secondary:#1E3A60; --text-muted:#4A6285;
+  --text-faint:#6B7A90;
+  --green:#16A34A; --blue:#1D4ED8; --amber:#92400E;
+  --orange:#E06800;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-page); color: var(--text-primary); font-family: var(--fb); font-size: 14px; min-height: 100vh; }
+
+/* ── Header ─────────────────────────────────────── */
+.app-header {
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--bg-page);
+  position: sticky; top: 0; z-index: 50;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-logo img {
+  height: 44px; width: auto; object-fit: contain;
+  background: #003368; border-radius: 6px; padding: 2px 6px; display: block;
+}
+.header-title { font-family: var(--fd); font-weight: 900; font-size: 20px; letter-spacing: -0.01em; text-transform: uppercase; color: var(--text-primary); }
+.header-sub { font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-top: 1px; }
+.icon-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--text-muted); font-size: 15px;
+  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+
+/* ── Layout ─────────────────────────────────────── */
+.main { padding: 20px 18px; max-width: 1200px; }
+
+/* ── Empty state ─────────────────────────────────── */
+.empty-state {
+  max-width: 480px; margin: 72px auto; text-align: center;
+  padding: 44px 36px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+}
+.empty-icon { font-family: var(--fd); font-size: 40px; font-weight: 900; color: var(--orange); opacity: 0.25; margin-bottom: 20px; }
+.empty-title { font-family: var(--fd); font-weight: 900; font-size: 22px; text-transform: uppercase; color: var(--text-primary); margin-bottom: 10px; }
+.empty-body { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 24px; }
+.cta-btn {
+  display: inline-block; font-family: var(--fd); font-weight: 700; font-size: 12px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--orange); color: #fff; border: none;
+  padding: 10px 24px; border-radius: 5px; text-decoration: none; cursor: pointer;
+}
+
+/* ── Summary metrics ─────────────────────────────── */
+.score-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 8px; }
+.region-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.metric { background: var(--bg-card); border: 1px solid var(--border); border-radius: 7px; padding: 10px 13px; }
+.metric-label { font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.metric-value { font-family: var(--fd); font-weight: 900; font-size: 22px; line-height: 1; color: var(--text-primary); }
+.metric.green .metric-value { color: var(--green); }
+.metric.blue .metric-value { color: var(--blue); }
+.metric.amber .metric-value { color: var(--amber); }
+.metric.r-E { border-top: 2px solid #D85A30; }
+.metric.r-M { border-top: 2px solid #378ADD; }
+.metric.r-W { border-top: 2px solid #639922; }
+.metric.r-S { border-top: 2px solid #D4537E; }
+
+/* ── Progress bar ────────────────────────────────── */
+.progress-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+.progress-bar { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+
+/* ── Toolbar ─────────────────────────────────────── */
+.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.search-input {
+  flex: 1; min-width: 160px; padding: 7px 12px; font-size: 13px; font-family: var(--fb);
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);
+}
+.search-input::placeholder { color: var(--text-faint); }
+.search-input:focus { outline: none; border-color: var(--orange); }
+.toolbar-label { font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
+.region-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+.rsel-btn {
+  font-family: var(--fd); font-weight: 700; font-size: 11px; letter-spacing: 0.06em;
+  padding: 5px 12px; border-radius: 5px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted); cursor: pointer;
+}
+.rsel-btn:hover { border-color: var(--border-strong); }
+.rsel-btn.ra-none { background: var(--bg-ghost); color: var(--text-primary); border-color: var(--border-strong); }
+.rsel-btn.ra-E { background: rgba(216,90,48,0.15); color: #D85A30; border-color: #D85A30; }
+.rsel-btn.ra-M { background: rgba(55,138,221,0.15); color: #378ADD; border-color: #378ADD; }
+.rsel-btn.ra-W { background: rgba(99,153,34,0.15); color: #639922; border-color: #639922; }
+.rsel-btn.ra-S { background: rgba(212,83,126,0.15); color: #D4537E; border-color: #D4537E; }
+.action-btn {
+  font-family: var(--fd); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 6px 14px; border-radius: 5px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-muted); cursor: pointer; white-space: nowrap;
+}
+.action-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.action-btn.reload { color: var(--orange); border-color: rgba(255,119,4,0.35); }
+.action-btn.reload:hover { border-color: var(--orange); }
+
+/* ── Team grid ───────────────────────────────────── */
+.seed-section { margin-bottom: 16px; }
+.seed-header {
+  font-family: var(--fd); font-weight: 800; font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px;
+  display: flex; align-items: center; gap: 10px;
+}
+.seed-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.team-row {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 8px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 6px; min-width: 0;
+}
+.team-row.tg-E { border-left: 2.5px solid #D85A30; }
+.team-row.tg-M { border-left: 2.5px solid #378ADD; }
+.team-row.tg-W { border-left: 2.5px solid #639922; }
+.team-row.tg-S { border-left: 2.5px solid #D4537E; }
+.seed-pip {
+  font-family: var(--fd); font-weight: 900; font-size: 10px;
+  min-width: 18px; height: 18px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-ghost); color: var(--text-muted); flex-shrink: 0;
+}
+.team-name { font-family: var(--fd); font-weight: 700; font-size: 12px; color: var(--text-primary); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.seed-input {
+  width: 50px; padding: 3px 5px; font-size: 12px; font-family: var(--fb);
+  background: var(--bg-page); border: 1px solid var(--border); border-radius: 4px;
+  color: var(--text-primary); text-align: center; flex-shrink: 0;
+}
+.seed-input:focus { outline: none; border-color: var(--orange); }
+.pts-badge { font-family: var(--fd); font-weight: 800; font-size: 10px; min-width: 26px; text-align: center; padding: 2px 4px; border-radius: 3px; flex-shrink: 0; }
+.pts-6 { background: rgba(74,222,128,0.12); color: var(--green); }
+.pts-4 { background: rgba(96,165,250,0.12); color: var(--blue); }
+.pts-3 { background: rgba(251,191,36,0.12); color: var(--amber); }
+.pts-0 { background: var(--bg-ghost); color: var(--text-faint); }
+.pts-p { background: transparent; color: var(--text-faint); }
+
+.no-results { text-align: center; padding: 48px; color: var(--text-muted); font-size: 13px; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-page); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-left">
+    <a href="../">
+      <img src="../assets/img/logo-01.png" alt="The Round Robin" style="height:44px;width:auto;object-fit:contain;background:#003368;border-radius:6px;padding:2px 6px;display:block;">
+    </a>
+    <div>
+      <div class="header-title">Paymon Score</div>
+      <div class="header-sub">Bracket Accuracy Calculator</div>
+    </div>
+  </div>
+  <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">☀</button>
+</div>
+
+<div class="main">
+  <div id="app-body"></div>
+</div>
+
+<script>
+const TEAMS_URL = "https://grantbh12.github.io/The-Round-Robin/teams.json";
+const BRACKET_KEY = "bracketology-board-state";
+const SCORES_KEY  = "paymon-scores";
+const THEME_KEY   = "bracketology-theme";
+
+let teamData = [];  // [{id, name, predictedSeed, actualSeed, region}]
+let teamMap  = {};  // id → team object
+let activeRegion = null;
+let darkMode = true;
+
+// ── Theme ──────────────────────────────────────────────────────────────────
+function initTheme() {
+  darkMode = localStorage.getItem(THEME_KEY) !== "light";
+  applyTheme();
+}
+function applyTheme() {
+  document.documentElement.classList.toggle("light", !darkMode);
+  const btn = document.getElementById("theme-btn");
+  if (btn) btn.textContent = darkMode ? "☀" : "🌙";
+}
+function toggleTheme() {
+  darkMode = !darkMode;
+  localStorage.setItem(THEME_KEY, darkMode ? "dark" : "light");
+  applyTheme();
+}
+
+// ── Data loading ───────────────────────────────────────────────────────────
+async function loadData() {
+  let asgn = null;
+  try { const r = localStorage.getItem(BRACKET_KEY); if (r) asgn = JSON.parse(r); } catch(e) {}
+
+  const hasTeams = asgn && Array.from({length:16}, (_,i) => `seed${i+1}`).some(k => (asgn[k]||[]).length > 0);
+  if (!hasTeams) { renderEmpty(); return; }
+
+  try {
+    const res = await fetch(TEAMS_URL);
+    const json = await res.json();
+    (json.teams || []).forEach(t => { teamMap[t.id] = t; });
+  } catch(e) {}
+
+  buildTeamData(asgn);
+  loadSavedScores();
+  renderApp();
+}
+
+function buildTeamData(asgn) {
+  teamData = [];
+  for (let i = 1; i <= 16; i++) {
+    (asgn[`seed${i}`] || []).forEach(id => {
+      teamData.push({ id, name: teamMap[id]?.name || id, predictedSeed: i, actualSeed: null, region: null });
+    });
+  }
+}
+
+function loadSavedScores() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SCORES_KEY) || "{}");
+    teamData.forEach(t => {
+      if (saved[t.id]) { t.actualSeed = saved[t.id].a ?? null; t.region = saved[t.id].r ?? null; }
+    });
+  } catch(e) {}
+}
+
+function reloadBracket() {
+  // Preserve entered scores, rebuild from latest Nest state
+  const prev = {};
+  teamData.forEach(t => { prev[t.id] = { a: t.actualSeed, r: t.region }; });
+
+  let asgn = null;
+  try { const r = localStorage.getItem(BRACKET_KEY); if (r) asgn = JSON.parse(r); } catch(e) {}
+
+  const hasTeams = asgn && Array.from({length:16}, (_,i) => `seed${i+1}`).some(k => (asgn[k]||[]).length > 0);
+  if (!hasTeams) { renderEmpty(); return; }
+
+  buildTeamData(asgn);
+  teamData.forEach(t => { if (prev[t.id]) { t.actualSeed = prev[t.id].a; t.region = prev[t.id].r; } });
+  renderApp();
+}
+
+// ── Persistence ────────────────────────────────────────────────────────────
+function saveScores() {
+  try {
+    const out = {};
+    teamData.forEach(t => { if (t.actualSeed !== null || t.region) out[t.id] = { a: t.actualSeed, r: t.region }; });
+    localStorage.setItem(SCORES_KEY, JSON.stringify(out));
+  } catch(e) {}
+}
+
+// ── Scoring ────────────────────────────────────────────────────────────────
+function calcPoints(predicted, actual) {
+  if (actual === null) return null;
+  const diff = Math.abs(predicted - actual);
+  if (diff === 0) return 6;
+  if (diff === 1) return 4;
+  return 3;
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderEmpty() {
+  document.getElementById("app-body").innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">P</div>
+      <div class="empty-title">No Bracket Found</div>
+      <div class="empty-body">Build your bracket in The Nest first — place teams on seed lines 1–16, then come back here to score it against the actual field.</div>
+      <a href="../bracket/" class="cta-btn">Open The Nest →</a>
+    </div>`;
+}
+
+function renderApp() {
+  const n = teamData.length;
+  document.getElementById("app-body").innerHTML = `
+    <div class="score-grid">
+      <div class="metric"><div class="metric-label">Total Score</div><div class="metric-value" id="m-total">0</div></div>
+      <div class="metric"><div class="metric-label">Max Possible</div><div class="metric-value" id="m-max">—</div></div>
+      <div class="metric"><div class="metric-label">Entered</div><div class="metric-value" id="m-entered">0 / ${n}</div></div>
+      <div class="metric green"><div class="metric-label">Exact Seed</div><div class="metric-value" id="m-exact">—</div></div>
+      <div class="metric blue"><div class="metric-label">Within One</div><div class="metric-value" id="m-one">—</div></div>
+      <div class="metric amber"><div class="metric-label">Correct Pick</div><div class="metric-value" id="m-sel">—</div></div>
+    </div>
+    <div class="region-grid">
+      <div class="metric r-E"><div class="metric-label">East</div><div class="metric-value" id="m-E">—</div></div>
+      <div class="metric r-M"><div class="metric-label">Midwest</div><div class="metric-value" id="m-M">—</div></div>
+      <div class="metric r-W"><div class="metric-label">West</div><div class="metric-value" id="m-W">—</div></div>
+      <div class="metric r-S"><div class="metric-label">South</div><div class="metric-value" id="m-S">—</div></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="prog" style="width:0%"></div></div>
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search team…" id="search-inp" oninput="renderTeams()">
+      <span class="toolbar-label">Region:</span>
+      <div class="region-btns">
+        <button class="rsel-btn ra-none" id="rbtn-none" onclick="setRegion(null)">None</button>
+        <button class="rsel-btn" id="rbtn-E" onclick="setRegion('E')">East</button>
+        <button class="rsel-btn" id="rbtn-M" onclick="setRegion('M')">Midwest</button>
+        <button class="rsel-btn" id="rbtn-W" onclick="setRegion('W')">West</button>
+        <button class="rsel-btn" id="rbtn-S" onclick="setRegion('S')">South</button>
+      </div>
+      <button class="action-btn reload" onclick="reloadBracket()">↺ Reload from Nest</button>
+      <button class="action-btn" onclick="resetAll()">Reset All</button>
+    </div>
+    <div id="teams-container"></div>`;
+  renderTeams();
+  updateSummary();
+}
+
+function renderTeams() {
+  const q = (document.getElementById("search-inp")?.value || "").toLowerCase().trim();
+  const filtered = q ? teamData.filter(t => t.name.toLowerCase().includes(q)) : teamData;
+
+  if (!filtered.length) {
+    document.getElementById("teams-container").innerHTML = '<div class="no-results">No teams found</div>';
+    return;
+  }
+
+  const grouped = {};
+  filtered.forEach(t => { (grouped[t.predictedSeed] = grouped[t.predictedSeed] || []).push(t); });
+
+  let html = "";
+  Object.keys(grouped).sort((a,b) => a-b).forEach(seed => {
+    html += `<div class="seed-section"><div class="seed-header">Seed ${seed}</div><div class="team-grid">`;
+    grouped[seed].forEach(t => {
+      const pts = calcPoints(t.predictedSeed, t.actualSeed);
+      const tgCls = t.region ? ` tg-${t.region}` : "";
+      const ptsCls = pts === null ? "pts-p" : pts === 6 ? "pts-6" : pts === 4 ? "pts-4" : pts === 3 ? "pts-3" : "pts-0";
+      const ptsText = pts === null ? "—" : pts;
+      html += `<div class="team-row${tgCls}" id="row-${t.id}">
+        <span class="seed-pip">${t.predictedSeed}</span>
+        <span class="team-name" title="${t.name}">${t.name}</span>
+        <input class="seed-input" type="number" min="1" max="16" placeholder="seed"
+          value="${t.actualSeed ?? ''}" data-id="${t.id}"
+          oninput="onInput(this)"
+          onkeydown="if(event.key==='Enter'){const a=Array.from(document.querySelectorAll('.seed-input'));const i=a.indexOf(this);if(i<a.length-1)a[i+1].focus();}">
+        <span class="pts-badge ${ptsCls}" id="pts-${t.id}">${ptsText}</span>
+      </div>`;
+    });
+    html += "</div></div>";
+  });
+
+  document.getElementById("teams-container").innerHTML = html;
+}
+
+function onInput(input) {
+  const id = input.dataset.id;
+  const t = teamData.find(x => x.id === id);
+  if (!t) return;
+  const v = input.value.trim() === "" ? null : parseInt(input.value);
+  t.actualSeed = (v !== null && v >= 1 && v <= 16) ? v : null;
+  if (activeRegion && t.actualSeed !== null) t.region = activeRegion;
+
+  const row = document.getElementById(`row-${id}`);
+  if (row) row.className = "team-row" + (t.region ? ` tg-${t.region}` : "");
+
+  const pts = calcPoints(t.predictedSeed, t.actualSeed);
+  const ptsCls = pts === null ? "pts-p" : pts === 6 ? "pts-6" : pts === 4 ? "pts-4" : pts === 3 ? "pts-3" : "pts-0";
+  const el = document.getElementById(`pts-${id}`);
+  if (el) { el.className = `pts-badge ${ptsCls}`; el.textContent = pts === null ? "—" : pts; }
+
+  updateSummary();
+  saveScores();
+}
+
+function updateSummary() {
+  const entered = teamData.filter(t => t.actualSeed !== null);
+  const n = entered.length;
+  const total = entered.reduce((s,t) => s + calcPoints(t.predictedSeed, t.actualSeed), 0);
+  const exact  = entered.filter(t => calcPoints(t.predictedSeed, t.actualSeed) === 6).length;
+  const oneOff = entered.filter(t => calcPoints(t.predictedSeed, t.actualSeed) === 4).length;
+  const sel    = entered.filter(t => (calcPoints(t.predictedSeed, t.actualSeed) ?? 0) > 0).length;
+  const full   = teamData.length;
+
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set("m-total",   total);
+  set("m-max",     n > 0 ? n * 6 : "—");
+  set("m-entered", `${n} / ${full}`);
+  set("m-exact",   n > 0 ? `${exact} / ${full}` : "—");
+  set("m-one",     n > 0 ? `${exact + oneOff} / ${full}` : "—");
+  set("m-sel",     n > 0 ? `${sel} / ${full}` : "—");
+  const prog = document.getElementById("prog");
+  if (prog) prog.style.width = `${full > 0 ? (n / full * 100) : 0}%`;
+
+  ["E","M","W","S"].forEach(r => {
+    const rt = teamData.filter(t => t.region === r && t.actualSeed !== null);
+    const rs = rt.reduce((s,t) => s + calcPoints(t.predictedSeed, t.actualSeed), 0);
+    set(`m-${r}`, rt.length > 0 ? rs : "—");
+  });
+}
+
+function setRegion(r) {
+  activeRegion = r;
+  ["none","E","M","W","S"].forEach(x => {
+    const btn = document.getElementById(`rbtn-${x}`);
+    if (!btn) return;
+    btn.className = "rsel-btn" + (x === "none" && r === null ? " ra-none" : x === r ? ` ra-${r}` : "");
+  });
+}
+
+function resetAll() {
+  teamData.forEach(t => { t.actualSeed = null; t.region = null; });
+  setRegion(null);
+  const si = document.getElementById("search-inp");
+  if (si) si.value = "";
+  try { localStorage.removeItem(SCORES_KEY); } catch(e) {}
+  renderTeams();
+  updateSummary();
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+initTheme();
+loadData();
+</script>
+</body>
+</html>
