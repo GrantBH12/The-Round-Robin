@@ -85,7 +85,7 @@ function getSortDisplay(t, field) {
 }
 
 // TeamCard defined OUTSIDE App — prevents React from remounting scroll containers
-const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDown, zone, poolSort }) {
+const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onPointerDown, zone, poolSort }) {
   const t = tm[tid];
   if (!t) return null;
   const isSel = selected === tid;
@@ -94,7 +94,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
   return (
     <div
       data-card={tid}
-      onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
+      onPointerDown={e => { e.stopPropagation(); onPointerDown(e, tid); }}
       onClick={e => e.stopPropagation()}
       style={{
         background: isSel ? "rgba(232,135,43,0.15)" : "var(--bg-card)",
@@ -102,6 +102,8 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onMouseDow
         borderRadius:6, padding:"5px 8px",
         cursor: isDragging ? "grabbing" : "grab",
         userSelect:"none", marginBottom:3, transition: isDragging ? "none" : "all 0.12s",
+        touchAction:"none",
+        WebkitTouchCallout:"none",
         boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
         opacity: isDragging ? 0.35 : 1,
       }}
@@ -188,7 +190,7 @@ function SectionToggle({ label, open, onToggle, color }) {
   );
 }
 
-function MobileSeedTeamCard({ tid, tm, selected, dragTid, onMouseDown, expanded, onToggleExpand }) {
+function MobileSeedTeamCard({ tid, tm, selected, dragTid, onPointerDown, expanded, onToggleExpand }) {
   const t = tm[tid];
   if (!t) return null;
   const isSel = selected === tid;
@@ -196,7 +198,7 @@ function MobileSeedTeamCard({ tid, tm, selected, dragTid, onMouseDown, expanded,
   return (
     <div
       data-card={tid}
-      onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
+      onPointerDown={e => { e.stopPropagation(); onPointerDown(e, tid); }}
       onClick={e => e.stopPropagation()}
       style={{
         background: isSel ? "rgba(232,135,43,0.15)" : "var(--bg-card)",
@@ -205,6 +207,8 @@ function MobileSeedTeamCard({ tid, tm, selected, dragTid, onMouseDown, expanded,
         padding:"8px 10px",
         cursor: isDragging ? "grabbing" : "grab",
         userSelect:"none",
+        touchAction:"none",
+        WebkitTouchCallout:"none",
         marginBottom:5,
         transition:"all 0.12s",
         boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
@@ -235,7 +239,7 @@ function MobileSeedTeamCard({ tid, tm, selected, dragTid, onMouseDown, expanded,
   );
 }
 
-const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange, selected, darkMode }) {
+const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handlePointerDown, moveTeam, collapseKey, expandKey, onOpenChange, selected, darkMode }) {
   const [powerOpen, setPowerOpen] = useState(true);
   const [recordsOpen, setRecordsOpen] = useState(true);
   const [winsOpen, setWinsOpen] = useState(true);
@@ -253,8 +257,8 @@ const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, inser
       {insertTarget?.zone===COMPARE && insertTarget?.beforeTid===tid && (
         <div style={{ width:3, alignSelf:"stretch", background:"#4A6FA5", borderRadius:1, marginRight:4, minHeight:40 }}/>
       )}
-      <div data-card={tid} onMouseDown={e => { e.stopPropagation(); handleMouseDown(e, tid); }} onClick={e => e.stopPropagation()}
-        style={{ width:220, background: selected===tid ? "rgba(232,135,43,0.15)" : "var(--bg-card)", border: selected===tid ? "1.5px solid #E8872B" : "1px solid var(--border-strong)", boxShadow: selected===tid ? "0 0 0 1px #E8872B" : "none", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab", transition:"all 0.12s" }}>
+      <div data-card={tid} onPointerDown={e => { e.stopPropagation(); handlePointerDown(e, tid); }} onClick={e => e.stopPropagation()}
+        style={{ width:220, background: selected===tid ? "rgba(232,135,43,0.15)" : "var(--bg-card)", border: selected===tid ? "1.5px solid #E8872B" : "1px solid var(--border-strong)", boxShadow: selected===tid ? "0 0 0 1px #E8872B" : "none", borderRadius:8, padding:"10px 10px 8px", display:"flex", flexDirection:"column", cursor:"grab", transition:"all 0.12s", touchAction:"none", WebkitTouchCallout:"none" }}>
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10, paddingBottom:8, borderBottom:"1px solid var(--border)" }}>
           {t.logo && <img src={t.logo} alt="" style={{ width:34, height:34, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
@@ -519,7 +523,7 @@ function App({ teams }) {
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
 
-  const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null});
+  const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null, pointerId:null});
   const ghostRef = useRef(null);
   const boardScrollRef = useRef(null);
   const poolScrollRef = useRef(null);
@@ -713,12 +717,15 @@ function App({ teams }) {
     toAdd.forEach(id => moveTeam(id, COMPARE));
   }, [compareIds, poolF, asgn, moveTeam]);
 
-  const handleMouseDown = useCallback((e, tid) => {
-    if (e.button !== 0) return;
+  const handlePointerDown = useCallback((e, tid) => {
+    if (!e.isPrimary) return;
+    if (e.pointerType === "mouse" && e.button !== 0) return;
     e.preventDefault();
-    dragRef.current = { tid, startX:e.clientX, startY:e.clientY, dragging:false, zoneRef:null, insertRef:null };
+    dragRef.current = { tid, startX:e.clientX, startY:e.clientY, dragging:false, zoneRef:null, insertRef:null, pointerId:e.pointerId };
+    if (e.currentTarget?.setPointerCapture) e.currentTarget.setPointerCapture(e.pointerId);
 
-    const onMouseMove = (mv) => {
+    const onPointerMove = (mv) => {
+      if (mv.pointerId !== dragRef.current.pointerId) return;
       const dx = mv.clientX - dragRef.current.startX;
       const dy = mv.clientY - dragRef.current.startY;
       if (!dragRef.current.dragging && Math.sqrt(dx*dx+dy*dy) > DRAG_THRESHOLD) {
@@ -776,9 +783,11 @@ function App({ teams }) {
       }
     };
 
-    const onMouseUp = () => {
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
+    const onPointerUpOrCancel = (up) => {
+      if (up.pointerId !== dragRef.current.pointerId) return;
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", onPointerUpOrCancel);
+      document.removeEventListener("pointercancel", onPointerUpOrCancel);
       if (ghostRef.current) ghostRef.current.style.display = "none";
       if (dragRef.current.dragging) {
         const targetZone = dragRef.current.zoneRef;
@@ -807,11 +816,12 @@ function App({ teams }) {
       } else {
         setSelected(prev => prev === tid ? null : tid);
       }
-      dragRef.current = { tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null };
+      dragRef.current = { tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null, pointerId:null };
     };
 
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUpOrCancel);
+    document.addEventListener("pointercancel", onPointerUpOrCancel);
   }, [asgn, moveTeam, tm]);
 
   const POOL_SORT_OPTS = [
@@ -1220,7 +1230,7 @@ function App({ teams }) {
             transition:"background 0.1s",
           }}>
             {poolF.map(id => (
-              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="pool" poolSort={poolSort}/>
+              <TeamCard key={id} tid={id} tm={tm} selected={selected} dragTid={dragTid} onPointerDown={handlePointerDown} zone="pool" poolSort={poolSort}/>
             ))}
           </div>
           <div style={{ padding:"8px 10px", borderTop:"1px solid var(--border)", fontSize:9, color:"var(--text-faint)", lineHeight:1.5 }}>
@@ -1434,7 +1444,7 @@ function App({ teams }) {
                     {compareIds.map(id => (
                       <CompareCard key={id} tid={id} tm={tm} asgn={asgn} compareIds={compareIds}
                         insertTarget={insertTarget} sendFromCompare={sendFromCompare}
-                        handleMouseDown={handleMouseDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange} selected={selected} darkMode={darkMode}/>
+                        handlePointerDown={handlePointerDown} moveTeam={moveTeam} collapseKey={collapseKey} expandKey={expandKey} onOpenChange={handleCardOpenChange} selected={selected} darkMode={darkMode}/>
                     ))}
                   </div>
                 </>
@@ -1491,7 +1501,7 @@ function App({ teams }) {
                             tm={tm}
                             selected={selected}
                             dragTid={dragTid}
-                            onMouseDown={handleMouseDown}
+                            onPointerDown={handlePointerDown}
                             expanded={!!mobileExpandedBySeed[id]}
                             onToggleExpand={() => {
                               setMobileSeedExpanded(prev => {
@@ -1507,7 +1517,7 @@ function App({ teams }) {
                             }}
                           />
                         ) : (
-                          <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                          <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onPointerDown={handlePointerDown} zone="board"/>
                         )}
                         {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
@@ -1549,7 +1559,7 @@ function App({ teams }) {
                       {insertTarget?.zone === tier.id && insertTarget?.beforeTid === id && (
                         <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                       )}
-                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                      <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onPointerDown={handlePointerDown} zone="board"/>
                       {insertTarget?.zone === tier.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
                         <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
                       )}
