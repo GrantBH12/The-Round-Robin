@@ -812,6 +812,13 @@ function App({ teams }) {
   const totalPlaced = SEEDS.reduce((s,sd) => s+(asgn[sd.id]?.length||0), 0) + EXTRA_TIERS.reduce((s,t) => s+(asgn[t.id]?.length||0), 0);
   const compareIds = asgn[COMPARE] || [];
   const isSel = !!selected;
+  const selectedTeam = selected ? tm[selected] : null;
+  const quickMove = useCallback((target) => {
+    if (!selected) return;
+    if (target === COMPARE && asgn[COMPARE].length >= 8 && !asgn[COMPARE].includes(selected)) return;
+    moveTeam(selected, target);
+    setSelected(null);
+  }, [selected, asgn, moveTeam]);
 
   return (
     <div style={{ minHeight:"100vh", background:"var(--bg-page)", color:"var(--text-primary)", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
@@ -834,6 +841,49 @@ function App({ teams }) {
           pointerEvents:"none", whiteSpace:"nowrap",
         }}>
           {toastMsg}
+        </div>
+      )}
+
+      {/* Selected team quick actions */}
+      {isSel && (
+        <div style={{
+          position:"fixed", left:"50%", bottom:10, transform:"translateX(-50%)",
+          width:"min(96vw, 1080px)", zIndex:15000,
+          background:"var(--bg-sidebar)", border:"1px solid var(--border-strong)", borderRadius:10,
+          boxShadow:"0 12px 26px rgba(0,0,0,0.45)", padding:"8px 10px",
+          display:"flex", alignItems:"center", gap:8, flexWrap:"wrap",
+        }}>
+          <div style={{ fontSize:11, fontWeight:700, color:"#E8872B", marginRight:2, whiteSpace:"nowrap" }}>
+            {selectedTeam ? selectedTeam.name : "Selected team"}
+          </div>
+          <div style={{ display:"flex", gap:4, flexWrap:"wrap", flex:"1 1 auto" }}>
+            {SEEDS.map(seed => (
+              <button key={seed.id} onClick={() => quickMove(seed.id)}
+                style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:4, color:"var(--text-secondary)", fontSize:10, minHeight:28, padding:"4px 6px", cursor:"pointer", minWidth:28 }}>
+                {seed.num}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => quickMove(COMPARE)}
+            style={{ background:"rgba(74,111,165,0.16)", border:"1px solid #4A6FA5", borderRadius:5, color:"#4A6FA5", fontSize:10, fontWeight:700, minHeight:28, padding:"4px 8px", cursor:"pointer", whiteSpace:"nowrap" }}>
+            Compare
+          </button>
+          <button onClick={() => quickMove("ffo")}
+            style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:darkMode ? "#8B4444" : "#C0392B", fontSize:10, fontWeight:700, minHeight:28, padding:"4px 8px", cursor:"pointer", whiteSpace:"nowrap" }}>
+            FFO
+          </button>
+          <button onClick={() => quickMove("nfo")}
+            style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:darkMode ? "#6B3A3A" : "#A93226", fontSize:10, fontWeight:700, minHeight:28, padding:"4px 8px", cursor:"pointer", whiteSpace:"nowrap" }}>
+            NFO
+          </button>
+          <button onClick={() => quickMove("ac")}
+            style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:darkMode ? "#555B6E" : "#3D4F6E", fontSize:10, fontWeight:700, minHeight:28, padding:"4px 8px", cursor:"pointer", whiteSpace:"nowrap" }}>
+            AC
+          </button>
+          <button onClick={() => quickMove(POOL)}
+            style={{ background:"rgba(232,135,43,0.12)", border:"1px solid rgba(232,135,43,0.45)", borderRadius:5, color:"#E8872B", fontSize:10, fontWeight:700, minHeight:28, padding:"4px 10px", cursor:"pointer", whiteSpace:"nowrap" }}>
+            Return to pool
+          </button>
         </div>
       )}
 
