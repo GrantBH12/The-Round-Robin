@@ -188,6 +188,53 @@ function SectionToggle({ label, open, onToggle, color }) {
   );
 }
 
+function MobileSeedTeamCard({ tid, tm, selected, dragTid, onMouseDown, expanded, onToggleExpand }) {
+  const t = tm[tid];
+  if (!t) return null;
+  const isSel = selected === tid;
+  const isDragging = dragTid === tid;
+  return (
+    <div
+      data-card={tid}
+      onMouseDown={e => { e.stopPropagation(); onMouseDown(e, tid); }}
+      onClick={e => e.stopPropagation()}
+      style={{
+        background: isSel ? "rgba(232,135,43,0.15)" : "var(--bg-card)",
+        border: `1.5px solid ${isSel ? "#E8872B" : "var(--border)"}`,
+        borderRadius:8,
+        padding:"8px 10px",
+        cursor: isDragging ? "grabbing" : "grab",
+        userSelect:"none",
+        marginBottom:5,
+        transition:"all 0.12s",
+        boxShadow: isSel ? "0 0 0 1px #E8872B" : "none",
+        opacity: isDragging ? 0.35 : 1,
+      }}
+    >
+      <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+        {t.logo && <img src={t.logo} alt="" style={{ width:18, height:18, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
+        <span style={{ color:"var(--text-primary)", fontWeight:700, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
+        <span style={{ color:"#E8872B", fontSize:11, fontFamily:"monospace", fontWeight:700 }}>{t.record || "—"}</span>
+        <button
+          onClick={e => { e.stopPropagation(); onToggleExpand(); }}
+          style={{ background:"none", border:"none", color:"var(--text-muted)", fontSize:12, cursor:"pointer", padding:2, minWidth:22, minHeight:22 }}
+          aria-label={expanded ? "Collapse details" : "Expand details"}
+        >
+          {expanded ? "▾" : "▸"}
+        </button>
+      </div>
+      {expanded && (
+        <div style={{ marginTop:7, paddingTop:7, borderTop:"1px solid var(--border)", display:"grid", gridTemplateColumns:"1fr 1fr", gap:"4px 10px" }}>
+          <St l="Conf" v={t.conf || "—"} />
+          <St l="NET" v={t.net != null ? `#${t.net}` : "—"} />
+          <St l="Q1" v={t.q1 || "—"} />
+          <St l="Q2" v={t.q2 || "—"} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 const CompareCard = memo(function CompareCard({ tid, tm, asgn, compareIds, insertTarget, sendFromCompare, handleMouseDown, moveTeam, collapseKey, expandKey, onOpenChange, selected, darkMode }) {
   const [powerOpen, setPowerOpen] = useState(true);
   const [recordsOpen, setRecordsOpen] = useState(true);
@@ -442,6 +489,8 @@ function App({ teams }) {
   }, []);
   const isNarrowHeader = viewportWidth <= 760;
   const isNarrowViewport = viewportWidth <= 980;
+  const isPhoneViewport = viewportWidth < 700;
+  const [mobileSeedExpanded, setMobileSeedExpanded] = useState({});
   useEffect(() => {
     try { localStorage.setItem("bracketology-active-pane", activePane); } catch (e) {}
   }, [activePane]);
@@ -1065,25 +1114,25 @@ function App({ teams }) {
       })()}
 
       {/* Header */}
-      <div style={{ padding:"10px 18px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+      <div style={{ padding:isPhoneViewport ? "8px 10px" : "10px 18px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:isPhoneViewport ? "stretch" : "center", justifyContent:"space-between", flexWrap:"wrap", gap:isPhoneViewport ? 6 : 8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:isPhoneViewport ? 8 : 12, minWidth:0 }}>
           <a href="../" style={{ display:"flex", flexShrink:0 }}>
-            <img src="../assets/img/logo-01.png" alt="The Round Robin" style={{ height:44, width:"auto", objectFit:"contain", flexShrink:0, background:"#003368", borderRadius:6, padding:"2px 6px" }}/>
+            <img src="../assets/img/logo-01.png" alt="The Round Robin" style={{ height:isPhoneViewport ? 30 : 44, width:"auto", objectFit:"contain", flexShrink:0, background:"#003368", borderRadius:6, padding:isPhoneViewport ? "1px 4px" : "2px 6px" }}/>
           </a>
-          <div>
-            <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+          <div style={{ minWidth:0 }}>
+            <h1 style={{ margin:0, fontSize:isPhoneViewport ? 16 : 20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
               The Nest Bracket Studio
             </h1>
-            <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
+            <p style={{ margin:"2px 0 0", fontSize:isPhoneViewport ? 9 : 10, color:"var(--text-faint)", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
               {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
             </p>
           </div>
         </div>
-        <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}>
-          <a href="../paymon/" style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", letterSpacing:"0.03em", gap:6 }}>
+        <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", width:isPhoneViewport ? "100%" : "auto", flexDirection:isPhoneViewport ? "column" : "row" }}>
+          <a href="../paymon/" style={{ background:isPhoneViewport ? "linear-gradient(135deg,#E8872B,#D07020)" : "none", border:isPhoneViewport ? "none" : "1px solid var(--border)", borderRadius:6, color:isPhoneViewport ? "#fff" : "var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", justifyContent:"center", letterSpacing:"0.03em", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:13, lineHeight:1 }}>🏁</span>{isNarrowHeader ? "Paymon" : "Paymon Score →"}
           </a>
-          <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", gap:6 }}>
+          <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:12, lineHeight:1 }}>🔗</span>{isNarrowHeader ? "Share" : "Share Bracket"}
           </button>
           <button onClick={() => {
@@ -1091,17 +1140,19 @@ function App({ teams }) {
             n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
             setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-          }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:6, color:"#fff", fontSize:isNarrowHeader ? 11 : 12, padding:"10px 18px", minHeight:44, cursor:"pointer", fontWeight:700, letterSpacing:"0.03em", display:"flex", alignItems:"center", gap:6 }}>
+          }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:6, color:"#fff", fontSize:isNarrowHeader ? 11 : 12, padding:"10px 18px", minHeight:44, cursor:"pointer", fontWeight:700, letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:12, lineHeight:1 }}>⟲</span>{isNarrowHeader ? "Reset" : "Reset Board"}
           </button>
-          <button onClick={toggleMode} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-            style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
-            {darkMode ? "☀" : "🌙"}
-          </button>
-          <button onClick={() => setHelpOpen(true)} title="Help"
-            style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
-            ?
-          </button>
+          <div style={{ display:"flex", gap:6, width:isPhoneViewport ? "100%" : "auto", justifyContent:isPhoneViewport ? "flex-end" : "flex-start" }}>
+            <button onClick={toggleMode} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+              style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+              {darkMode ? "☀" : "🌙"}
+            </button>
+            <button onClick={() => setHelpOpen(true)} title="Help"
+              style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+              ?
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1131,7 +1182,7 @@ function App({ teams }) {
       )}
 
       {/* Main layout */}
-      <div style={{ display:"flex", height:isNarrowViewport ? "calc(100vh - 120px)" : "calc(100vh - 66px)", overflow:"hidden" }}>
+      <div style={{ display:"flex", height:isNarrowViewport ? (isPhoneViewport ? "calc(100vh - 210px)" : "calc(100vh - 120px)") : "calc(100vh - 66px)", overflow:"hidden" }}>
 
         {/* Pool sidebar */}
         <div id="trr-pool" style={{ flex:isNarrowViewport ? "1 1 auto" : "0 0 260px", borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "pool") ? "flex" : "none", flexDirection:"column", background:"var(--bg-sidebar)" }}>
@@ -1417,30 +1468,54 @@ function App({ teams }) {
             const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : isFull ? color+"66" : "transparent"}`;
             // 6-slot lines: 4 per row so 5th/6th wrap; 4-slot lines: fill single row
             const slotFlex = seed.max === 6 && ids.length > 4 ? "0 0 calc(25% - 2px)" : "1";
+            const mobileExpandedBySeed = mobileSeedExpanded[seed.id] || {};
             return (
               <div key={seed.id} style={{ marginBottom:4 }} onClick={() => handleZoneClick(seed.id)}>
-                <div style={{ display:"flex", alignItems:"stretch", gap:8, minHeight:40 }}>
-                  <div style={{ width:30, minWidth:30, borderRadius:5, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:800, color:"#fff", alignSelf:"stretch", minHeight:40 }}>{seed.num}</div>
+                <div style={{ display:"flex", alignItems:isPhoneViewport ? "flex-start" : "stretch", gap:8, minHeight:40 }}>
+                  <div style={{ width:isPhoneViewport ? 24 : 30, minWidth:isPhoneViewport ? 24 : 30, borderRadius:5, background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:isPhoneViewport ? 11 : 12, fontWeight:800, color:"#fff", alignSelf:isPhoneViewport ? "flex-start" : "stretch", minHeight:isPhoneViewport ? 30 : 40 }}>{seed.num}</div>
                   <div data-zone={seed.id} style={{
-                    flex:1, display:"flex", flexWrap:"wrap", gap:2, minHeight:40,
-                    borderRadius:6, padding:"2px 4px",
+                    flex:1, display:"flex", flexDirection:isPhoneViewport ? "column" : "row", flexWrap:isPhoneViewport ? "nowrap" : "wrap", gap:isPhoneViewport ? 4 : 2, minHeight:40,
+                    borderRadius:6, padding:isPhoneViewport ? "4px" : "2px 4px",
                     border: zoneBorder,
                     background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
                     {ids.map((id, idx) => (
-                      <div key={id} style={{ flex:slotFlex, minWidth:120 }}>
+                      <div key={id} style={{ flex:isPhoneViewport ? "1 1 auto" : slotFlex, minWidth:isPhoneViewport ? 0 : 120 }}>
                         {insertTarget?.zone === seed.id && insertTarget?.beforeTid === id && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginBottom:2 }}/>
                         )}
-                        <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                        {isPhoneViewport ? (
+                          <MobileSeedTeamCard
+                            tid={id}
+                            tm={tm}
+                            selected={selected}
+                            dragTid={dragTid}
+                            onMouseDown={handleMouseDown}
+                            expanded={!!mobileExpandedBySeed[id]}
+                            onToggleExpand={() => {
+                              setMobileSeedExpanded(prev => {
+                                const prevSeedMap = prev[seed.id] || {};
+                                return {
+                                  ...prev,
+                                  [seed.id]: {
+                                    ...prevSeedMap,
+                                    [id]: !prevSeedMap[id],
+                                  },
+                                };
+                              });
+                            }}
+                          />
+                        ) : (
+                          <TeamCard tid={id} tm={tm} selected={selected} dragTid={dragTid} onMouseDown={handleMouseDown} zone="board"/>
+                        )}
                         {insertTarget?.zone === seed.id && !insertTarget?.beforeTid && insertTarget?.afterTid === id && idx === ids.length-1 && (
                           <div style={{ height:2, background:"#4A6FA5", borderRadius:1, marginTop:2 }}/>
                         )}
                       </div>
                     ))}
                     {emptyCount > 0 && Array.from({length:emptyCount}).map((_,i) => (
-                      <div key={`e-${i}`} style={{ flex:slotFlex, minWidth:120, height:34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
+                      <div key={`e-${i}`} style={{ flex:isPhoneViewport ? "1 1 auto" : slotFlex, minWidth:isPhoneViewport ? 0 : 120, height:isPhoneViewport ? 30 : 34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
                   </div>
                   <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "var(--text-faint)", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
