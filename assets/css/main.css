@@ -538,3 +538,113 @@ footer {
   flex: 1 1 100%;
   line-height: 1.6;
 }
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1200px) {
+  :root { --pad: 44px; }
+
+  .hero h1 { font-size: clamp(54px, 7.8vw, 84px); }
+
+  .card-grid { grid-template-columns: 1fr; }
+
+  .score-bar-inner {
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .score-main { padding-right: 24px; }
+  .ss { padding: 0 22px; }
+
+  .about-strip {
+    gap: 18px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  :root { --pad: 30px; }
+
+  .hero h1 { font-size: clamp(42px, 9.4vw, 66px); }
+
+  .card-grid { grid-template-columns: 1fr; }
+
+  .score-bar-inner {
+    flex-direction: column;
+    gap: 14px;
+  }
+  .score-main {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 0 10px;
+    width: 100%;
+  }
+  .score-stats {
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .ss {
+    padding: 0 16px;
+    min-width: 140px;
+  }
+  .ss:first-child { padding-left: 0; }
+
+  .about-strip {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  :root { --pad: 20px; }
+
+  .hero h1 { font-size: clamp(34px, 11vw, 52px); }
+
+  .card-grid { grid-template-columns: 1fr; }
+
+  .score-bar-inner { gap: 12px; }
+  .score-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .ss {
+    border-right: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+
+  .about-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+  .about-link { margin-left: 0; }
+}
+
+@media (max-width: 480px) {
+  :root { --pad: 14px; }
+
+  .hero h1 { font-size: clamp(28px, 12.5vw, 40px); }
+
+  .card-grid { grid-template-columns: 1fr; }
+
+  .score-bar-inner {
+    padding-top: 18px;
+    padding-bottom: 18px;
+    gap: 10px;
+  }
+  .score-stats { grid-template-columns: 1fr; }
+  .score-num { font-size: 44px; }
+  .ss { padding: 8px 10px; }
+
+  .about-strip {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    gap: 8px;
+  }
+  .about-name { font-size: 15px; }
+}
