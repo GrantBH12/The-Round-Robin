@@ -432,7 +432,7 @@ function App({ teams }) {
     SEEDS.forEach(s => { state[s.id] = asgn[s.id] || []; });
     EXTRA_TIERS.forEach(t => { state[t.id] = asgn[t.id] || []; });
     const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
-    const url = `${window.location.origin}${window.location.pathname}?b=${compressed}`;
+    const url = `${window.location.origin}/bracket/view/?b=${compressed}`;
     navigator.clipboard.writeText(url).then(() => {
       setToastMsg("Link copied to clipboard.");
     }).catch(() => {
