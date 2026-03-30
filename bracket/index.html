@@ -132,14 +132,14 @@ const SEED_COLORS = ["#E8872B","#D97A28","#C06128","#A84E26","#4A6FA5","#3D5E8C"
 const SEED_COLORS_LIGHT = ["#E8872B","#D97A28","#B05520","#9A4020","#3A5C90","#305080","#305080","#26426A","#26426A","#1E3458","#1E3458","#6B4A2A","#6B4A2A","#484848","#484848","#383838"];
 
 const TOUR_STEPS = [
-  { targetId: null, title: "Welcome to The Nest", body: "This is The Nest Bracket Studio — 16 years of bracketology process in one tool. Take a quick tour to learn your way around. Use → / ← to navigate, or click the buttons below." },
+  { targetId: null, title: "Welcome to The Nest: Bracketology Studio", body: "This is The Nest: Bracketology Studio — 16 years of bracketology process in one tool. Take a quick tour to learn your way around. Use → / ← to navigate, or click the buttons below." },
   { targetId: "trr-pool", title: "Team Pool", body: "Every team in the field starts here. Click a team to select it (orange highlight), then place it with a key or by clicking a seed line. Use ↑ ↓ arrow keys to select without clicking. Search by name or sort by NET, KenPom, Record, and more." },
   { targetId: "trr-filters", title: "Filter Panel", body: "Narrow the pool by conference or ranking thresholds. Click conference pills to filter to one or more leagues. Drag the sliders to set floors and ceilings for NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank. Click the ◀ arrow to collapse the panel and reclaim screen space." },
   { targetId: "trr-board", title: "Bracket Seedlines", body: "The 68-team field lives here — 16 seed lines, 4 teams each (seeds 11 and 16 hold 6 for First Four play-in games). With a team selected, press the matching key to place it instantly: 1–9, 0=10, -=11, ==12, [=13, ]=14, \\=15, `=16. Or drag teams between slots. Use Auto-Seed by NET to fill the board in one click." },
   { targetId: "trr-compare", title: "Compare Resumes", body: "Press C with any team selected to load it here (up to 8 teams side by side). Full resume metrics — NET, SOS, Q1–Q4 records, KPI, KenPom, and more — appear for each team. A summary table with bar charts appears automatically when 2+ teams are loaded. Press C again or click × to remove a team." },
-  { targetId: "trr-bubble", title: "Bubble Tiers", body: "Teams just outside the field go here. Press F for First Four Out, N for Next Four Out, A for Also Considered. These tiers are tracked separately from the bracket and flow into your Paymon Score when you're done building." },
+  { targetId: "trr-bubble", title: "Bubble Tiers", body: "Teams just outside the field go here. Press F for First Four Out, N for Next Four Out, A for Also Considered. These tiers are tracked separately from the bracket and flow into your Accuracy Calculator when you're done building." },
   { targetId: null, title: "Keyboard Shortcuts", isShortcuts: true },
-  { targetId: null, title: "You're all set.", body: "Build your bracket, score it with Paymon, and iterate. The ? button in the header restarts this tour anytime. Good luck." },
+  { targetId: null, title: "You're all set.", body: "Build your bracket, score it with the Accuracy Calculator (powered by the Paymon Scoring System), and iterate. The ? button in the header restarts this tour anytime. Good luck." },
 ];
 
 // Returns 0.12–0.90 fill based on value's rank within vals array
@@ -1121,7 +1121,7 @@ function App({ teams }) {
           </a>
           <div style={{ minWidth:0 }}>
             <h1 style={{ margin:0, fontSize:isPhoneViewport ? 16 : 20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
-              The Nest Bracket Studio
+              The Nest: Bracketology Studio
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:isPhoneViewport ? 9 : 10, color:"var(--text-faint)", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
               {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
@@ -1130,7 +1130,7 @@ function App({ teams }) {
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", width:isPhoneViewport ? "100%" : "auto", flexDirection:isPhoneViewport ? "column" : "row" }}>
           <a href="../paymon/" style={{ background:isPhoneViewport ? "linear-gradient(135deg,#E8872B,#D07020)" : "none", border:isPhoneViewport ? "none" : "1px solid var(--border)", borderRadius:6, color:isPhoneViewport ? "#fff" : "var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", justifyContent:"center", letterSpacing:"0.03em", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
-            <span style={{ fontSize:13, lineHeight:1 }}>🏁</span>{isNarrowHeader ? "Paymon" : "Paymon Score →"}
+            <span style={{ fontSize:13, lineHeight:1 }}>🏁</span>{isNarrowHeader ? "Accuracy" : "Accuracy Calculator →"}
           </a>
           <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:12, lineHeight:1 }}>🔗</span>{isNarrowHeader ? "Share" : "Share Bracket"}

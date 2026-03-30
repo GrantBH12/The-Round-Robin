@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paymon Score Calculator · The Round Robin</title>
+<title>Accuracy Calculator · The Round Robin</title>
 <link rel="icon" href="../favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -252,8 +252,8 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
       <img src="../assets/img/logo-01.png" alt="The Round Robin" style="height:44px;width:auto;object-fit:contain;background:#003368;border-radius:6px;padding:2px 6px;display:block;">
     </a>
     <div>
-      <div class="header-title">Paymon Score</div>
-      <div class="header-sub">Bracket Accuracy Calculator</div>
+      <div class="header-title">Accuracy Calculator</div>
+      <div class="header-sub">Bracket Accuracy Calculator · Powered by the Paymon Scoring System</div>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -331,7 +331,7 @@ function loadSavedScores() {
 }
 
 function reloadBracket() {
-  // Preserve entered scores, rebuild from latest Nest state
+  // Preserve entered scores, rebuild from latest The Nest: Bracketology Studio state
   const prev = {};
   teamData.forEach(t => { prev[t.id] = { a: t.actualSeed, r: t.region }; });
 
@@ -370,8 +370,8 @@ function renderEmpty() {
     <div class="empty-state">
       <div class="empty-icon">P</div>
       <div class="empty-title">No Bracket Found</div>
-      <div class="empty-body">Build your bracket in The Nest first — place teams on seed lines 1–16, then come back here to score it against the actual field.</div>
-      <a href="../bracket/" class="cta-btn">Open The Nest →</a>
+      <div class="empty-body">Build your bracket in The Nest: Bracketology Studio first — place teams on seed lines 1–16, then come back here to score it against the actual field.</div>
+      <a href="../bracket/" class="cta-btn">Open The Nest: Bracketology Studio →</a>
     </div>`;
 }
 
@@ -403,7 +403,7 @@ function renderApp() {
         <button class="rsel-btn" id="rbtn-W" onclick="setRegion('W')">West</button>
         <button class="rsel-btn" id="rbtn-S" onclick="setRegion('S')">South</button>
       </div>
-      <button class="action-btn reload" onclick="reloadBracket()"><span class="btn-icon">↺</span><span class="btn-label-full">Reload from Nest</span><span class="btn-label-short">Reload</span></button>
+      <button class="action-btn reload" onclick="reloadBracket()"><span class="btn-icon">↺</span><span class="btn-label-full">Reload from Studio</span><span class="btn-label-short">Reload</span></button>
       <button class="action-btn" onclick="resetAll()"><span class="btn-icon">⟲</span><span class="btn-label-full">Reset All</span><span class="btn-label-short">Reset</span></button>
     </div>
     <div id="teams-container"></div>`;

@@ -104,7 +104,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
           </a>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-              The Nest Bracket Studio
+              The Nest: Bracketology Studio
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
               {totalPlaced} teams placed · read-only view
@@ -118,7 +118,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
             </div>
           )}
           <a href="/bracket/" style={{ background:"linear-gradient(135deg,#E8872B,#F0A855)", border:"none", borderRadius:5, color:"#fff", fontSize:12, fontWeight:700, padding:"8px 16px", cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", letterSpacing:"0.03em" }}>
-            Build your own in The Nest →
+            Build your own in The Nest: Bracketology Studio →
           </a>
         </div>
       </div>
@@ -189,7 +189,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
           <div style={{ marginTop:32, paddingTop:16, borderTop:"1px solid var(--border)", textAlign:"center" }}>
             <p style={{ color:"var(--text-faint)", fontSize:12, marginBottom:12 }}>Want to build your own bracket with full resume data?</p>
             <a href="/bracket/" style={{ background:"linear-gradient(135deg,#E8872B,#F0A855)", borderRadius:6, color:"#fff", fontSize:14, fontWeight:700, padding:"10px 24px", textDecoration:"none", letterSpacing:"0.03em" }}>
-              Build your own in The Nest →
+              Build your own in The Nest: Bracketology Studio →
             </a>
           </div>
 
@@ -213,7 +213,7 @@ function ErrorScreen({ error }) {
     <div style={{ minHeight:"100vh", background:"var(--bg-page)", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
       <h1 style={{ fontSize:20, color:"var(--accent-red)", marginBottom:8 }}>Could not load bracket</h1>
       <p style={{ color:"var(--text-faint)", fontSize:12, marginBottom:16 }}>{error}</p>
-      <a href="/bracket/" style={{ background:"#E8872B", borderRadius:6, color:"#fff", fontSize:13, padding:"8px 20px", textDecoration:"none" }}>Go to The Nest</a>
+      <a href="/bracket/" style={{ background:"#E8872B", borderRadius:6, color:"#fff", fontSize:13, padding:"8px 20px", textDecoration:"none" }}>Go to The Nest: Bracketology Studio</a>
     </div>
   );
 }
