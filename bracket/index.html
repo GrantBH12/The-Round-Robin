@@ -426,6 +426,13 @@ function App({ teams }) {
       return next;
     });
   }, []);
+  const [viewportWidth, setViewportWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1280));
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  const isNarrowHeader = viewportWidth <= 760;
 
   const shareBracket = useCallback(() => {
     const state = {};
@@ -1010,27 +1017,27 @@ function App({ teams }) {
             </p>
           </div>
         </div>
-        <div style={{ display:"flex", gap:6, alignItems:"center" }}>
-          <a href="../paymon/" style={{ background:"none", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-muted)", fontSize:11, fontWeight:700, padding:"6px 12px", cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", letterSpacing:"0.04em" }}>
-            Paymon Score →
+        <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap" }}>
+          <a href="../paymon/" style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", letterSpacing:"0.03em", gap:6 }}>
+            <span style={{ fontSize:13, lineHeight:1 }}>🏁</span>{isNarrowHeader ? "Paymon" : "Paymon Score →"}
           </a>
-          <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-muted)", fontSize:11, fontWeight:700, padding:"6px 12px", cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.04em" }}>
-            Share Bracket
+          <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", gap:6 }}>
+            <span style={{ fontSize:12, lineHeight:1 }}>🔗</span>{isNarrowHeader ? "Share" : "Share Bracket"}
           </button>
           <button onClick={() => {
             const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
             n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
             setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
             try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
-          }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:5, color:"#fff", fontSize:13, padding:"8px 24px", cursor:"pointer", fontWeight:700, letterSpacing:"0.03em" }}>
-            Reset
+          }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:6, color:"#fff", fontSize:isNarrowHeader ? 11 : 12, padding:"10px 18px", minHeight:44, cursor:"pointer", fontWeight:700, letterSpacing:"0.03em", display:"flex", alignItems:"center", gap:6 }}>
+            <span style={{ fontSize:12, lineHeight:1 }}>⟲</span>{isNarrowHeader ? "Reset" : "Reset Board"}
           </button>
           <button onClick={toggleMode} title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-            style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+            style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             {darkMode ? "☀" : "🌙"}
           </button>
           <button onClick={() => setHelpOpen(true)} title="Help"
-            style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+            style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:44, height:44, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             ?
           </button>
         </div>
@@ -1045,11 +1052,11 @@ function App({ teams }) {
             <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Team Pool</div>
             <div style={{ position:"relative" }}>
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, conf, or NET..."
-                style={{ width:"100%", boxSizing:"border-box", padding:"6px 8px", background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-primary)", fontSize:12, outline:"none" }}
+                style={{ width:"100%", boxSizing:"border-box", minHeight:44, padding:"10px 10px", background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:5, color:"var(--text-primary)", fontSize:12, outline:"none" }}
               />
               {(search || anyFilterActive) && (
                 <button onClick={() => { setSearch(""); clearFilters(); }}
-                  style={{ position:"absolute", right:6, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"var(--text-muted)", fontSize:13, cursor:"pointer", lineHeight:1, padding:"0 2px" }}>×</button>
+                  style={{ position:"absolute", right:4, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", color:"var(--text-muted)", fontSize:16, cursor:"pointer", lineHeight:1, minWidth:36, minHeight:36, padding:"0 2px" }}>×</button>
               )}
             </div>
             <div style={{ display:"flex", gap:3, flexWrap:"wrap", marginTop:6 }}>
@@ -1058,7 +1065,7 @@ function App({ teams }) {
                 return (
                   <button key={opt.field} onClick={() => setPoolSort(p => p.field === opt.field ? { field:opt.field, dir:p.dir==='asc'?'desc':'asc' } : { field:opt.field, dir:opt.defDir })}
                     style={{ background: active ? "#E8872B22" : "var(--bg-card)", border:`1px solid ${active ? "#E8872B" : "var(--border)"}`,
-                      borderRadius:4, color: active ? "#E8872B" : "var(--text-muted)", fontSize:9, padding:"2px 6px",
+                      borderRadius:4, color: active ? "#E8872B" : "var(--text-muted)", fontSize:8, minHeight:32, padding:"6px 7px",
                       cursor:"pointer", fontWeight: active ? 700 : 400, whiteSpace:"nowrap" }}>
                     {opt.label}<span style={{ opacity: active ? 1 : 0, marginLeft:2 }}>{poolSort.dir==='asc'?'▲':'▼'}</span>
                   </button>
@@ -1304,8 +1311,8 @@ function App({ teams }) {
                 <input type="checkbox" checked={includeBubbleTiers} onChange={e => setIncludeBubbleTiers(e.target.checked)} style={{ accentColor:"#E8872B", cursor:"pointer" }}/>
                 Bubble
               </label>
-              <button onClick={autoSeed} style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:4, color:"var(--text-muted)", fontSize:10, fontWeight:700, padding:"3px 8px", cursor:"pointer", letterSpacing:"0.04em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
-                Auto-Seed by NET
+              <button onClick={autoSeed} style={{ background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:9, fontWeight:700, minHeight:44, padding:"10px 10px", cursor:"pointer", letterSpacing:"0.03em", textTransform:"uppercase", whiteSpace:"nowrap", display:"flex", alignItems:"center", gap:5 }}>
+                <span style={{ fontSize:12, lineHeight:1 }}>⚡</span>{isNarrowHeader ? "Auto NET" : "Auto-Seed by NET"}
               </button>
             </div>
           </div>

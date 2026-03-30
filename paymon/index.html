@@ -47,8 +47,8 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 .header-sub { font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-top: 1px; }
 .icon-btn {
   background: none; border: 1px solid var(--border); border-radius: 6px;
-  color: var(--text-muted); font-size: 15px;
-  width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  color: var(--text-muted); font-size: 14px;
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
 }
 .icon-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
 
@@ -92,17 +92,18 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 /* ── Toolbar ─────────────────────────────────────── */
 .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 .search-input {
-  flex: 1; min-width: 160px; padding: 7px 12px; font-size: 13px; font-family: var(--fb);
+  flex: 1; min-width: 160px; min-height: 44px; padding: 10px 12px; font-size: 13px; font-family: var(--fb);
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);
 }
-.search-input::placeholder { color: var(--text-faint); }
+.search-input::placeholder { color: var(--text-faint); font-size: 12px; }
 .search-input:focus { outline: none; border-color: var(--orange); }
-.toolbar-label { font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
+.toolbar-label { font-family: var(--fd); font-weight: 700; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); flex-shrink: 0; }
 .region-btns { display: flex; gap: 4px; flex-wrap: wrap; }
 .rsel-btn {
-  font-family: var(--fd); font-weight: 700; font-size: 11px; letter-spacing: 0.06em;
-  padding: 5px 12px; border-radius: 5px; border: 1px solid var(--border);
+  font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.05em;
+  min-height: 44px; padding: 10px 12px; border-radius: 5px; border: 1px solid var(--border);
   background: transparent; color: var(--text-muted); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
 }
 .rsel-btn:hover { border-color: var(--border-strong); }
 .rsel-btn.ra-none { background: var(--bg-ghost); color: var(--text-primary); border-color: var(--border-strong); }
@@ -111,13 +112,15 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 .rsel-btn.ra-W { background: rgba(99,153,34,0.15); color: #639922; border-color: #639922; }
 .rsel-btn.ra-S { background: rgba(212,83,126,0.15); color: #D4537E; border-color: #D4537E; }
 .action-btn {
-  font-family: var(--fd); font-weight: 700; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 6px 14px; border-radius: 5px; border: 1px solid var(--border);
+  font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+  min-height: 44px; padding: 10px 14px; border-radius: 5px; border: 1px solid var(--border);
   background: transparent; color: var(--text-muted); cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
 }
 .action-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
 .action-btn.reload { color: var(--orange); border-color: rgba(255,119,4,0.35); }
 .action-btn.reload:hover { border-color: var(--orange); }
+.btn-icon { font-size: 13px; line-height: 1; }
 
 /* ── Team grid ───────────────────────────────────── */
 .seed-section { margin-bottom: 16px; }
@@ -193,7 +196,7 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
   .action-btn {
     flex: 1 1 auto;
     text-align: center;
-    min-height: 32px;
+    min-height: 44px;
   }
 }
 
@@ -227,6 +230,17 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
     width: 68px;
   }
   .rsel-btn { flex: 1 1 calc(50% - 6px); text-align: center; }
+  .action-btn .btn-label-full { display: none; }
+  .action-btn .btn-label-short { display: inline; }
+}
+
+.btn-label-short { display: none; }
+
+@media (max-width: 480px) {
+  .header-title { font-size: 18px; }
+  .header-sub { font-size: 9px; letter-spacing: 0.1em; }
+  .toolbar-label { font-size: 8px; }
+  .rsel-btn { font-size: 9px; }
 }
 </style>
 </head>
@@ -389,8 +403,8 @@ function renderApp() {
         <button class="rsel-btn" id="rbtn-W" onclick="setRegion('W')">West</button>
         <button class="rsel-btn" id="rbtn-S" onclick="setRegion('S')">South</button>
       </div>
-      <button class="action-btn reload" onclick="reloadBracket()">↺ Reload from Nest</button>
-      <button class="action-btn" onclick="resetAll()">Reset All</button>
+      <button class="action-btn reload" onclick="reloadBracket()"><span class="btn-icon">↺</span><span class="btn-label-full">Reload from Nest</span><span class="btn-label-short">Reload</span></button>
+      <button class="action-btn" onclick="resetAll()"><span class="btn-icon">⟲</span><span class="btn-label-full">Reset All</span><span class="btn-label-short">Reset</span></button>
     </div>
     <div id="teams-container"></div>`;
   renderTeams();
