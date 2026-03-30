@@ -491,6 +491,16 @@ nav {
 .next-four-out .bubble-label { color: #6B3A3A; }
 .third-four-out .bubble-label { color: var(--sub); }
 
+/* PREDICTIONS PAGE TYPOGRAPHY OVERRIDES */
+.predictions-page .team-name { font-size: 15px; }
+.predictions-page .result { font-size: 13px; }
+.predictions-page .ss-num { font-size: 30px; }
+.predictions-page .ss-label { font-size: 13px; }
+.predictions-page .score-label { font-size: 12px; }
+.predictions-page .bubble-label { font-size: 12px; }
+.predictions-page .bubble-teams { font-size: 15px; line-height: 1.7; }
+.predictions-page .section-label { font-size: 13px; }
+
 /* ABOUT PAGE */
 .about-page { max-width: 740px; padding: 52px var(--pad); }
 .about-page h2 {
