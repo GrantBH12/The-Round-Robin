@@ -2,7 +2,7 @@
   "meta": {
     "source": "Warren Nolan NET Nitty Gritty + Team Sheets",
     "url": "https://www.warrennolan.com/basketball/2026/net-nitty",
-    "scrapedAt": "2026-03-29T08:33:26.161594+00:00",
+    "scrapedAt": "2026-03-30T09:05:38.173041+00:00",
     "season": "2026",
     "teamCount": 128,
     "sheetsScraped": true
@@ -15,19 +15,19 @@
       "conf": "ACC",
       "confRecord": "17-1",
       "net": 1,
-      "record": "35-2",
+      "record": "35-3",
       "sos": 9,
       "ncRecord": "12-1",
       "ncSos": 9,
       "home": "15-0",
       "road": "10-1",
-      "neutral": "10-1",
-      "q1": "19-2",
+      "neutral": "10-2",
+      "q1": "19-3",
       "q2": "6-0",
       "q3": "3-0",
       "q4": "7-0",
       "avgNetWins": 87,
-      "avgNetLosses": 21,
+      "avgNetLosses": 17,
       "keyWins": [
         {
           "opp": "Michigan",
@@ -79,6 +79,13 @@
           "score": "81-82",
           "site": "N",
           "date": "12-20"
+        },
+        {
+          "opp": "Connecticut",
+          "oppNet": 10,
+          "score": "72-73",
+          "site": "N",
+          "date": "03-29"
         }
       ],
       "kpi": 1,
@@ -95,18 +102,18 @@
       "conf": "Big Ten",
       "confRecord": "19-1",
       "net": 2,
-      "record": "34-3",
+      "record": "35-3",
       "sos": 1,
       "ncRecord": "10-1",
       "ncSos": 7,
       "home": "14-1",
       "road": "11-0",
-      "neutral": "9-2",
-      "q1": "19-3",
+      "neutral": "10-2",
+      "q1": "20-3",
       "q2": "5-0",
       "q3": "6-0",
       "q4": "4-0",
-      "avgNetWins": 68,
+      "avgNetWins": 67,
       "avgNetLosses": 11,
       "keyWins": [
         {
@@ -861,20 +868,27 @@
       "conf": "Big East",
       "confRecord": "17-3",
       "net": 10,
-      "record": "32-5",
+      "record": "33-5",
       "sos": 52,
       "ncRecord": "10-1",
       "ncSos": 11,
       "home": "15-2",
       "road": "9-2",
-      "neutral": "8-1",
-      "q1": "9-3",
+      "neutral": "9-1",
+      "q1": "10-3",
       "q2": "11-1",
       "q3": "7-1",
       "q4": "5-0",
-      "avgNetWins": 102,
+      "avgNetWins": 99,
       "avgNetLosses": 42,
       "keyWins": [
+        {
+          "opp": "Duke",
+          "oppNet": 1,
+          "score": "73-72",
+          "site": "N",
+          "date": "03-29"
+        },
         {
           "opp": "Florida",
           "oppNet": 4,
@@ -902,13 +916,6 @@
           "score": "72-40",
           "site": "H",
           "date": "02-25"
-        },
-        {
-          "opp": "Kansas",
-          "oppNet": 21,
-          "score": "61-56",
-          "site": "A",
-          "date": "12-02"
         }
       ],
       "keyLosses": [
@@ -1871,19 +1878,19 @@
       "conf": "SEC",
       "confRecord": "11-7",
       "net": 20,
-      "record": "25-11",
+      "record": "25-12",
       "sos": 12,
       "ncRecord": "10-3",
       "ncSos": 62,
       "home": "14-3",
       "road": "5-5",
-      "neutral": "6-3",
-      "q1": "8-10",
+      "neutral": "6-4",
+      "q1": "8-11",
       "q2": "7-1",
       "q3": "3-0",
       "q4": "7-0",
       "avgNetWins": 109,
-      "avgNetLosses": 26,
+      "avgNetLosses": 24,
       "keyWins": [
         {
           "opp": "Houston",
