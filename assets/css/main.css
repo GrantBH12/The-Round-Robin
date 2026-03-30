@@ -60,12 +60,50 @@ nav {
   text-transform: uppercase;
   color: var(--muted);
   padding: 6px 12px;
+  border: 1px solid transparent;
   border-radius: 4px;
   text-decoration: none;
   transition: all .15s;
 }
 .nav-link:hover { color: var(--text); background: var(--surface); }
-.nav-link.active { color: var(--orange); }
+.nav-link.active {
+  color: var(--orange);
+  background: rgba(255,119,4,0.14);
+  border: 1px solid rgba(255,119,4,0.32);
+}
+
+@media (max-width: 760px) {
+  nav {
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+
+  .nav-links {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+    gap: 8px;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  .nav-link:focus-visible {
+    background: var(--surface);
+  }
+}
 
 /* HERO */
 .hero-wrap {
