@@ -296,6 +296,10 @@ def main():
         print("ERROR: No teams parsed.", file=sys.stderr)
         sys.exit(1)
 
+    if len(teams) < 100:
+        print("ERROR: Suspiciously low team count — scrape may have failed. Aborting.", file=sys.stderr)
+        sys.exit(1)
+
     print(f"  Found {len(teams)} teams")
     if teams:
         t = teams[0]
