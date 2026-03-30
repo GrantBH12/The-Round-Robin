@@ -393,6 +393,13 @@ function App({ teams }) {
   const [toastMsg, setToastMsg] = useState("");
   const [compareOpen, setCompareOpen] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [helpOpen, setHelpOpen] = useState(false);
+  useEffect(() => {
+    if (!helpOpen) return;
+    const onKey = e => { if (e.key === "Escape") setHelpOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [helpOpen]);
   const [tourStep, setTourStep] = useState(null);
   const finishTour = useCallback(() => {
     try { localStorage.setItem("bracketology-tour-seen", "1"); } catch(e) {}
@@ -530,7 +537,7 @@ function App({ teams }) {
         if (e.key === "ArrowLeft") { setTourStep(s => Math.max(0, s - 1)); return; }
         return;
       }
-      if (e.key === "Escape") { setSelected(null); return; }
+      if (e.key === "Escape") { if (helpOpen) { setHelpOpen(false); return; } setSelected(null); return; }
       if (!selected) {
         // No selection: arrows start selecting from pool/compare
         if (e.key === "ArrowDown" && poolF.length > 0) { e.preventDefault(); setSelected(poolF[0]); }
@@ -597,7 +604,7 @@ function App({ teams }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, tourStep, poolF, compareIds, asgn, moveTeam, finishTour]);
+  }, [selected, tourStep, helpOpen, poolF, compareIds, asgn, moveTeam, finishTour]);
 
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
@@ -794,6 +801,98 @@ function App({ teams }) {
         </div>
       )}
 
+      {/* Help Modal */}
+      {helpOpen && (
+        <div onClick={() => setHelpOpen(false)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", zIndex:20000, display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:"var(--bg-sidebar)", border:"1px solid var(--border)", borderRadius:10, padding:"24px 28px", maxWidth:580, width:"100%", maxHeight:"82vh", overflowY:"auto", position:"relative", boxShadow:"0 8px 40px rgba(0,0,0,0.45)", fontFamily:"'Segoe UI','Inter',system-ui,sans-serif" }}>
+            <button onClick={() => setHelpOpen(false)} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", color:"var(--text-muted)", fontSize:18, cursor:"pointer", lineHeight:1, padding:0 }}>✕</button>
+            <h2 style={{ margin:"0 0 4px", fontSize:17, fontWeight:800, background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>The Bracketology Nest</h2>
+            <p style={{ color:"var(--text-faint)", fontSize:11, margin:"0 0 14px" }}>Interactive bracket prediction &amp; resume comparison tool for college basketball</p>
+            <button onClick={() => { setHelpOpen(false); setTourStep(0); }} style={{ display:"flex", alignItems:"center", gap:8, width:"100%", background:"rgba(232,135,43,0.08)", border:"1px solid rgba(232,135,43,0.35)", borderRadius:7, padding:"10px 14px", marginBottom:18, cursor:"pointer", textAlign:"left" }}>
+              <span style={{ fontSize:16 }}>▶</span>
+              <div>
+                <div style={{ fontSize:12, fontWeight:700, color:"#E8872B" }}>Take the Interactive Tour</div>
+                <div style={{ fontSize:10, color:"var(--text-faint)", marginTop:1 }}>Step-by-step walkthrough of every section and keyboard shortcut</div>
+              </div>
+            </button>
+            <p style={{ color:"var(--text-secondary)", fontSize:12, lineHeight:1.6, margin:"0 0 20px", padding:"10px 14px", background:"var(--bg-card)", borderRadius:6, borderLeft:"3px solid #E8872B" }}>
+              Build your bracket by placing teams from the pool into seed lines 1–16, compare team resumes side by side, and track bubble teams in the tier zones below the bracket. Your bracket auto-saves in the browser between sessions.
+            </p>
+
+            {/* Zones */}
+            {[["ZONES",null],
+              ["Team Pool","All unplaced teams. Sort by any metric, search by name or conference, and use the filter panel to narrow the list. Drag or click-select to move teams."],
+              ["Compare Resumes","Place up to 8 teams side by side for a detailed resume comparison. A summary table with bars appears automatically when 2 or more teams are loaded."],
+              ["Bracket Seedlines 1–16","The 68-team field. Each seed line holds 4 teams; seeds 11 and 16 hold 6 (First Four play-in games). You can exceed the cap manually."],
+              ["First Four Out","Bubble tracking zone for teams just outside the field."],
+              ["Next Four Out","Teams a step further from the bubble."],
+              ["Also Considered","Additional bubble-watch zone for teams worth monitoring."],
+            ].map(([title, desc], i) => i === 0
+              ? <div key={i} style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>{title}</div>
+              : <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                  <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+                </div>
+            )}
+
+            {/* Moving Teams */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Moving Teams</div>
+            {[
+              ["Click to select","Click any team card to select it (orange highlight). Then click a zone or seed line to place it there."],
+              ["Drag","Drag a team directly from any zone to any other zone or seed line. Reorder within zones by dragging."],
+              ["Deselect","Click the selected team again or press Escape to deselect."],
+              ["From Compare","Use the numbered seed buttons at the bottom of each compare card to send a team directly to a seed line."],
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+              </div>
+            ))}
+
+            {/* Filters */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Filters</div>
+            {[
+              ["Search","Find teams by name, conference, or NET ranking. The clear × button resets search and all filters."],
+              ["Conference pills","Filter the pool to one or more conferences. Multiple selections are combined (OR)."],
+              ["Ranking sliders","Narrow the pool by ranking range across NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank."],
+              ["Collapse","Click the arrow button to collapse the filter panel horizontally and give seedlines more room."],
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display:"flex", gap:10, padding:"7px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"var(--text-primary)", minWidth:140, flexShrink:0 }}>{title}</span>
+                <span style={{ fontSize:11, color:"var(--text-secondary)", lineHeight:1.5 }}>{desc}</span>
+              </div>
+            ))}
+
+            {/* Keyboard Shortcuts */}
+            <div style={{ fontSize:10, fontWeight:700, color:"#E8872B", textTransform:"uppercase", letterSpacing:"0.08em", margin:"20px 0 8px" }}>Keyboard Shortcuts</div>
+            <div style={{ fontSize:10, color:"var(--text-faint)", marginBottom:8 }}>Shortcuts work when a team is selected (orange highlight). Use arrow keys to select without clicking.</div>
+            {[
+              ["↑ / ↓","Navigate up/down in the pool list"],
+              ["← / →","Navigate left/right through compare cards, or between teams within a seed line"],
+              ["Shift + ← / →","Reorder the selected team one slot left/right within its seed line"],
+              ["1 – 9","Place selected team on seed line 1–9"],
+              ["0","Seed line 10"],
+              ["- = [ ] \\ `","Seed lines 11–16 (in order)"],
+              ["c","Move to Compare Resumes"],
+              ["f","First Four Out"],
+              ["n","Next Four Out"],
+              ["a","Also Considered"],
+              ["Backspace / Delete","Return selected team to pool"],
+              ["Escape","Deselect / close this panel"],
+            ].map(([key, action], i) => (
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"5px 10px", background: i%2===0 ? "var(--bg-card)" : "transparent", borderRadius:5, marginBottom:2 }}>
+                <code style={{ fontSize:11, fontFamily:"monospace", color:"#E8872B", background:"rgba(232,135,43,0.10)", border:"1px solid rgba(232,135,43,0.25)", borderRadius:4, padding:"2px 7px", minWidth:120, flexShrink:0, display:"inline-block", textAlign:"center" }}>{key}</code>
+                <span style={{ fontSize:11, color:"var(--text-secondary)" }}>{action}</span>
+              </div>
+            ))}
+
+            <div style={{ marginTop:20, paddingTop:14, borderTop:"1px solid var(--border)", fontSize:10, color:"var(--text-faint)", textAlign:"center" }}>
+              Data sourced from <a href="https://warrennolan.com" target="_blank" rel="noopener noreferrer" style={{ color:"#4A6FA5" }}>WarrenNolan.com</a> · Not affiliated with, endorsed by, or sponsored by the NCAA or any member institution · Terms like bracketology and tournament selection are used editorially · © 2026 The Round Robin
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tour Overlay */}
       {tourStep !== null && (() => {
         const step = TOUR_STEPS[tourStep];
@@ -910,7 +1009,7 @@ function App({ teams }) {
             style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:15, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             {darkMode ? "☀" : "🌙"}
           </button>
-          <button onClick={() => setTourStep(0)} title="Help / Tour"
+          <button onClick={() => setHelpOpen(true)} title="Help"
             style={{ background:"none", border:"1px solid var(--border)", borderRadius:"50%", color:"var(--text-muted)", fontSize:13, fontWeight:700, width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
             ?
           </button>
