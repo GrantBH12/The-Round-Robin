@@ -17,6 +17,7 @@ exclude:
 keep_files:
   - bracket
   - teams.json
+  - my-bracket.json
   - favicon.ico
 
 plugins:
