@@ -162,6 +162,72 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-page); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 1120px) {
+  .score-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .region-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 860px) {
+  .app-header { padding: 10px 12px; }
+  .main { padding: 16px 12px; }
+  .score-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toolbar {
+    align-items: stretch;
+    gap: 6px;
+  }
+  .search-input {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .toolbar-label {
+    width: 100%;
+    margin-top: 2px;
+  }
+  .region-btns {
+    width: 100%;
+    gap: 6px;
+  }
+  .action-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    min-height: 32px;
+  }
+}
+
+@media (max-width: 620px) {
+  .score-grid,
+  .region-grid,
+  .team-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .team-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "pip name points"
+      "pip input input";
+    column-gap: 8px;
+    row-gap: 6px;
+    align-items: center;
+    padding: 8px 10px 8px 12px;
+  }
+  .seed-pip { grid-area: pip; }
+  .team-name {
+    grid-area: name;
+    white-space: normal;
+    line-height: 1.25;
+  }
+  .pts-badge { grid-area: points; justify-self: end; }
+  .seed-input {
+    grid-area: input;
+    justify-self: start;
+    width: 68px;
+  }
+  .rsel-btn { flex: 1 1 calc(50% - 6px); text-align: center; }
+}
 </style>
 </head>
 <body>

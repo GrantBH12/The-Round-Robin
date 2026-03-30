@@ -133,6 +133,63 @@ p:last-child { margin-bottom: 0; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-page); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 900px) {
+  .page { padding: 32px 16px 64px; }
+  .app-header {
+    padding: 10px 12px;
+    align-items: flex-start;
+  }
+  .step { padding: 16px; }
+  .stat-row {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .stat-name { width: auto; }
+}
+
+@media (max-width: 680px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .header-left { min-width: 0; }
+  .header-title { font-size: 18px; }
+  .back-btn { padding: 6px 10px; }
+  h2 { font-size: 24px; }
+  p { font-size: 14px; line-height: 1.7; }
+  .step {
+    gap: 12px;
+    padding: 14px;
+  }
+  .step-num {
+    width: 24px;
+    font-size: 22px;
+  }
+  .step-title { font-size: 15px; }
+  .score-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .score-table thead,
+  .score-table tbody,
+  .score-table tr {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 500px) {
+  .tip,
+  .stat-row {
+    padding: 12px;
+  }
+  .tip { gap: 8px; }
+  .section { margin-bottom: 36px; }
+  .section-label { margin-bottom: 14px; }
+}
 </style>
 </head>
 <body>
