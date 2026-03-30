@@ -427,12 +427,24 @@ function App({ teams }) {
     });
   }, []);
   const [viewportWidth, setViewportWidth] = useState(() => (typeof window !== "undefined" ? window.innerWidth : 1280));
+  const [activePane, setActivePane] = useState(() => {
+    try {
+      const saved = localStorage.getItem("bracketology-active-pane");
+      return saved || "board";
+    } catch (e) {
+      return "board";
+    }
+  });
   useEffect(() => {
     const onResize = () => setViewportWidth(window.innerWidth);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
   const isNarrowHeader = viewportWidth <= 760;
+  const isNarrowViewport = viewportWidth <= 980;
+  useEffect(() => {
+    try { localStorage.setItem("bracketology-active-pane", activePane); } catch (e) {}
+  }, [activePane]);
 
   const shareBracket = useCallback(() => {
     const state = {};
@@ -1043,11 +1055,36 @@ function App({ teams }) {
         </div>
       </div>
 
+      {isNarrowViewport && (
+        <div style={{ display:"flex", gap:6, padding:"8px 10px", borderBottom:"1px solid var(--border)", background:"var(--bg-page)" }}>
+          {[
+            { id:"pool", label:"Pool" },
+            { id:"board", label:"Board" },
+            { id:"compare", label:"Compare" },
+            { id:"filters", label:"Filters" },
+          ].map(tab => {
+            const active = activePane === tab.id;
+            return (
+              <button key={tab.id} onClick={() => setActivePane(tab.id)}
+                style={{
+                  flex:1, minHeight:38, borderRadius:999, cursor:"pointer",
+                  border:`1px solid ${active ? "#E8872B" : "var(--border)"}`,
+                  background: active ? "rgba(232,135,43,0.16)" : "var(--bg-card)",
+                  color: active ? "#E8872B" : "var(--text-muted)",
+                  fontSize:11, fontWeight:700, letterSpacing:"0.03em",
+                }}>
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Main layout */}
-      <div style={{ display:"flex", height:"calc(100vh - 66px)", overflow:"hidden" }}>
+      <div style={{ display:"flex", height:isNarrowViewport ? "calc(100vh - 120px)" : "calc(100vh - 66px)", overflow:"hidden" }}>
 
         {/* Pool sidebar */}
-        <div id="trr-pool" style={{ flex:"0 0 260px", borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", background:"var(--bg-sidebar)" }}>
+        <div id="trr-pool" style={{ flex:isNarrowViewport ? "1 1 auto" : "0 0 260px", borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "pool") ? "flex" : "none", flexDirection:"column", background:"var(--bg-sidebar)" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid var(--border)" }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Team Pool</div>
             <div style={{ position:"relative" }}>
@@ -1091,7 +1128,7 @@ function App({ teams }) {
         </div>
 
         {/* Filter panel — horizontally collapsible */}
-        <div id="trr-filters" style={{ width: filtersOpen ? 200 : 28, flexShrink:0, borderRight:"1px solid var(--border)", display:"flex", flexDirection:"column", background:"var(--bg-page)", overflow:"hidden", transition:"width 0.18s ease" }}>
+        <div id="trr-filters" style={{ width: isNarrowViewport ? "100%" : (filtersOpen ? 200 : 28), flexShrink:0, borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "filters") ? "flex" : "none", flexDirection:"column", background:"var(--bg-page)", overflow:"hidden", transition:isNarrowViewport ? "none" : "width 0.18s ease" }}>
           <div onClick={() => setFiltersOpen(o => !o)} style={{ padding:"10px 0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", borderBottom:"1px solid var(--border)", flexShrink:0, gap:4 }}>
             <span style={{ fontSize:11, color: anyFilterActive ? "#E8872B" : "var(--text-muted)" }}>{filtersOpen ? "◀" : "▶"}</span>
             {filtersOpen && <span style={{ fontSize:9, fontWeight:700, color: anyFilterActive ? "#E8872B" : "var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Filters · Collapse</span>}
@@ -1160,10 +1197,11 @@ function App({ teams }) {
         </div>
 
         {/* Board */}
-        <div id="trr-board" ref={boardScrollRef} style={{ flex:1, overflowY:"auto", padding:"10px 14px 10px 8px" }}>
+        <div id="trr-board" ref={boardScrollRef} style={{ flex:1, overflowY:"auto", padding:"10px 14px 10px 8px", display:(!isNarrowViewport || activePane === "board" || activePane === "compare") ? "block" : "none" }}>
 
 
           {/* Collapsible Compare */}
+          {(!isNarrowViewport || activePane === "compare") && (
           <div id="trr-compare" style={{ marginBottom:16 }}>
             <div onClick={() => setCompareOpen(o => !o)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", marginBottom:compareOpen?8:0, userSelect:"none" }}>
               <span style={{ color:"#4A6FA5", fontSize:13, fontWeight:700 }}>{compareOpen ? "▾" : "▸"}</span>
@@ -1302,7 +1340,10 @@ function App({ teams }) {
               );
             })()}
           </div>
+          )}
 
+          {(!isNarrowViewport || activePane === "board") && (
+          <>
           <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,var(--border))", margin:"0 0 8px", borderRadius:1 }}/>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Bracket Seedlines</div>
@@ -1394,6 +1435,8 @@ function App({ teams }) {
             );
           })}
           </div>{/* end trr-bubble */}
+          </>
+          )}
         </div>{/* end board */}
       </div>{/* end main layout */}
     </div>
