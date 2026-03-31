@@ -1482,7 +1482,10 @@ function App({ teams }) {
             const color = seedColors[si] || "#555";
             const emptyCount = seed.max - ids.length;
             const isFull = ids.length >= seed.max;
-            const zoneBorder = `1px solid ${dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : isFull ? color+"66" : "transparent"}`;
+            const isPartial = ids.length > 0 && ids.length < seed.max;
+            const zoneBorderColor = dropZone===seed.id ? "#E8872B" : isSel ? "#E8872B55" : isFull ? "#E8872B72" : isPartial ? "#E8872B33" : "#1A2740";
+            const zoneBorder = `1px solid ${zoneBorderColor}`;
+            const zoneBg = dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : isFull ? "rgba(232,135,43,0.10)" : isPartial ? "rgba(232,135,43,0.04)" : "transparent";
             // 6-slot lines: 4 per row so 5th/6th wrap; 4-slot lines: fill single row
             const slotFlex = seed.max === 6 && ids.length > 4 ? "0 0 calc(25% - 2px)" : "1";
             const mobileExpandedBySeed = mobileSeedExpanded[seed.id] || {};
@@ -1494,7 +1497,7 @@ function App({ teams }) {
                     flex:1, display:"flex", flexDirection:isPhoneViewport ? "column" : "row", flexWrap:isPhoneViewport ? "nowrap" : "wrap", gap:isPhoneViewport ? 4 : 2, minHeight:40,
                     borderRadius:6, padding:isPhoneViewport ? "4px" : "2px 4px",
                     border: zoneBorder,
-                    background: dropZone===seed.id ? "rgba(232,135,43,0.06)" : isSel ? "rgba(232,135,43,0.02)" : "transparent",
+                    background: zoneBg,
                     transition:"background 0.1s, border-color 0.1s",
                   }}>
                     {ids.map((id, idx) => (
@@ -1535,7 +1538,7 @@ function App({ teams }) {
                       <div key={`e-${i}`} style={{ flex:isPhoneViewport ? "1 1 auto" : slotFlex, minWidth:isPhoneViewport ? 0 : 120, height:isPhoneViewport ? 30 : 34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
                   </div>
-                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E85555" : "var(--text-faint)", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
+                  <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E8872B" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
                 </div>
               </div>
             );
