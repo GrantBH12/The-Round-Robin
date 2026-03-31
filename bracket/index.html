@@ -529,8 +529,11 @@ function App({ teams }) {
   const [dragTid, setDragTid] = useState(null);
   const [dropZone, setDropZone] = useState(null);
   const [insertTarget, setInsertTarget] = useState(null);
+  const [poolWidth, setPoolWidth] = useState(() => { try { return +localStorage.getItem("bracketology-pool-width") || 300; } catch(e) { return 300; } });
+  const [tipDismissed, setTipDismissed] = useState(() => { try { return !!localStorage.getItem("bracketology-tip-dismissed"); } catch(e) { return false; } });
 
   const dragRef = useRef({tid:null, startX:0, startY:0, dragging:false, zoneRef:null, insertRef:null, pointerId:null});
+  const poolResizeRef = useRef({ dragging: false, startX: 0, startWidth: 0 });
   const ghostRef = useRef(null);
   const boardScrollRef = useRef(null);
   const poolScrollRef = useRef(null);
@@ -1202,7 +1205,7 @@ function App({ teams }) {
       <div style={{ display:"flex", height:isNarrowViewport ? (isPhoneViewport ? "calc(100vh - 210px)" : "calc(100vh - 120px)") : "calc(100vh - 66px)", overflow:"hidden" }}>
 
         {/* Pool sidebar */}
-        <div id="trr-pool" style={{ flex:isNarrowViewport ? "1 1 auto" : "0 0 260px", borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "pool") ? "flex" : "none", flexDirection:"column", background:"var(--bg-sidebar)" }}>
+        <div id="trr-pool" style={{ flex:isNarrowViewport ? "1 1 auto" : `0 0 ${poolWidth}px`, borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "pool") ? "flex" : "none", flexDirection:"column", background:"var(--bg-sidebar)" }}>
           <div style={{ padding:"8px 10px", borderBottom:"1px solid var(--border)" }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:8 }}>Team Pool</div>
             <div style={{ position:"relative" }}>
@@ -1230,6 +1233,18 @@ function App({ teams }) {
             <div style={{ fontSize:9, color:"var(--text-faint)", marginTop:4 }}>
               {anyFilterActive || search ? `${poolF.length} of ${teams.length}` : `${poolF.length} teams`}
             </div>
+            {!tipDismissed && (
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:6,
+                background:"rgba(232,135,43,0.08)", border:"1px solid rgba(232,135,43,0.22)",
+                borderRadius:4, padding:"5px 8px", gap:6 }}>
+                <span style={{ fontSize:9, color:"var(--text-secondary)", lineHeight:1.4 }}>
+                  Select a team · click a seed row to place · click a placed team to move
+                </span>
+                <button onClick={() => { setTipDismissed(true); try { localStorage.setItem("bracketology-tip-dismissed","1"); } catch(e) {} }}
+                  style={{ background:"none", border:"none", color:"var(--text-faint)", fontSize:12,
+                    cursor:"pointer", lineHeight:1, padding:"0 2px", flexShrink:0 }}>×</button>
+              </div>
+            )}
           </div>
           <div ref={poolScrollRef} data-zone={POOL} style={{
             flex:1, overflowY:"auto", padding:"4px 6px",
@@ -1244,6 +1259,18 @@ function App({ teams }) {
             Data sourced from <a href="https://warrennolan.com" target="_blank" rel="noopener noreferrer" style={{ color:"#4A6FA5", textDecoration:"underline" }}>WarrenNolan.com</a> · Not affiliated with, endorsed by, or sponsored by the NCAA or any member institution · Terms like bracketology and tournament selection are used editorially · For informational purposes only · © 2026 The Round Robin
           </div>
         </div>
+
+        {/* Pool resize handle */}
+        {!isNarrowViewport && (
+          <div
+            onPointerDown={e => { e.preventDefault(); poolResizeRef.current = { dragging:true, startX:e.clientX, startWidth:poolWidth }; e.currentTarget.setPointerCapture(e.pointerId); }}
+            onPointerMove={e => { if (!poolResizeRef.current.dragging) return; const dx = e.clientX - poolResizeRef.current.startX; setPoolWidth(Math.min(440, Math.max(220, poolResizeRef.current.startWidth + dx))); }}
+            onPointerUp={() => { poolResizeRef.current.dragging = false; try { localStorage.setItem("bracketology-pool-width", poolWidth); } catch(e) {} }}
+            onPointerEnter={e => { e.currentTarget.style.background = "rgba(232,135,43,0.15)"; }}
+            onPointerLeave={e => { if (!poolResizeRef.current.dragging) e.currentTarget.style.background = "transparent"; }}
+            style={{ width:5, cursor:"col-resize", background:"transparent", flexShrink:0, transition:"background 0.1s" }}
+          />
+        )}
 
         {/* Filter panel — horizontally collapsible */}
         <div id="trr-filters" style={{ width: isNarrowViewport ? "100%" : (filtersOpen ? 200 : 28), flexShrink:0, borderRight:isNarrowViewport ? "none" : "1px solid var(--border)", display:(!isNarrowViewport || activePane === "filters") ? "flex" : "none", flexDirection:"column", background:"var(--bg-page)", overflow:"hidden", transition:isNarrowViewport ? "none" : "width 0.18s ease" }}>
@@ -1537,6 +1564,24 @@ function App({ teams }) {
                     {emptyCount > 0 && Array.from({length:emptyCount}).map((_,i) => (
                       <div key={`e-${i}`} style={{ flex:isPhoneViewport ? "1 1 auto" : slotFlex, minWidth:isPhoneViewport ? 0 : 120, height:isPhoneViewport ? 30 : 34, borderRadius:5, border:`1px dashed ${color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, color:`${color}66`, margin:1 }}>{isSel ? "+" : ""}</div>
                     ))}
+                    {ids.includes(selected) && !isPhoneViewport && (
+                      <div onClick={e => e.stopPropagation()} style={{ flexBasis:"100%", display:"flex", alignItems:"center", gap:3, padding:"3px 2px 1px", flexWrap:"wrap" }}>
+                        <span style={{ fontSize:8, color:"var(--text-faint)", marginRight:2, whiteSpace:"nowrap" }}>Move to:</span>
+                        {SEEDS.map((s, si) => {
+                          const isCurrent = s.id === seed.id;
+                          const col = seedColors[si] || "#555";
+                          return (
+                            <button key={s.id}
+                              onClick={e => { e.stopPropagation(); if (!isCurrent) { moveTeam(selected, s.id); setSelected(null); } }}
+                              style={{ width:18, height:18, borderRadius:3, border:`1px solid ${isCurrent ? col : col+"66"}`,
+                                background: isCurrent ? col : "transparent", color: isCurrent ? "#fff" : col,
+                                fontSize:8, fontWeight:700, cursor: isCurrent ? "default" : "pointer", padding:0, lineHeight:1 }}>
+                              {s.num}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                   <span style={{ fontSize:9, color: ids.length >= seed.max ? "#E8872B" : "#4A5568", minWidth:20, textAlign:"right", alignSelf:"center" }}>{ids.length}/{seed.max}</span>
                 </div>
