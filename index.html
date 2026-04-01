@@ -70,9 +70,10 @@ layout: default
       <line x1="400" y1="275" x2="545" y2="275"/>
     </g>
 
-    <!-- Championship: vertical connector between left (y=205) and right (y=275) finalists -->
+    <!-- Championship: vertical connector + horizontal champion line from midpoint -->
     <g stroke="#FF7704" stroke-width="2" fill="none" opacity="0.20">
       <line x1="400" y1="205" x2="400" y2="275"/>
+      <line x1="400" y1="240" x2="470" y2="240"/>
     </g>
 
     <!-- Robin perched on right R3 advance line (y=120, x=545-615), facing left -->
@@ -137,7 +138,20 @@ layout: default
     </a>
     <a href="{{ site.baseurl }}/paymon/" class="hub-card">
       <div class="hc-top">
-        <div class="hc-icon">P</div>
+        <div class="hc-icon">
+          <svg width="30" height="38" viewBox="0 0 30 38" fill="none" aria-hidden="true" style="display:block">
+            <rect x="1" y="1" width="28" height="36" rx="4" stroke="#FF7704" stroke-width="1.5"/>
+            <rect x="4" y="4" width="22" height="9" rx="2" fill="rgba(255,119,4,0.15)" stroke="#FF7704" stroke-width="1"/>
+            <rect x="4" y="17" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="12" y="17" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="20" y="17" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="4" y="24" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="12" y="24" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="20" y="24" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+            <rect x="4" y="31" width="14" height="5" rx="1.5" fill="rgba(255,119,4,0.28)"/>
+            <rect x="20" y="31" width="6" height="5" rx="1.5" fill="rgba(255,119,4,0.2)"/>
+          </svg>
+        </div>
         <div class="hc-label">Accuracy Metric</div>
         <div class="hc-title">Accuracy Calculator</div>
         <div class="hc-desc">Score your bracket against the actual field. Pulls your seed-line predictions directly from The Nest: Bracketology Studio — no re-entry needed.</div>
@@ -157,7 +171,16 @@ layout: default
   <div class="card-grid">
     <a href="{{ site.baseurl }}/predictions/" class="hub-card">
       <div class="hc-top">
-        <div class="hc-icon">✦</div>
+        <div class="hc-icon" style="display:flex;align-items:center;gap:8px;">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <circle cx="18" cy="18" r="15" stroke="#FF7704" stroke-width="1.5"/>
+            <path d="M18 3 C13 10 13 26 18 33" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M18 3 C23 10 23 26 18 33" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M3 18 C10 14 28 14 33 18" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M3 18 C10 22 28 22 33 18" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+          </svg>
+          <span>M</span>
+        </div>
         <div class="hc-label">NCAA Men's Basketball Bracketology</div>
         <div class="hc-title">2026 Men's Projections</div>
         <div class="hc-desc">My final bracket before Selection Sunday, scored against the official NCAA field. Accuracy Calculator: 374.</div>
@@ -169,7 +192,16 @@ layout: default
     </a>
     <div class="hub-card soon">
       <div class="hc-top">
-        <div class="hc-icon">W</div>
+        <div class="hc-icon" style="display:flex;align-items:center;gap:8px;">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+            <circle cx="18" cy="18" r="15" stroke="#FF7704" stroke-width="1.5"/>
+            <path d="M18 3 C13 10 13 26 18 33" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M18 3 C23 10 23 26 18 33" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M3 18 C10 14 28 14 33 18" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+            <path d="M3 18 C10 22 28 22 33 18" stroke="#FF7704" stroke-width="1.2" fill="none"/>
+          </svg>
+          <span>W</span>
+        </div>
         <div class="hc-label">NCAA Women's Basketball Bracketology</div>
         <div class="hc-title">2027 Women's Projections</div>
         <div class="hc-desc">Resume-first bracketology for the women's tournament. Coming next season.</div>
