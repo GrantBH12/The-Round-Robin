@@ -117,7 +117,7 @@ const TeamCard = memo(function TeamCard({ tid, tm, selected, dragTid, onPointerD
     >
       <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:12 }}>
         {t.logo && <img src={t.logo} alt="" style={{ width:20, height:20, objectFit:"contain", flexShrink:0 }} onError={e => e.target.style.display="none"}/>}
-        {inPool && t.net != null && <span style={{ color:"var(--text-muted)", fontSize:9, fontFamily:"monospace", flexShrink:0 }}>#{t.net}</span>}
+        {inPool && t.net != null && <span style={{ color:"#E8872B", fontSize:9, fontFamily:"monospace", flexShrink:0 }}>{t.net}</span>}
         <span style={{ color:"var(--text-primary)", fontWeight:600, flex:1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis", fontSize:12 }}>{t.name}</span>
         {inPool && <span style={{ color:"var(--text-faint)", fontSize:9, flexShrink:0 }}>{t.conf}</span>}
         {inPool && t.record && <span style={{ color:"var(--text-secondary)", fontSize:9, flexShrink:0 }}>{t.record}</span>}
