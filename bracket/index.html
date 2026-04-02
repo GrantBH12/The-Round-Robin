@@ -509,11 +509,13 @@ function App({ teams }) {
   }, [activePane]);
 
   const shareBracket = useCallback(() => {
+    const name = (window.prompt("Name this bracket (optional):", "") ?? "").trim();
     const state = {};
     SEEDS.forEach(s => { state[s.id] = asgn[s.id] || []; });
     EXTRA_TIERS.forEach(t => { state[t.id] = asgn[t.id] || []; });
     const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
-    const url = `${window.location.origin}/bracket/view/?b=${compressed}`;
+    const nameParam = name ? `&name=${encodeURIComponent(name)}` : "";
+    const url = `${window.location.origin}/bracket/view/?b=${compressed}${nameParam}`;
     navigator.clipboard.writeText(url).then(() => {
       setToastMsg("Link copied to clipboard.");
     }).catch(() => {
@@ -1234,6 +1236,7 @@ function App({ teams }) {
             </div>
             <div style={{ fontSize:9, color:"var(--text-faint)", marginTop:4 }}>
               {anyFilterActive || search ? `${poolF.length} of ${teams.length}` : `${poolF.length} teams`}
+              {DATA_SCRAPED_AT && (() => { const d = new Date(DATA_SCRAPED_AT); if (!Number.isFinite(d.getTime())) return null; return <span style={{ marginLeft:6 }}>· as of {d.toLocaleDateString("en-US",{month:"short",day:"numeric"})}</span>; })()}
             </div>
             {!tipDismissed && (
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:6,

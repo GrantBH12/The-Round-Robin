@@ -57,6 +57,7 @@ if (!initDark) document.documentElement.classList.add("light");
 const _params = new URLSearchParams(window.location.search);
 const B_PARAM = _params.get('b');
 const PROJECTION = _params.get('projection');
+const BRACKET_NAME = _params.get('name') || "";
 if (!B_PARAM && PROJECTION !== 'current') {
   window.location.replace('/bracket/');
 }
@@ -104,7 +105,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
           </a>
           <div>
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-              The Nest: Bracketology Studio
+              {BRACKET_NAME || "The Nest: Bracketology Studio"}
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
               {totalPlaced} teams placed · read-only view

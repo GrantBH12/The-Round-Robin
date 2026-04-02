@@ -20,6 +20,37 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/main.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://theroundrobin.studio/#org",
+        "name": "The Round Robin",
+        "url": "https://theroundrobin.studio",
+        "logo": "https://theroundrobin.studio/assets/img/logo-01.png"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://theroundrobin.studio/#website",
+        "url": "https://theroundrobin.studio",
+        "name": "The Round Robin",
+        "publisher": { "@id": "https://theroundrobin.studio/#org" }
+      },
+      {
+        "@type": "WebApplication",
+        "name": "The Nest: Bracketology Studio",
+        "url": "https://theroundrobin.studio/bracket/",
+        "description": "Build your NCAA bracket with live NET data. Compare team resumes, filter by any metric, and track the bubble.",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@id": "https://theroundrobin.studio/#org" }
+      }
+    ]
+  }
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-FLH4CLGMVE"></script>
   <script>
@@ -35,6 +66,9 @@
     <a href="{{ site.baseurl }}/" class="nav-logo">
       <img src="{{ site.baseurl }}/assets/img/logo-01.png" alt="The Round Robin">
     </a>
+    <button class="nav-hamburger" aria-label="Toggle navigation" aria-expanded="false" onclick="var n=this.closest('nav'),open=n.classList.toggle('nav-open');this.setAttribute('aria-expanded',open)">
+      <span></span><span></span><span></span>
+    </button>
     <div class="nav-links">
       <a href="{{ site.baseurl }}/" class="nav-link {% if page.url == '/' %}active{% endif %}" {% if page.url == '/' %}aria-current="page"{% endif %}>Home</a>
       <a href="{{ site.baseurl }}/bracket/" class="nav-link {% if page.url contains 'bracket' %}active{% endif %}" {% if page.url contains 'bracket' %}aria-current="page"{% endif %}>The Nest: Bracketology Studio</a>
@@ -56,5 +90,10 @@
     <a href="{{ site.baseurl }}/terms/" style="color:inherit;text-decoration:none;">Terms</a>
     <span class="footer-disclaimer">Not affiliated with, endorsed by, or sponsored by the NCAA or any member institution. Terms like bracketology and tournament selection are used editorially.</span>
   </footer>
+  <div id="cookie-notice" style="display:none" role="region" aria-label="Cookie notice">
+    <span>This site uses Google Analytics to understand traffic. <a href="{{ site.baseurl }}/privacy/">Privacy Policy</a></span>
+    <button onclick="document.getElementById('cookie-notice').style.display='none';try{localStorage.setItem('trr-cookies-ok','1')}catch(e){}">OK</button>
+  </div>
+  <script>try{if(!localStorage.getItem('trr-cookies-ok'))document.getElementById('cookie-notice').style.display='flex'}catch(e){}</script>
 </body>
 </html>
