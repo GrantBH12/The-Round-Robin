@@ -443,7 +443,7 @@ function App({ teams }) {
   const [diffSlotId, setDiffSlotId] = useState(null);
   const [diffOtherState, setDiffOtherState] = useState(null);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
-  const [editingName, setEditingName] = useState("My Bracket");
+  const [renamingId, setRenamingId] = useState(null);
 
   useEffect(() => { asgnRef.current = asgn; }, [asgn]);
 
@@ -497,7 +497,6 @@ function App({ teams }) {
         const repaired = validateAndRepairAsgn(activeSlot.state, teams);
         setAsgn(repaired || blankAsgn(teams));
         setActiveSlotId(activeSlot.id);
-        setEditingName(activeSlot.name);
         setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
       } catch(e) {}
       setLoaded(true);
@@ -662,7 +661,6 @@ function App({ teams }) {
       data.activeId = id;
       writeSlots(data);
       setActiveSlotId(id);
-      setEditingName(target.name);
       undoStackRef.current = []; setCanUndo(false);
       const repaired = validateAndRepairAsgn(target.state, teams);
       setAsgn(repaired || blankAsgn(teams));
@@ -681,7 +679,6 @@ function App({ teams }) {
       writeSlots(data);
       setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
       setActiveSlotId(id);
-      setEditingName(name);
       undoStackRef.current = []; setCanUndo(false);
     } catch(e) {}
     setSlotSelectorOpen(false);
@@ -709,7 +706,6 @@ function App({ teams }) {
         data.activeId = data.slots[0].id;
         const next = data.slots[0];
         setActiveSlotId(data.activeId);
-        setEditingName(next.name);
         const repaired = validateAndRepairAsgn(next.state, teams);
         setAsgn(repaired || blankAsgn(teams));
         undoStackRef.current = []; setCanUndo(false);
@@ -1400,42 +1396,61 @@ function App({ teams }) {
             <img src="../assets/img/logo-01.png" alt="The Round Robin" style={{ height:isPhoneViewport ? 30 : 44, width:"auto", objectFit:"contain", flexShrink:0, background:"#003368", borderRadius:6, padding:isPhoneViewport ? "1px 4px" : "2px 6px" }}/>
           </a>
           <div style={{ minWidth:0, position:"relative" }} onClick={e => e.stopPropagation()}>
-            <div style={{ display:"flex", alignItems:"center", gap:3 }}>
-              <input
-                value={editingName}
-                onChange={e => setEditingName(e.target.value)}
-                onBlur={() => { const n = editingName.trim(); if (n) renameSlot(activeSlotId, n); else setEditingName(slotsMeta.find(s=>s.id===activeSlotId)?.name||"My Bracket"); }}
-                onKeyDown={e => { if (e.key==="Enter") e.target.blur(); if (e.key==="Escape") { setEditingName(slotsMeta.find(s=>s.id===activeSlotId)?.name||"My Bracket"); e.target.blur(); } }}
-                maxLength={20}
-                title="Click to rename this version"
-                style={{ background:"none", border:"none", borderBottom:"1px solid transparent", color:"var(--text-primary)", fontSize:isPhoneViewport?14:17, fontWeight:800, letterSpacing:"-0.02em", outline:"none", padding:"1px 2px", minWidth:50, maxWidth:isPhoneViewport?110:200, fontFamily:"inherit", cursor:"text", transition:"border-color 0.15s" }}
-                onFocus={e => e.target.style.borderBottomColor="var(--border-strong)"}
-                onBlurCapture={e => e.target.style.borderBottomColor="transparent"}
-              />
-              <button onClick={() => setSlotSelectorOpen(s=>!s)} style={{ background:"none", border:"none", color:"var(--text-muted)", fontSize:11, cursor:"pointer", padding:"2px 4px", lineHeight:1, flexShrink:0, userSelect:"none" }} title="Switch version">▾</button>
-            </div>
-            <p style={{ margin:"2px 0 0", fontSize:isPhoneViewport?9:10, color:"var(--text-faint)" }}>
+            {/* Version selector trigger — styled as a distinct control */}
+            <button
+              onClick={() => setSlotSelectorOpen(s=>!s)}
+              style={{
+                display:"flex", alignItems:"center", gap:5,
+                background: slotSelectorOpen ? "rgba(232,135,43,0.12)" : "var(--bg-sidebar)",
+                border:`1.5px solid ${slotSelectorOpen ? "#E8872B" : "var(--border-strong)"}`,
+                borderRadius:6, padding:"5px 8px 5px 10px", cursor:"pointer",
+                maxWidth:isPhoneViewport?140:220, transition:"border-color 0.15s, background 0.15s",
+              }}
+            >
+              <span style={{ fontSize:isPhoneViewport?12:14, fontWeight:800, letterSpacing:"-0.02em", color:"var(--text-primary)", fontFamily:"inherit", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
+                {slotsMeta.find(s=>s.id===activeSlotId)?.name || "My Bracket"}
+              </span>
+              <span style={{ fontSize:9, color:"var(--text-muted)", flexShrink:0, marginLeft:2, opacity:0.8 }}>{slotSelectorOpen?"▴":"▾"}</span>
+            </button>
+            <p style={{ margin:"3px 0 0", fontSize:isPhoneViewport?9:10, color:"var(--text-faint)", paddingLeft:2 }}>
               {totalPlaced} placed · {asgn[POOL]?.length||0} pool{slotsMeta.length>1 ? ` · ${slotsMeta.length} versions` : ""}
             </p>
             {slotSelectorOpen && (
-              <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:6, minWidth:190, zIndex:300, overflow:"hidden", boxShadow:"0 8px 24px rgba(0,0,0,0.45)" }}>
+              <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:7, minWidth:210, zIndex:300, overflow:"hidden", boxShadow:"0 10px 32px rgba(0,0,0,0.5)" }}>
+                <div style={{ padding:"7px 12px 5px", borderBottom:"1px solid var(--border)" }}>
+                  <span style={{ fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.1em" }}>Versions</span>
+                </div>
                 {slotsMeta.map(s => (
-                  <div key={s.id} style={{ display:"flex", alignItems:"center", padding:"8px 10px", borderBottom:"1px solid var(--border)", background:s.id===activeSlotId?"rgba(232,135,43,0.10)":"transparent", gap:6 }}>
-                    <button onClick={() => switchSlot(s.id)} style={{ flex:1, background:"none", border:"none", cursor:"pointer", color:s.id===activeSlotId?"#E8872B":"var(--text-primary)", fontSize:12, fontWeight:s.id===activeSlotId?700:400, textAlign:"left", padding:0 }}>
-                      {s.id===activeSlotId && <span style={{marginRight:4}}>✓</span>}{s.name}
-                    </button>
-                    {slotsMeta.length>1 && <button onClick={() => deleteSlot(s.id)} style={{ background:"none", border:"none", color:"var(--text-faint)", fontSize:14, cursor:"pointer", padding:0, lineHeight:1 }} title="Delete version">×</button>}
+                  <div key={s.id} style={{ display:"flex", alignItems:"center", padding:"8px 10px 8px 12px", borderBottom:"1px solid var(--border)", background:s.id===activeSlotId?"rgba(232,135,43,0.08)":"transparent", gap:6 }}>
+                    {renamingId === s.id ? (
+                      <input
+                        autoFocus
+                        defaultValue={s.name}
+                        maxLength={20}
+                        onBlur={e => { const n = e.target.value.trim(); renameSlot(s.id, n||s.name); setRenamingId(null); }}
+                        onKeyDown={e => { if (e.key==="Enter") e.target.blur(); if (e.key==="Escape") setRenamingId(null); e.stopPropagation(); }}
+                        onClick={e => e.stopPropagation()}
+                        style={{ flex:1, background:"var(--bg-page)", border:"1.5px solid #E8872B", borderRadius:4, color:"var(--text-primary)", fontSize:12, fontWeight:700, outline:"none", padding:"4px 7px", fontFamily:"inherit" }}
+                      />
+                    ) : (
+                      <button onClick={() => switchSlot(s.id)} style={{ flex:1, background:"none", border:"none", cursor:"pointer", color:s.id===activeSlotId?"#E8872B":"var(--text-primary)", fontSize:13, fontWeight:s.id===activeSlotId?700:500, textAlign:"left", padding:0, display:"flex", alignItems:"center", gap:6 }}>
+                        <span style={{ width:12, textAlign:"center", fontSize:10, color:"#E8872B", flexShrink:0 }}>{s.id===activeSlotId?"✓":""}</span>
+                        {s.name}
+                      </button>
+                    )}
+                    {renamingId !== s.id && <button onClick={e => { e.stopPropagation(); setRenamingId(s.id); }} style={{ background:"none", border:"none", color:"var(--text-faint)", fontSize:12, cursor:"pointer", padding:"2px 4px", lineHeight:1, flexShrink:0 }} title="Rename">✎</button>}
+                    {slotsMeta.length>1 && renamingId!==s.id && <button onClick={() => deleteSlot(s.id)} style={{ background:"none", border:"none", color:"var(--text-faint)", fontSize:15, cursor:"pointer", padding:0, lineHeight:1, flexShrink:0 }} title="Delete version">×</button>}
                   </div>
                 ))}
-                <div>
+                <div style={{ borderTop:"1px solid var(--border)" }}>
                   {slotsMeta.length>=2 && (
                     <button onClick={() => { setDiffSlotId(slotsMeta.find(s=>s.id!==activeSlotId)?.id||null); setDiffModalOpen(true); setSlotSelectorOpen(false); }}
-                      style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-secondary)", fontSize:11, cursor:"pointer", padding:"8px 10px", textAlign:"left" }}>
+                      style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-secondary)", fontSize:11, cursor:"pointer", padding:"9px 12px", textAlign:"left", display:"flex", alignItems:"center", gap:6 }}>
                       ⊕ Compare Versions
                     </button>
                   )}
                   <button onClick={newVersion} disabled={slotsMeta.length>=5}
-                    style={{ width:"100%", background:"none", border:"none", color:slotsMeta.length>=5?"var(--text-faint)":"#E8872B", fontSize:11, fontWeight:700, cursor:slotsMeta.length>=5?"default":"pointer", padding:"8px 10px", textAlign:"left" }}>
+                    style={{ width:"100%", background:"none", border:"none", color:slotsMeta.length>=5?"var(--text-faint)":"#E8872B", fontSize:11, fontWeight:700, cursor:slotsMeta.length>=5?"default":"pointer", padding:"9px 12px", textAlign:"left", display:"flex", alignItems:"center", gap:6 }}>
                     + New Version{slotsMeta.length>=5?" (max 5)":""}
                   </button>
                 </div>
