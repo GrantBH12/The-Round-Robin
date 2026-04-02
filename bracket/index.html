@@ -153,6 +153,60 @@ const TOUR_STEPS = [
   { targetId: null, title: "You're all set.", body: "Build your bracket, score it with the Accuracy Calculator (powered by the Paymon Scoring System), and iterate. The ? button in the header restarts this tour anytime. Good luck." },
 ];
 
+// --- Slot / versioning helpers (outside component) ---
+function makeSlotId() { try { return crypto.randomUUID(); } catch(e) { return `slot-${Date.now()}-${Math.random().toString(36).slice(2)}`; } }
+function slotDateName() { return new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}); }
+function blankAsgn(teams) {
+  const a = {};
+  SEEDS.forEach(s => a[s.id] = []);
+  EXTRA_TIERS.forEach(t => a[t.id] = []);
+  a[COMPARE] = []; a[POOL] = teams.map(t => t.id);
+  return a;
+}
+function validateAndRepairAsgn(saved, teams) {
+  const allIds = new Set(teams.map(t => t.id));
+  const usedIds = new Set();
+  for (const k in saved) {
+    if (!Array.isArray(saved[k])) return null;
+    for (const id of saved[k]) {
+      if (!allIds.has(id) || usedIds.has(id)) return null;
+      usedIds.add(id);
+    }
+  }
+  if (usedIds.size === 0) return null;
+  const out = {};
+  SEEDS.forEach(s => out[s.id] = saved[s.id] || []);
+  EXTRA_TIERS.forEach(t => out[t.id] = saved[t.id] || []);
+  out[COMPARE] = saved[COMPARE] || [];
+  const missing = teams.filter(t => !usedIds.has(t.id)).map(t => t.id);
+  out[POOL] = [...(saved[POOL] || []), ...missing];
+  return out;
+}
+function readSlots() { try { const r = localStorage.getItem("bracketology-slots"); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+function writeSlots(data) { try { localStorage.setItem("bracketology-slots", JSON.stringify(data)); } catch(e) {} }
+function diffSlots(oldState, newState, tm) {
+  const getSeedOf = state => {
+    const map = {};
+    SEEDS.forEach(s => (state[s.id]||[]).forEach(id => map[id] = s.num));
+    EXTRA_TIERS.forEach(t => (state[t.id]||[]).forEach(id => map[id] = t.label));
+    return map;
+  };
+  const oldMap = getSeedOf(oldState), newMap = getSeedOf(newState);
+  const allTids = new Set([...Object.keys(oldMap), ...Object.keys(newMap)]);
+  const movedUp = [], movedDown = [], added = [], dropped = [];
+  for (const tid of allTids) {
+    const t = tm[tid]; if (!t) continue;
+    const o = oldMap[tid], n = newMap[tid];
+    const entry = { tid, name:t.name, conf:t.conf, oldSeed:o, newSeed:n };
+    if (typeof o === 'number' && typeof n === 'number') { if (n < o) movedUp.push(entry); else if (n > o) movedDown.push(entry); }
+    else if (!o && n) added.push(entry);
+    else if (o && !n) dropped.push(entry);
+  }
+  movedUp.sort((a,b) => a.newSeed - b.newSeed);
+  movedDown.sort((a,b) => a.newSeed - b.newSeed);
+  return { movedUp, movedDown, added, dropped };
+}
+
 // Returns 0.12–0.90 fill based on value's rank within vals array
 function barPct(val, vals, lowerIsBetter) {
   const v = vals.filter(x => x != null && !isNaN(x));
@@ -377,57 +431,94 @@ function App({ teams }) {
   const tm = useMemo(() => Object.fromEntries(teams.map(t => [t.id, t])), [teams]);
   const allConfs = useMemo(() => ["All", ...[...new Set(teams.map(t => t.conf))].sort()], [teams]);
 
-  const [asgn, setAsgn] = useState(() => {
-    const a = {};
-    SEEDS.forEach(s => a[s.id] = []);
-    EXTRA_TIERS.forEach(t => a[t.id] = []);
-    a[COMPARE] = [];
-    a[POOL] = teams.map(t => t.id);
-    return a;
-  });
+  const [asgn, setAsgn] = useState(() => blankAsgn(teams));
   const [loaded, setLoaded] = useState(false);
+  const [slotsMeta, setSlotsMeta] = useState([]);
+  const [activeSlotId, setActiveSlotId] = useState(null);
+  const asgnRef = useRef(null);
+  const undoStackRef = useRef([]);
+  const [canUndo, setCanUndo] = useState(false);
+  const [slotSelectorOpen, setSlotSelectorOpen] = useState(false);
+  const [diffModalOpen, setDiffModalOpen] = useState(false);
+  const [diffSlotId, setDiffSlotId] = useState(null);
+  const [diffOtherState, setDiffOtherState] = useState(null);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [editingName, setEditingName] = useState("My Bracket");
 
+  useEffect(() => { asgnRef.current = asgn; }, [asgn]);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    if (!slotSelectorOpen && !shareMenuOpen) return;
+    const handler = () => { setSlotSelectorOpen(false); setShareMenuOpen(false); };
+    const t = setTimeout(() => window.addEventListener("click", handler), 0);
+    return () => { clearTimeout(t); window.removeEventListener("click", handler); };
+  }, [slotSelectorOpen, shareMenuOpen]);
+
+  // Reload diff other-slot state when diffSlotId changes
+  useEffect(() => {
+    if (!diffModalOpen || !diffSlotId) return;
+    try {
+      const data = readSlots();
+      const other = data?.slots.find(s => s.id === diffSlotId);
+      if (other?.state) setDiffOtherState(other.state);
+    } catch(e) {}
+  }, [diffSlotId, diffModalOpen]);
+
+  // Initial load: migrate old key → slots, or load existing slots
   useEffect(() => {
     (async () => {
       try {
         const urlParam = new URLSearchParams(window.location.search).get('b');
-        const val = urlParam
-          ? LZString.decompressFromEncodedURIComponent(urlParam)
-          : localStorage.getItem("bracketology-board-state");
-        if (val) {
-          const saved = JSON.parse(val);
-          const allIds = new Set(teams.map(t => t.id));
-          const usedIds = new Set();
-          let valid = true;
-          for (const k in saved) {
-            if (!Array.isArray(saved[k])) { valid = false; break; }
-            for (const id of saved[k]) {
-              if (!allIds.has(id) || usedIds.has(id)) { valid = false; break; }
-              usedIds.add(id);
-            }
+        if (urlParam) {
+          // Shared bracket via URL — load read-only, don't touch saved slots
+          const val = LZString.decompressFromEncodedURIComponent(urlParam);
+          if (val) {
+            const repaired = validateAndRepairAsgn(JSON.parse(val), teams);
+            if (repaired) setAsgn(repaired);
           }
-          if (valid && usedIds.size > 0) {
-            const missing = teams.filter(t => !usedIds.has(t.id)).map(t => t.id);
-            // Safeguard for newly added zones preventing LocalStorage crashes
-            if (!saved[POOL]) saved[POOL] = [];
-            if (!saved[COMPARE]) saved[COMPARE] = [];
-            SEEDS.forEach(s => { if (!saved[s.id]) saved[s.id] = []; });
-            EXTRA_TIERS.forEach(t => { if (!saved[t.id]) saved[t.id] = []; });
-            
-            saved[POOL] = [...saved[POOL], ...missing];
-            setAsgn(saved);
-          }
+          setLoaded(true);
+          return;
         }
+        let data = readSlots();
+        if (!data) {
+          // Migrate from old single-slot key
+          const oldRaw = localStorage.getItem("bracketology-board-state");
+          let initialState = null;
+          if (oldRaw) { try { initialState = validateAndRepairAsgn(JSON.parse(oldRaw), teams); } catch(e) {} }
+          const id = makeSlotId(), now = new Date().toISOString();
+          const slot = { id, name:"My Bracket", createdAt:now, updatedAt:now, state:initialState || blankAsgn(teams) };
+          data = { activeId:id, slots:[slot] };
+          writeSlots(data);
+          try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
+        }
+        const activeSlot = data.slots.find(s => s.id === data.activeId) || data.slots[0];
+        if (!activeSlot) throw new Error("no slots");
+        const repaired = validateAndRepairAsgn(activeSlot.state, teams);
+        setAsgn(repaired || blankAsgn(teams));
+        setActiveSlotId(activeSlot.id);
+        setEditingName(activeSlot.name);
+        setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
       } catch(e) {}
       setLoaded(true);
       try { if (!localStorage.getItem("bracketology-tour-seen")) setTourStep(0); } catch(e) {}
     })();
   }, [teams]);
 
+  // Auto-save active slot on every asgn change
   useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem("bracketology-board-state", JSON.stringify(asgn)); } catch(e) {}
-  }, [asgn, loaded]);
+    if (!loaded || !activeSlotId) return;
+    try {
+      const data = readSlots();
+      if (!data) return;
+      const slot = data.slots.find(s => s.id === activeSlotId);
+      if (!slot) return;
+      slot.state = asgn;
+      slot.updatedAt = new Date().toISOString();
+      writeSlots(data);
+      setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
+    } catch(e) {}
+  }, [asgn, loaded, activeSlotId]);
 
   const [search, setSearch] = useState("");
   const [confFs, setConfFs] = useState(new Set());
@@ -509,19 +600,19 @@ function App({ teams }) {
   }, [activePane]);
 
   const shareBracket = useCallback(() => {
-    const name = (window.prompt("Name this bracket (optional):", "") ?? "").trim();
+    const name = slotsMeta.find(s => s.id === activeSlotId)?.name || "Bracket";
     const state = {};
     SEEDS.forEach(s => { state[s.id] = asgn[s.id] || []; });
     EXTRA_TIERS.forEach(t => { state[t.id] = asgn[t.id] || []; });
     const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(state));
-    const nameParam = name ? `&name=${encodeURIComponent(name)}` : "";
-    const url = `${window.location.origin}/bracket/view/?b=${compressed}${nameParam}`;
+    const url = `${window.location.origin}/bracket/view/?b=${compressed}&name=${encodeURIComponent(name)}`;
     navigator.clipboard.writeText(url).then(() => {
       setToastMsg("Link copied to clipboard.");
     }).catch(() => {
       setToastMsg("Could not copy link.");
     });
-  }, [asgn]);
+    setShareMenuOpen(false);
+  }, [asgn, slotsMeta, activeSlotId]);
   const seedColors = darkMode ? SEED_COLORS : SEED_COLORS_LIGHT;
   const handleCardOpenChange = useCallback((tid, anyOpen, allOpen) => {
     setCardOpenMap(p => {
@@ -547,7 +638,112 @@ function App({ teams }) {
     return null;
   }, [asgn]);
 
+  const snapshotForUndo = useCallback(() => {
+    if (!asgnRef.current) return;
+    undoStackRef.current = [...undoStackRef.current.slice(-19), asgnRef.current];
+    setCanUndo(true);
+  }, []);
+
+  const undo = useCallback(() => {
+    if (!undoStackRef.current.length) return;
+    const prev = undoStackRef.current[undoStackRef.current.length - 1];
+    undoStackRef.current = undoStackRef.current.slice(0, -1);
+    setCanUndo(undoStackRef.current.length > 0);
+    setAsgn(prev);
+  }, []);
+
+  const switchSlot = useCallback((id) => {
+    if (id === activeSlotId) { setSlotSelectorOpen(false); return; }
+    try {
+      const data = readSlots();
+      if (!data) return;
+      const target = data.slots.find(s => s.id === id);
+      if (!target) return;
+      data.activeId = id;
+      writeSlots(data);
+      setActiveSlotId(id);
+      setEditingName(target.name);
+      undoStackRef.current = []; setCanUndo(false);
+      const repaired = validateAndRepairAsgn(target.state, teams);
+      setAsgn(repaired || blankAsgn(teams));
+    } catch(e) {}
+    setSlotSelectorOpen(false);
+  }, [activeSlotId, teams]);
+
+  const newVersion = useCallback(() => {
+    try {
+      const data = readSlots();
+      if (!data || data.slots.length >= 5) return;
+      const id = makeSlotId(), now = new Date().toISOString(), name = slotDateName();
+      const newSlot = { id, name, createdAt:now, updatedAt:now, state:asgnRef.current || blankAsgn(teams) };
+      data.slots.push(newSlot);
+      data.activeId = id;
+      writeSlots(data);
+      setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
+      setActiveSlotId(id);
+      setEditingName(name);
+      undoStackRef.current = []; setCanUndo(false);
+    } catch(e) {}
+    setSlotSelectorOpen(false);
+  }, [teams]);
+
+  const renameSlot = useCallback((id, name) => {
+    try {
+      const data = readSlots();
+      if (!data) return;
+      const slot = data.slots.find(s => s.id === id);
+      if (!slot) return;
+      slot.name = name.slice(0,20);
+      slot.updatedAt = new Date().toISOString();
+      writeSlots(data);
+      setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
+    } catch(e) {}
+  }, []);
+
+  const deleteSlot = useCallback((id) => {
+    try {
+      const data = readSlots();
+      if (!data || data.slots.length <= 1) return;
+      data.slots = data.slots.filter(s => s.id !== id);
+      if (data.activeId === id) {
+        data.activeId = data.slots[0].id;
+        const next = data.slots[0];
+        setActiveSlotId(data.activeId);
+        setEditingName(next.name);
+        const repaired = validateAndRepairAsgn(next.state, teams);
+        setAsgn(repaired || blankAsgn(teams));
+        undoStackRef.current = []; setCanUndo(false);
+      }
+      writeSlots(data);
+      setSlotsMeta(data.slots.map(({id,name,createdAt,updatedAt}) => ({id,name,createdAt,updatedAt})));
+    } catch(e) {}
+  }, [teams]);
+
+  const exportCSV = useCallback(() => {
+    const lines = ["Seed,Team,Conference,Record,NET"];
+    SEEDS.forEach(s => {
+      (asgnRef.current?.[s.id]||[]).forEach(tid => {
+        const t = tm[tid]; if (!t) return;
+        lines.push(`${s.num},"${(t.name||"").replace(/"/g,'""')}","${t.conf||""}","${t.record||""}",${t.net??""}`);
+      });
+    });
+    EXTRA_TIERS.forEach(tier => {
+      (asgnRef.current?.[tier.id]||[]).forEach(tid => {
+        const t = tm[tid]; if (!t) return;
+        lines.push(`"${tier.label}","${(t.name||"").replace(/"/g,'""')}","${t.conf||""}","${t.record||""}",${t.net??""}`);
+      });
+    });
+    const blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const slotName = (slotsMeta.find(s => s.id === activeSlotId)?.name || "bracket").replace(/[^a-z0-9]/gi,"-");
+    a.href = url; a.download = `${slotName}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    setShareMenuOpen(false);
+  }, [tm, slotsMeta, activeSlotId]);
+
   const moveTeam = useCallback((tid, target, beforeTid = null) => {
+    snapshotForUndo();
     setAsgn(p => {
       const n = {};
       for (const k in p) n[k] = p[k].filter(x => x !== tid);
@@ -561,9 +757,10 @@ function App({ teams }) {
       }
       return n;
     });
-  }, []);
+  }, [snapshotForUndo]);
 
   const autoSeed = useCallback(() => {
+    snapshotForUndo();
     // Always work from the full 128-team list regardless of current board state
     const sortedByNet = [...teams.map(t => t.id)].sort((a,b) => (tm[a]?.net??999)-(tm[b]?.net??999));
 
@@ -619,7 +816,7 @@ function App({ teams }) {
     const placedCount = fIdx;
     const msg = `Auto-seeded ${placedCount} teams · ${autoQSet.size} conf champs · ${atLargeIn.size} at-large${includeBubbleTiers ? ` · ${ffoCount} FFO · ${nfoCount} NFO` : ''}`;
     setToastMsg(msg);
-  }, [asgn, tm, teams, includeBubbleTiers]);
+  }, [asgn, tm, teams, includeBubbleTiers, snapshotForUndo]);
 
   useEffect(() => {
     if (!toastMsg) return;
@@ -630,6 +827,7 @@ function App({ teams }) {
   useEffect(() => {
     const onKey = e => {
       const tag = e.target?.tagName;
+      if ((e.ctrlKey || e.metaKey) && (e.key === "z" || e.key === "Z") && tag !== "INPUT" && tag !== "TEXTAREA") { e.preventDefault(); undo(); return; }
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (tourStep !== null) {
         if (e.key === "Escape") { finishTour(); return; }
@@ -707,7 +905,7 @@ function App({ teams }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selected, tourStep, helpOpen, poolF, compareIds, asgn, moveTeam, finishTour]);
+  }, [selected, tourStep, helpOpen, poolF, compareIds, asgn, moveTeam, finishTour, undo]);
 
   const handleZoneClick = useCallback(zoneId => {
     if (!selected) return;
@@ -916,6 +1114,64 @@ function App({ teams }) {
           {toastMsg}
         </div>
       )}
+
+      {/* Version diff modal */}
+      {diffModalOpen && diffOtherState && (() => {
+        const otherMeta = slotsMeta.find(s => s.id === diffSlotId);
+        const activeMeta = slotsMeta.find(s => s.id === activeSlotId);
+        const diff = diffSlots(diffOtherState, asgn, tm);
+        const otherSlots = slotsMeta.filter(s => s.id !== activeSlotId);
+        const totalChanges = diff.movedUp.length + diff.movedDown.length + diff.added.length + diff.dropped.length;
+        return (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", zIndex:10000, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }} onClick={() => setDiffModalOpen(false)}>
+            <div style={{ background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:8, width:"100%", maxWidth:520, maxHeight:"82vh", display:"flex", flexDirection:"column", overflow:"hidden" }} onClick={e => e.stopPropagation()}>
+              <div style={{ padding:"12px 16px", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
+                <div>
+                  <div style={{ fontSize:13, fontWeight:700, color:"var(--text-primary)" }}>Compare Versions</div>
+                  <div style={{ fontSize:10, color:"var(--text-faint)", marginTop:2 }}>{otherMeta?.name} → {activeMeta?.name}</div>
+                </div>
+                <button onClick={() => setDiffModalOpen(false)} style={{ background:"none", border:"none", color:"var(--text-muted)", fontSize:20, cursor:"pointer", lineHeight:1, padding:4 }}>×</button>
+              </div>
+              {otherSlots.length > 1 && (
+                <div style={{ padding:"8px 16px", borderBottom:"1px solid var(--border)", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
+                  <span style={{ fontSize:9, color:"var(--text-faint)", marginRight:4 }}>Compare against:</span>
+                  {otherSlots.map(s => (
+                    <button key={s.id} onClick={() => setDiffSlotId(s.id)} style={{ background:s.id===diffSlotId?"#E8872B22":"var(--bg-ghost)", border:`1px solid ${s.id===diffSlotId?"#E8872B":"var(--border)"}`, borderRadius:4, color:s.id===diffSlotId?"#E8872B":"var(--text-muted)", fontSize:10, fontWeight:s.id===diffSlotId?700:400, padding:"3px 8px", cursor:"pointer" }}>
+                      {s.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div style={{ overflowY:"auto", padding:"12px 16px", flex:1 }}>
+                {totalChanges === 0 ? (
+                  <div style={{ fontSize:13, color:"var(--text-muted)", textAlign:"center", padding:"28px 0" }}>No changes between these versions.</div>
+                ) : (
+                  [
+                    { key:"up", label:"↑ Moved Up", list:diff.movedUp, color:"#4ADE80" },
+                    { key:"down", label:"↓ Moved Down", list:diff.movedDown, color:"#F87171" },
+                    { key:"add", label:"+ Added to Field", list:diff.added, color:"#60A5FA" },
+                    { key:"drop", label:"− Dropped", list:diff.dropped, color:"#FBBF24" },
+                  ].filter(sec => sec.list.length > 0).map(sec => (
+                    <div key={sec.key} style={{ marginBottom:14 }}>
+                      <div style={{ fontSize:10, fontWeight:700, color:sec.color, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:5 }}>{sec.label} ({sec.list.length})</div>
+                      {sec.list.map(entry => (
+                        <div key={entry.tid} style={{ display:"flex", alignItems:"center", gap:8, padding:"5px 0", borderBottom:"1px solid var(--border)", fontSize:12 }}>
+                          <span style={{ flex:1, color:"var(--text-primary)", fontWeight:600 }}>{entry.name}</span>
+                          <span style={{ color:"var(--text-faint)", fontSize:10, flexShrink:0 }}>{entry.conf}</span>
+                          <span style={{ color:"var(--text-secondary)", fontSize:11, minWidth:52, textAlign:"right", flexShrink:0 }}>
+                            {typeof entry.oldSeed==='number'?`#${entry.oldSeed}`:(entry.oldSeed||"—")} → {typeof entry.newSeed==='number'?`#${entry.newSeed}`:(entry.newSeed||"—")}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
 
       {/* Selected team quick actions */}
       {isSel && (
@@ -1143,27 +1399,74 @@ function App({ teams }) {
           <a href="../" style={{ display:"flex", flexShrink:0 }}>
             <img src="../assets/img/logo-01.png" alt="The Round Robin" style={{ height:isPhoneViewport ? 30 : 44, width:"auto", objectFit:"contain", flexShrink:0, background:"#003368", borderRadius:6, padding:isPhoneViewport ? "1px 4px" : "2px 6px" }}/>
           </a>
-          <div style={{ minWidth:0 }}>
-            <h1 style={{ margin:0, fontSize:isPhoneViewport ? 16 : 20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
-              The Nest: Bracketology Studio
-            </h1>
-            <p style={{ margin:"2px 0 0", fontSize:isPhoneViewport ? 9 : 10, color:"var(--text-faint)", whiteSpace:isPhoneViewport ? "nowrap" : "normal", overflow:isPhoneViewport ? "hidden" : "visible", textOverflow:isPhoneViewport ? "ellipsis" : "clip" }}>
-              {totalPlaced} placed · {asgn[POOL]?.length||0} pool · {compareIds.length} comparing · Data: {DATA_SCRAPED_AT ? (() => { const d = new Date(DATA_SCRAPED_AT); const ts = d.getTime(); if (!Number.isFinite(ts)) return "—"; const diff = Math.max(0, Date.now() - ts); const h = Math.floor(diff/3600000); const rel = h < 1 ? `${Math.floor(diff/60000)}m ago` : h < 24 ? `${h}h ago` : `${Math.floor(h/24)}d ago`; return `${d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"})} · ${rel}`; })() : "—"}
+          <div style={{ minWidth:0, position:"relative" }} onClick={e => e.stopPropagation()}>
+            <div style={{ display:"flex", alignItems:"center", gap:3 }}>
+              <input
+                value={editingName}
+                onChange={e => setEditingName(e.target.value)}
+                onBlur={() => { const n = editingName.trim(); if (n) renameSlot(activeSlotId, n); else setEditingName(slotsMeta.find(s=>s.id===activeSlotId)?.name||"My Bracket"); }}
+                onKeyDown={e => { if (e.key==="Enter") e.target.blur(); if (e.key==="Escape") { setEditingName(slotsMeta.find(s=>s.id===activeSlotId)?.name||"My Bracket"); e.target.blur(); } }}
+                maxLength={20}
+                title="Click to rename this version"
+                style={{ background:"none", border:"none", borderBottom:"1px solid transparent", color:"var(--text-primary)", fontSize:isPhoneViewport?14:17, fontWeight:800, letterSpacing:"-0.02em", outline:"none", padding:"1px 2px", minWidth:50, maxWidth:isPhoneViewport?110:200, fontFamily:"inherit", cursor:"text", transition:"border-color 0.15s" }}
+                onFocus={e => e.target.style.borderBottomColor="var(--border-strong)"}
+                onBlurCapture={e => e.target.style.borderBottomColor="transparent"}
+              />
+              <button onClick={() => setSlotSelectorOpen(s=>!s)} style={{ background:"none", border:"none", color:"var(--text-muted)", fontSize:11, cursor:"pointer", padding:"2px 4px", lineHeight:1, flexShrink:0, userSelect:"none" }} title="Switch version">▾</button>
+            </div>
+            <p style={{ margin:"2px 0 0", fontSize:isPhoneViewport?9:10, color:"var(--text-faint)" }}>
+              {totalPlaced} placed · {asgn[POOL]?.length||0} pool{slotsMeta.length>1 ? ` · ${slotsMeta.length} versions` : ""}
             </p>
+            {slotSelectorOpen && (
+              <div style={{ position:"absolute", top:"calc(100% + 4px)", left:0, background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:6, minWidth:190, zIndex:300, overflow:"hidden", boxShadow:"0 8px 24px rgba(0,0,0,0.45)" }}>
+                {slotsMeta.map(s => (
+                  <div key={s.id} style={{ display:"flex", alignItems:"center", padding:"8px 10px", borderBottom:"1px solid var(--border)", background:s.id===activeSlotId?"rgba(232,135,43,0.10)":"transparent", gap:6 }}>
+                    <button onClick={() => switchSlot(s.id)} style={{ flex:1, background:"none", border:"none", cursor:"pointer", color:s.id===activeSlotId?"#E8872B":"var(--text-primary)", fontSize:12, fontWeight:s.id===activeSlotId?700:400, textAlign:"left", padding:0 }}>
+                      {s.id===activeSlotId && <span style={{marginRight:4}}>✓</span>}{s.name}
+                    </button>
+                    {slotsMeta.length>1 && <button onClick={() => deleteSlot(s.id)} style={{ background:"none", border:"none", color:"var(--text-faint)", fontSize:14, cursor:"pointer", padding:0, lineHeight:1 }} title="Delete version">×</button>}
+                  </div>
+                ))}
+                <div>
+                  {slotsMeta.length>=2 && (
+                    <button onClick={() => { setDiffSlotId(slotsMeta.find(s=>s.id!==activeSlotId)?.id||null); setDiffModalOpen(true); setSlotSelectorOpen(false); }}
+                      style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-secondary)", fontSize:11, cursor:"pointer", padding:"8px 10px", textAlign:"left" }}>
+                      ⊕ Compare Versions
+                    </button>
+                  )}
+                  <button onClick={newVersion} disabled={slotsMeta.length>=5}
+                    style={{ width:"100%", background:"none", border:"none", color:slotsMeta.length>=5?"var(--text-faint)":"#E8872B", fontSize:11, fontWeight:700, cursor:slotsMeta.length>=5?"default":"pointer", padding:"8px 10px", textAlign:"left" }}>
+                    + New Version{slotsMeta.length>=5?" (max 5)":""}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div style={{ display:"flex", gap:6, alignItems:"center", flexWrap:"wrap", width:isPhoneViewport ? "100%" : "auto", flexDirection:isPhoneViewport ? "column" : "row" }}>
           <a href="../paymon/" style={{ background:isPhoneViewport ? "linear-gradient(135deg,#E8872B,#D07020)" : "none", border:isPhoneViewport ? "none" : "1px solid var(--border)", borderRadius:6, color:isPhoneViewport ? "#fff" : "var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", display:"flex", alignItems:"center", justifyContent:"center", letterSpacing:"0.03em", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:13, lineHeight:1 }}>🏁</span>{isNarrowHeader ? "Accuracy" : "Accuracy Calculator →"}
           </a>
-          <button onClick={shareBracket} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader ? 10 : 11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
-            <span style={{ fontSize:12, lineHeight:1 }}>🔗</span>{isNarrowHeader ? "Share" : "Share Bracket"}
-          </button>
+          {canUndo && (
+            <button onClick={undo} title="Undo last placement (Ctrl+Z)" style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader?10:11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport?"100%":"auto" }}>
+              ↩{!isNarrowHeader&&" Undo"}
+            </button>
+          )}
+          <div style={{ position:"relative" }} onClick={e=>e.stopPropagation()}>
+            <button onClick={() => setShareMenuOpen(s=>!s)} style={{ background:"none", border:"1px solid var(--border)", borderRadius:6, color:"var(--text-muted)", fontSize:isNarrowHeader?10:11, fontWeight:700, padding:"10px 12px", minHeight:44, cursor:"pointer", whiteSpace:"nowrap", letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport?"100%":"auto" }}>
+              <span style={{ fontSize:12, lineHeight:1 }}>🔗</span>{isNarrowHeader?"Share":"Share ▾"}
+            </button>
+            {shareMenuOpen && (
+              <div style={{ position:"absolute", top:"calc(100% + 4px)", right:0, background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:6, minWidth:170, zIndex:300, overflow:"hidden", boxShadow:"0 8px 24px rgba(0,0,0,0.45)" }}>
+                <button onClick={shareBracket} style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>🔗 Copy share link</button>
+                <button onClick={exportCSV} style={{ width:"100%", background:"none", border:"none", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>⬇ Export as CSV</button>
+              </div>
+            )}
+          </div>
           <button onClick={() => {
-            const n = {}; SEEDS.forEach(s => n[s.id]=[]); EXTRA_TIERS.forEach(t => n[t.id]=[]);
-            n[COMPARE]=[]; n[POOL]=teams.map(t => t.id);
-            setAsgn(n); setSelected(null); setPoolSort({field:'net',dir:'asc'});
-            try { localStorage.removeItem("bracketology-board-state"); } catch(e) {}
+            if (!window.confirm("Reset this version? This cannot be undone.")) return;
+            setAsgn(blankAsgn(teams)); setSelected(null); setPoolSort({field:'net',dir:'asc'});
+            undoStackRef.current = []; setCanUndo(false);
           }} style={{ background:"linear-gradient(135deg,#FF7704,#E06200)", border:"none", borderRadius:6, color:"#fff", fontSize:isNarrowHeader ? 11 : 12, padding:"10px 18px", minHeight:44, cursor:"pointer", fontWeight:700, letterSpacing:"0.03em", display:"flex", alignItems:"center", justifyContent:"center", gap:6, width:isPhoneViewport ? "100%" : "auto" }}>
             <span style={{ fontSize:12, lineHeight:1 }}>⟲</span>{isNarrowHeader ? "Reset" : "Reset Board"}
           </button>
