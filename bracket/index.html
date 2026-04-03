@@ -40,6 +40,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha512-MOCpqoRoisCTwJ8vQQiciZv0qcpROCidek3GTFS6KTk2+y7munJIlKCVkFCYY+p3ErYFXCjmFjnfTTRSC1OHWQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js" integrity="sha512-qoCTmFwBtCPvFhA+WAqatSOrghwpDhFHxwAGh+cppWonXbHA09nG1z5zi4/NGnp8dUhXiVrzA6EnKgJA+fyrpw==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.5/babel.min.js" integrity="sha512-F62mvp9bPPLjVOpNlD+9erbo9KBRQKkLittcNub5D2o8WfgV9nrJR/0hKc1OUY3LNwlo671inEZzCjnLJz62nw==" crossorigin="anonymous"></script>
 <script type="text/babel">
 const { useState, useRef, useCallback, useMemo, useEffect, memo } = React;
@@ -150,7 +151,7 @@ const TOUR_STEPS = [
   { targetId: "trr-compare", title: "Compare Resumes", body: "Press C with any team selected to load it here (up to 8 teams side by side). Full resume metrics — NET, SOS, Q1–Q4 records, KPI, KenPom, and more — appear for each team. A summary table with bar charts appears automatically when 2+ teams are loaded. Press C again or click × to remove a team." },
   { targetId: "trr-bubble", title: "Bubble Tiers", body: "Teams just outside the field go here. Press F for First Four Out, N for Next Four Out, A for Also Considered. These tiers are tracked separately from the bracket and flow into your Accuracy Calculator when you're done building." },
   { targetId: null, title: "Keyboard Shortcuts", isShortcuts: true },
-  { targetId: null, title: "You're all set.", body: "Build your bracket, score it with the Accuracy Calculator (powered by the Paymon Scoring System), and iterate. The ? button in the header restarts this tour anytime. Good luck." },
+  { targetId: null, title: "You're all set.", body: "Your bracket auto-saves as you go. Click the version name in the header to snapshot your work by date, create new versions, and compare changes between projections. Score any version with the Accuracy Calculator (Paymon Scoring System). The ? button restarts this tour anytime." },
 ];
 
 // --- Slot / versioning helpers (outside component) ---
@@ -737,6 +738,25 @@ function App({ teams }) {
     URL.revokeObjectURL(url);
     setShareMenuOpen(false);
   }, [tm, slotsMeta, activeSlotId]);
+
+  const exportImage = useCallback(() => {
+    const el = document.getElementById("trr-seedlines-wrap");
+    if (!el || typeof html2canvas === "undefined") return;
+    setShareMenuOpen(false);
+    const bg = document.documentElement.classList.contains("light") ? "#F5F7FA" : "#081828";
+    html2canvas(el, {
+      backgroundColor: bg,
+      scale: 2,
+      useCORS: true,
+      ignoreElements: node => node.tagName === "IMG",
+    }).then(canvas => {
+      const slotName = (slotsMeta.find(s => s.id === activeSlotId)?.name || "bracket").replace(/[^a-z0-9]/gi,"-");
+      const link = document.createElement("a");
+      link.download = `${slotName}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }).catch(() => {});
+  }, [slotsMeta, activeSlotId]);
 
   const moveTeam = useCallback((tid, target, beforeTid = null) => {
     snapshotForUndo();
@@ -1360,6 +1380,7 @@ function App({ teams }) {
                       ["F  N  A","FFO / NFO / Also Consid."],
                       ["⌫  Del","Return to pool"],
                       ["Esc","Deselect"],
+                      ["Ctrl+Z","Undo last placement"],
                     ].map(([k,v],i) => (
                       <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 8px", background:i%2===0?"var(--bg-card)":"transparent", borderRadius:4 }}>
                         <code style={{ fontSize:10, color:"#E8872B", background:"rgba(232,135,43,0.10)", border:"1px solid rgba(232,135,43,0.25)", borderRadius:3, padding:"1px 6px", minWidth:88, textAlign:"center", flexShrink:0, fontFamily:"monospace" }}>{k}</code>
@@ -1474,7 +1495,8 @@ function App({ teams }) {
             {shareMenuOpen && (
               <div style={{ position:"absolute", top:"calc(100% + 4px)", right:0, background:"var(--bg-card)", border:"1px solid var(--border-strong)", borderRadius:6, minWidth:170, zIndex:300, overflow:"hidden", boxShadow:"0 8px 24px rgba(0,0,0,0.45)" }}>
                 <button onClick={shareBracket} style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>🔗 Copy share link</button>
-                <button onClick={exportCSV} style={{ width:"100%", background:"none", border:"none", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>⬇ Export as CSV</button>
+                <button onClick={exportCSV} style={{ width:"100%", background:"none", border:"none", borderBottom:"1px solid var(--border)", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>⬇ Export as CSV</button>
+                <button onClick={exportImage} style={{ width:"100%", background:"none", border:"none", color:"var(--text-primary)", fontSize:12, cursor:"pointer", padding:"10px 14px", textAlign:"left" }}>🖼 Download as Image</button>
               </div>
             )}
           </div>
@@ -1811,7 +1833,7 @@ function App({ teams }) {
           )}
 
           {(!isNarrowViewport || activePane === "board") && (
-          <>
+          <div id="trr-seedlines-wrap">
           <div style={{ height:2, background:"linear-gradient(90deg,#4A6FA5,var(--border))", margin:"0 0 8px", borderRadius:1 }}/>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
             <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", textTransform:"uppercase", letterSpacing:"0.06em" }}>Bracket Seedlines</div>
@@ -1948,7 +1970,7 @@ function App({ teams }) {
             );
           })}
           </div>{/* end trr-bubble */}
-          </>
+          </div>{/* end trr-seedlines-wrap */}
           )}
         </div>{/* end board */}
       </div>{/* end main layout */}

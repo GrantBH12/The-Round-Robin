@@ -1,6 +1,17 @@
 ---
 layout: default
 ---
+<style>
+  .hub-card, .about-strip, .data-note {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .hub-card.in-view, .about-strip.in-view, .data-note.in-view {
+    opacity: 1;
+    transform: none;
+  }
+</style>
 <div class="hero-wrap">
   <svg class="hero-bg" aria-hidden="true" focusable="false" viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
     <!-- LEFT SIDE: 5 rounds, 8 R1 matchups, advances right to center -->
@@ -228,3 +239,11 @@ layout: default
   <div class="data-dot"></div>
   The Nest: Bracketology Studio pulls live Warren Nolan data · Refreshes nightly at 3am CT
 </div>
+<script>
+(function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.hub-card, .about-strip, .data-note').forEach(function(el) { obs.observe(el); });
+})();
+</script>

@@ -104,11 +104,12 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
             <img src="../../assets/img/logo-01.png" alt="The Round Robin" style={{ height:44, width:"auto", objectFit:"contain", flexShrink:0, background:"#003368", borderRadius:6, padding:"2px 6px" }}/>
           </a>
           <div>
+            {BRACKET_NAME && <div style={{ fontSize:9, fontWeight:700, color:"var(--text-faint)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:2 }}>Shared bracket</div>}
             <h1 style={{ margin:0, fontSize:20, fontWeight:800, letterSpacing:"-0.03em", background:"linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
               {BRACKET_NAME || "The Nest: Bracketology Studio"}
             </h1>
             <p style={{ margin:"2px 0 0", fontSize:10, color:"var(--text-faint)" }}>
-              {totalPlaced} teams placed · read-only view
+              {totalPlaced} teams placed · read-only
             </p>
           </div>
         </div>
@@ -119,7 +120,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
             </div>
           )}
           <a href="/bracket/" style={{ background:"linear-gradient(135deg,#E8872B,#F0A855)", border:"none", borderRadius:5, color:"#fff", fontSize:12, fontWeight:700, padding:"8px 16px", cursor:"pointer", textDecoration:"none", whiteSpace:"nowrap", letterSpacing:"0.03em" }}>
-            Build your own in The Nest: Bracketology Studio →
+            Open The Nest: Bracketology Studio →
           </a>
         </div>
       </div>
@@ -190,7 +191,7 @@ function BracketView({ teams, bracket, lastUpdated, darkMode }) {
           <div style={{ marginTop:32, paddingTop:16, borderTop:"1px solid var(--border)", textAlign:"center" }}>
             <p style={{ color:"var(--text-faint)", fontSize:12, marginBottom:12 }}>Want to build your own bracket with full resume data?</p>
             <a href="/bracket/" style={{ background:"linear-gradient(135deg,#E8872B,#F0A855)", borderRadius:6, color:"#fff", fontSize:14, fontWeight:700, padding:"10px 24px", textDecoration:"none", letterSpacing:"0.03em" }}>
-              Build your own in The Nest: Bracketology Studio →
+              Open The Nest: Bracketology Studio →
             </a>
           </div>
 
