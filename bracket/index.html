@@ -40,7 +40,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js" integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js" integrity="sha512-MOCpqoRoisCTwJ8vQQiciZv0qcpROCidek3GTFS6KTk2+y7munJIlKCVkFCYY+p3ErYFXCjmFjnfTTRSC1OHWQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js" integrity="sha512-qoCTmFwBtCPvFhA+WAqatSOrghwpDhFHxwAGh+cppWonXbHA09nG1z5zi4/NGnp8dUhXiVrzA6EnKgJA+fyrpw==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.5/babel.min.js" integrity="sha512-F62mvp9bPPLjVOpNlD+9erbo9KBRQKkLittcNub5D2o8WfgV9nrJR/0hKc1OUY3LNwlo671inEZzCjnLJz62nw==" crossorigin="anonymous"></script>
 <script type="text/babel">
 const { useState, useRef, useCallback, useMemo, useEffect, memo } = React;
@@ -741,21 +740,29 @@ function App({ teams }) {
 
   const exportImage = useCallback(() => {
     const el = document.getElementById("trr-seedlines-wrap");
-    if (!el || typeof html2canvas === "undefined") return;
+    if (!el) return;
     setShareMenuOpen(false);
-    const bg = document.documentElement.classList.contains("light") ? "#F5F7FA" : "#081828";
-    html2canvas(el, {
-      backgroundColor: bg,
-      scale: 2,
-      useCORS: true,
-      ignoreElements: node => node.tagName === "IMG",
-    }).then(canvas => {
-      const slotName = (slotsMeta.find(s => s.id === activeSlotId)?.name || "bracket").replace(/[^a-z0-9]/gi,"-");
-      const link = document.createElement("a");
-      link.download = `${slotName}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    }).catch(() => {});
+    const doCapture = () => {
+      const bg = document.documentElement.classList.contains("light") ? "#F5F7FA" : "#081828";
+      window.html2canvas(el, {
+        backgroundColor: bg,
+        scale: 2,
+        useCORS: true,
+        ignoreElements: node => node.tagName === "IMG",
+      }).then(canvas => {
+        const slotName = (slotsMeta.find(s => s.id === activeSlotId)?.name || "bracket").replace(/[^a-z0-9]/gi,"-");
+        const link = document.createElement("a");
+        link.download = `${slotName}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }).catch(() => {});
+    };
+    if (window.html2canvas) { doCapture(); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+    s.onload = doCapture;
+    s.onerror = () => alert("Could not load image export library. Please try again.");
+    document.head.appendChild(s);
   }, [slotsMeta, activeSlotId]);
 
   const moveTeam = useCallback((tid, target, beforeTid = null) => {
