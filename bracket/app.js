@@ -95,14 +95,54 @@ const DRAG_THRESHOLD = 6;
 const SEED_COLORS = ["#E8872B", "#D97A28", "#C06128", "#A84E26", "#4A6FA5", "#3D5E8C", "#3D5E8C", "#304D73", "#304D73", "#2A4060", "#2A4060", "#7A5A3A", "#7A5A3A", "#606060", "#606060", "#505050"];
 const SEED_COLORS_LIGHT = ["#E8872B", "#D97A28", "#B05520", "#9A4020", "#3A5C90", "#305080", "#305080", "#26426A", "#26426A", "#1E3458", "#1E3458", "#6B4A2A", "#6B4A2A", "#484848", "#484848", "#383838"];
 const TOUR_STEPS = [
-  { targetId: null, title: "Welcome to The Nest: Bracketology Studio", body: "This is The Nest: Bracketology Studio \u2014 16 years of bracketology process in one tool. Take a quick tour to learn your way around. Use \u2192 / \u2190 to navigate, or click the buttons below." },
-  { targetId: "trr-pool", title: "Team Pool", body: "Every team in the field starts here. Click a team to select it (orange highlight), then place it with a key or by clicking a seed line. Use \u2191 \u2193 arrow keys to select without clicking. Search by name or sort by NET, KenPom, Record, and more." },
-  { targetId: "trr-filters", title: "Filter Panel", body: "Narrow the pool by conference or ranking thresholds. Click conference pills to filter to one or more leagues. Drag the sliders to set floors and ceilings for NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank. Click the \u25C0 arrow to collapse the panel and reclaim screen space." },
-  { targetId: "trr-board", title: "Bracket Seedlines", body: "The 68-team field lives here \u2014 16 seed lines, 4 teams each (seeds 11 and 16 hold 6 for First Four play-in games). With a team selected, press the matching key to place it instantly: 1\u20139, 0=10, -=11, ==12, [=13, ]=14, \\=15, `=16. Or drag teams between slots. Use Auto-Seed by NET to fill the board in one click." },
-  { targetId: "trr-compare", title: "Compare Resumes", body: "Press C with any team selected to load it here (up to 8 teams side by side). Full resume metrics \u2014 NET, SOS, Q1\u2013Q4 records, KPI, KenPom, and more \u2014 appear for each team. A summary table with bar charts appears automatically when 2+ teams are loaded. Press C again or click \xD7 to remove a team." },
-  { targetId: "trr-bubble", title: "Bubble Tiers", body: "Teams just outside the field go here. Press F for First Four Out, N for Next Four Out, A for Also Considered. These tiers are tracked separately from the bracket and flow into your Accuracy Calculator when you're done building." },
+  {
+    targetId: null,
+    title: "Welcome to The Nest: Bracketology Studio",
+    body: "This is The Nest: Bracketology Studio \u2014 16 years of bracketology process in one tool. Take a quick tour to learn your way around. Use \u2192 / \u2190 to navigate, or click the buttons below.",
+    mobileBody: "This is The Nest: Bracketology Studio \u2014 16 years of bracketology process in one tool. Take a quick tour to learn your way around. Tap the buttons below to navigate."
+  },
+  {
+    targetId: "trr-pool",
+    pane: "pool",
+    title: "Team Pool",
+    body: "Every team in the field starts here. Click a team to select it (orange highlight), then place it with a key or by clicking a seed line. Use \u2191 \u2193 arrow keys to select without clicking. Search by name or sort by NET, KenPom, Record, and more.",
+    mobileBody: "Every team in the field starts here. Tap a team to select it (orange highlight), then switch to the Board tab and tap a seed slot to place it. Search by name or sort by NET, KenPom, Record, and more."
+  },
+  {
+    targetId: "trr-filters",
+    pane: "filters",
+    title: "Filter Panel",
+    body: "Narrow the pool by conference or ranking thresholds. Click conference pills to filter to one or more leagues. Drag the sliders to set floors and ceilings for NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank. Click the \u25C0 arrow to collapse the panel and reclaim screen space.",
+    mobileBody: "Narrow the pool by conference or ranking thresholds. Tap conference pills to filter to one or more leagues. Drag the sliders to set floors and ceilings for NET, SOS, KPI, SOR, WAB, BPI, KenPom, and T-Rank."
+  },
+  {
+    targetId: "trr-board",
+    pane: "board",
+    title: "Bracket Seedlines",
+    body: "The 68-team field lives here \u2014 16 seed lines, 4 teams each (seeds 11 and 16 hold 6 for First Four play-in games). With a team selected, press the matching key to place it instantly: 1\u20139, 0=10, -=11, ==12, [=13, ]=14, \\=15, `=16. Or drag teams between slots. Use Auto-Seed by NET to fill the board in one click.",
+    mobileBody: "The 68-team field lives here \u2014 16 seed lines, 4 teams each. Select a team in the Pool tab, then tap any seed slot here to place it. Drag teams between slots to reorder. Use Auto-Seed by NET to fill the board in one tap."
+  },
+  {
+    targetId: "trr-compare",
+    pane: "compare",
+    title: "Compare Resumes",
+    body: "Press C with any team selected to load it here (up to 8 teams side by side). Full resume metrics \u2014 NET, SOS, Q1\u2013Q4 records, KPI, KenPom, and more \u2014 appear for each team. A summary table with bar charts appears automatically when 2+ teams are loaded. Press C again or click \xD7 to remove a team.",
+    mobileBody: "Tap the C button next to any team to add it here \u2014 up to 8 teams side by side. Full resume metrics appear for each. A summary table with bar charts shows automatically when 2+ teams are loaded. Tap \xD7 to remove a team."
+  },
+  {
+    targetId: "trr-bubble",
+    pane: "board",
+    title: "Bubble Tiers",
+    body: "Teams just outside the field go here. Press F for First Four Out, N for Next Four Out, A for Also Considered. These tiers are tracked separately from the bracket and flow into your Accuracy Calculator when you're done building.",
+    mobileBody: "Teams just outside the field go here. With a team selected, tap the FFO, NFO, or AC tier buttons to assign them. These tiers are tracked separately and flow into your Accuracy Calculator when you're done building."
+  },
   { targetId: null, title: "Keyboard Shortcuts", isShortcuts: true },
-  { targetId: null, title: "You're all set.", body: "Your bracket auto-saves as you go. Click the version name in the header to snapshot your work by date, create new versions, and compare changes between projections. Score any version with the Accuracy Calculator (Paymon Scoring System). The ? button restarts this tour anytime." }
+  {
+    targetId: null,
+    title: "You're all set.",
+    body: "Your bracket auto-saves as you go. Click the version name in the header to snapshot your work by date, create new versions, and compare changes between projections. Score any version with the Accuracy Calculator (Paymon Scoring System). The ? button restarts this tour anytime.",
+    mobileBody: "Your bracket auto-saves as you go. Tap the version name in the header to snapshot your work, create new versions, and compare projections. Score any version with the Accuracy Calculator. The ? button restarts this tour anytime."
+  }
 ];
 function makeSlotId() {
   try {
@@ -747,19 +787,52 @@ function App({ teams }) {
     if (!el) return;
     setShareMenuOpen(false);
     const doCapture = () => {
-      const bg = document.documentElement.classList.contains("light") ? "#F5F7FA" : "#081828";
+      const isLight = document.documentElement.classList.contains("light");
+      const bg = isLight ? "#F5F7FA" : "#081828";
+      const scale = 2;
       window.html2canvas(el, {
         backgroundColor: bg,
-        scale: 2,
+        scale,
         useCORS: true,
         ignoreElements: (node) => node.tagName === "IMG"
       }).then((canvas) => {
         var _a2;
         const slotName = (((_a2 = slotsMeta.find((s2) => s2.id === activeSlotId)) == null ? void 0 : _a2.name) || "bracket").replace(/[^a-z0-9]/gi, "-");
-        const link = document.createElement("a");
-        link.download = `${slotName}.png`;
-        link.href = canvas.toDataURL("image/png");
-        link.click();
+        const brandH = 56 * scale;
+        const out = document.createElement("canvas");
+        out.width = canvas.width;
+        out.height = canvas.height + brandH;
+        const ctx = out.getContext("2d");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, out.width, out.height);
+        ctx.fillStyle = isLight ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.09)";
+        ctx.fillRect(0, brandH - scale, out.width, scale);
+        ctx.fillStyle = isLight ? "rgba(0,0,0,0.38)" : "rgba(255,255,255,0.38)";
+        ctx.font = `${10 * scale}px "Segoe UI",Inter,system-ui,sans-serif`;
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillText("theroundrobin.studio", out.width - 14 * scale, brandH / 2);
+        ctx.drawImage(canvas, 0, brandH);
+        const logoImg = new Image();
+        logoImg.crossOrigin = "anonymous";
+        const finalize = () => {
+          const link = document.createElement("a");
+          link.download = `${slotName}.png`;
+          link.href = out.toDataURL("image/png");
+          link.click();
+        };
+        logoImg.onload = () => {
+          const lh = 34 * scale;
+          const lw = Math.round(logoImg.naturalWidth * (lh / logoImg.naturalHeight));
+          const lx = 14 * scale;
+          const ly = Math.round((brandH - lh) / 2);
+          ctx.fillStyle = "#003368";
+          ctx.fillRect(lx - 4 * scale, ly - 3 * scale, lw + 8 * scale, lh + 6 * scale);
+          ctx.drawImage(logoImg, lx, ly, lw, lh);
+          finalize();
+        };
+        logoImg.onerror = finalize;
+        logoImg.src = "../assets/img/logo-01.png";
       }).catch(() => {
       });
     };
@@ -1282,11 +1355,17 @@ function App({ teams }) {
       if (isLast) {
         finishTour();
       } else {
+        const next = TOUR_STEPS[tourStep + 1];
+        if (isNarrowViewport && next.pane) setActivePane(next.pane);
         setTourStep((s) => s + 1);
       }
     };
     const retreat = () => {
-      if (tourStep > 0) setTourStep((s) => s - 1);
+      if (tourStep > 0) {
+        const prev = TOUR_STEPS[tourStep - 1];
+        if (isNarrowViewport && prev.pane) setActivePane(prev.pane);
+        setTourStep((s) => s - 1);
+      }
     };
     return /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", inset: 0, zIndex: 25e3, fontFamily: "'Segoe UI','Inter',system-ui,sans-serif" } }, r && r.width > 0 ? /* @__PURE__ */ React.createElement("div", { style: {
       position: "fixed",
@@ -1301,7 +1380,7 @@ function App({ teams }) {
       pointerEvents: "none"
     } }) : /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, background: "rgba(0,0,0,0.78)" } }), /* @__PURE__ */ React.createElement("div", { style: {
       position: "fixed",
-      bottom: 32,
+      bottom: isPhoneViewport ? 16 : 32,
       left: "50%",
       transform: "translateX(-50%)",
       width: "calc(100% - 40px)",
@@ -1311,8 +1390,19 @@ function App({ teams }) {
       borderRadius: 10,
       padding: "18px 22px",
       zIndex: 25002,
-      boxShadow: "0 8px 40px rgba(0,0,0,0.7)"
-    } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em" } }, "Step ", tourStep + 1, " of ", TOUR_STEPS.length), /* @__PURE__ */ React.createElement("button", { onClick: finishTour, style: { background: "none", border: "none", color: "var(--text-muted)", fontSize: 14, cursor: "pointer", padding: 0, lineHeight: 1 } }, "\u2715")), /* @__PURE__ */ React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 17, fontWeight: 800, background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, step.title), step.isShortcuts ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-faint)", marginBottom: 8 } }, "Shortcuts work when a team is selected. Use arrow keys to select from the pool without clicking."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 } }, [
+      boxShadow: "0 8px 40px rgba(0,0,0,0.7)",
+      maxHeight: isPhoneViewport ? "72vh" : "none",
+      overflowY: isPhoneViewport ? "auto" : "visible"
+    } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "var(--text-faint)", textTransform: "uppercase", letterSpacing: "0.08em" } }, "Step ", tourStep + 1, " of ", TOUR_STEPS.length), /* @__PURE__ */ React.createElement("button", { onClick: finishTour, style: { background: "none", border: "none", color: "var(--text-muted)", fontSize: 14, cursor: "pointer", padding: 0, lineHeight: 1 } }, "\u2715")), /* @__PURE__ */ React.createElement("h3", { style: { margin: "0 0 10px", fontSize: 17, fontWeight: 800, background: "linear-gradient(135deg,#E8872B,#F0A855)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" } }, step.isShortcuts && isNarrowViewport ? "Touch Tips" : step.title), step.isShortcuts ? isNarrowViewport ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-faint)", marginBottom: 8 } }, "Tap tips for building your bracket on mobile."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 } }, [
+      ["Tap team", "Select it (orange)"],
+      ["Tap seed slot", "Place selected team"],
+      ["Drag team", "Move between slots"],
+      ["Tap C button", "Toggle Compare"],
+      ["FFO / NFO / AC", "Assign bubble tier"],
+      ["Tap \xD7", "Remove from seed line"],
+      ["Pool \u2192 Board", "Switch tabs to place"],
+      ["? button", "Restart this tour"]
+    ].map(([k, v], i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", background: i % 2 === 0 ? "var(--bg-card)" : "transparent", borderRadius: 4 } }, /* @__PURE__ */ React.createElement("code", { style: { fontSize: 10, color: "#E8872B", background: "rgba(232,135,43,0.10)", border: "1px solid rgba(232,135,43,0.25)", borderRadius: 3, padding: "1px 6px", minWidth: 80, textAlign: "center", flexShrink: 0, fontFamily: "monospace" } }, k), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-secondary)" } }, v))))) : /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-faint)", marginBottom: 8 } }, "Shortcuts work when a team is selected. Use arrow keys to select from the pool without clicking."), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 } }, [
       ["1\u20139  0  -  =  [  ]  \\  `", "Seed lines 1\u201316"],
       ["\u2191  \u2193", "Navigate pool"],
       ["\u2190  \u2192", "Navigate in seed line"],
@@ -1322,7 +1412,7 @@ function App({ teams }) {
       ["\u232B  Del", "Return to pool"],
       ["Esc", "Deselect"],
       ["Ctrl+Z", "Undo last placement"]
-    ].map(([k, v], i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", background: i % 2 === 0 ? "var(--bg-card)" : "transparent", borderRadius: 4 } }, /* @__PURE__ */ React.createElement("code", { style: { fontSize: 10, color: "#E8872B", background: "rgba(232,135,43,0.10)", border: "1px solid rgba(232,135,43,0.25)", borderRadius: 3, padding: "1px 6px", minWidth: 88, textAlign: "center", flexShrink: 0, fontFamily: "monospace" } }, k), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-secondary)" } }, v))))) : /* @__PURE__ */ React.createElement("p", { style: { margin: 0, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.65 } }, step.body), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 } }, /* @__PURE__ */ React.createElement("button", { onClick: finishTour, style: { background: "none", border: "none", color: "var(--text-faint)", fontSize: 11, cursor: "pointer", padding: 0 } }, isLast ? "" : "Skip tour"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, tourStep > 0 && /* @__PURE__ */ React.createElement("button", { onClick: retreat, style: { background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-secondary)", fontSize: 12, padding: "6px 14px", cursor: "pointer" } }, "\u2190 Back"), /* @__PURE__ */ React.createElement("button", { onClick: advance, style: { background: "linear-gradient(135deg,#E8872B,#D07020)", border: "none", borderRadius: 5, color: "#fff", fontSize: 12, fontWeight: 700, padding: "6px 18px", cursor: "pointer" } }, isLast ? "Done" : "Next \u2192")))));
+    ].map(([k, v], i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", background: i % 2 === 0 ? "var(--bg-card)" : "transparent", borderRadius: 4 } }, /* @__PURE__ */ React.createElement("code", { style: { fontSize: 10, color: "#E8872B", background: "rgba(232,135,43,0.10)", border: "1px solid rgba(232,135,43,0.25)", borderRadius: 3, padding: "1px 6px", minWidth: 88, textAlign: "center", flexShrink: 0, fontFamily: "monospace" } }, k), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-secondary)" } }, v))))) : /* @__PURE__ */ React.createElement("p", { style: { margin: 0, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.65 } }, isNarrowViewport && step.mobileBody ? step.mobileBody : step.body), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 } }, /* @__PURE__ */ React.createElement("button", { onClick: finishTour, style: { background: "none", border: "none", color: "var(--text-faint)", fontSize: 11, cursor: "pointer", padding: 0 } }, isLast ? "" : "Skip tour"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, tourStep > 0 && /* @__PURE__ */ React.createElement("button", { onClick: retreat, style: { background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 5, color: "var(--text-secondary)", fontSize: 12, padding: "6px 14px", cursor: "pointer" } }, "\u2190 Back"), /* @__PURE__ */ React.createElement("button", { onClick: advance, style: { background: "linear-gradient(135deg,#E8872B,#D07020)", border: "none", borderRadius: 5, color: "#fff", fontSize: 12, fontWeight: 700, padding: "6px 18px", cursor: "pointer" } }, isLast ? "Done" : "Next \u2192")))));
   })(), /* @__PURE__ */ React.createElement("div", { style: { padding: isPhoneViewport ? "8px 10px" : "10px 18px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: isPhoneViewport ? "stretch" : "center", justifyContent: "space-between", flexWrap: "wrap", gap: isPhoneViewport ? 6 : 8 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: isPhoneViewport ? 8 : 12, minWidth: 0 } }, /* @__PURE__ */ React.createElement("a", { href: "../", style: { display: "flex", flexShrink: 0 } }, /* @__PURE__ */ React.createElement("img", { src: "../assets/img/logo-01.png", alt: "The Round Robin", style: { height: isPhoneViewport ? 30 : 44, width: "auto", objectFit: "contain", flexShrink: 0, background: "#003368", borderRadius: 6, padding: isPhoneViewport ? "1px 4px" : "2px 6px" } })), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, position: "relative" }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement(
     "button",
     {
