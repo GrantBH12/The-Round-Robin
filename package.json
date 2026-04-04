@@ -1,0 +1,12 @@
+{
+  "name": "the-round-robin",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "build:bracket": "esbuild bracket/src/app.jsx --loader=jsx --outfile=bracket/app.js",
+    "build:view": "esbuild bracket/view/src/app.jsx --loader=jsx --outfile=bracket/view/app.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

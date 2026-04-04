@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Jekyll Dev Server",
+      "runtimeExecutable": "bundle",
+      "runtimeArgs": ["exec", "jekyll", "serve", "--livereload", "--incremental"],
+      "port": 4000
+    },
+    {
+      "name": "Jekyll Dev Server (no livereload)",
+      "runtimeExecutable": "bundle",
+      "runtimeArgs": ["exec", "jekyll", "serve"],
+      "port": 4000
+    },
+    {
+      "name": "Build JSX (esbuild)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["build.js"],
+      "port": null
+    },
+    {
+      "name": "Python Static Server",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4000"],
+      "port": 4000
+    }
+  ]
+}
