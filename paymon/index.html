@@ -234,6 +234,23 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
   .action-btn .btn-label-short { display: inline; }
 }
 
+/* ── Version selector ─────────────────────────────── */
+.version-bar {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  padding: 9px 12px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.version-label {
+  font-family: var(--fd); font-weight: 700; font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted); white-space: nowrap; flex-shrink: 0;
+}
+.version-select {
+  flex: 1; padding: 5px 8px; font-size: 13px; font-family: var(--fb);
+  background: var(--bg-page); border: 1px solid var(--border); border-radius: 5px;
+  color: var(--text-primary); cursor: pointer;
+}
+.version-select:focus { outline: none; border-color: var(--orange); }
+
 .btn-label-short { display: none; }
 
 @media (max-width: 480px) {
@@ -267,15 +284,25 @@ body { background: var(--bg-page); color: var(--text-primary); font-family: var(
 </div>
 
 <script>
-const TEAMS_URL = "https://theroundrobin.studio/teams.json";
-const BRACKET_KEY = "bracketology-board-state";
-const SCORES_KEY  = "paymon-scores";
-const THEME_KEY   = "bracketology-theme";
+const TEAMS_URL  = "https://theroundrobin.studio/teams.json";
+const SLOTS_KEY  = "bracketology-slots";
+const SCORES_KEY = "paymon-scores";
+const THEME_KEY  = "bracketology-theme";
 
-let teamData = [];  // [{id, name, predictedSeed, actualSeed, region}]
-let teamMap  = {};  // id → team object
-let activeRegion = null;
-let darkMode = true;
+let teamData      = [];   // [{id, name, predictedSeed, actualSeed, region}]
+let teamMap       = {};   // id → team object
+let activeRegion  = null;
+let darkMode      = true;
+let allSlots      = [];   // [{id, name, updatedAt}]
+let currentSlotId = null;
+
+function readSlots() {
+  try { const r = localStorage.getItem(SLOTS_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+function getSlotAsgn(slotId) {
+  const slot = allSlots.find(s => s.id === slotId);
+  return slot?._state || null;
+}
 
 // ── Theme ──────────────────────────────────────────────────────────────────
 function initTheme() {
@@ -295,9 +322,18 @@ function toggleTheme() {
 
 // ── Data loading ───────────────────────────────────────────────────────────
 async function loadData() {
-  let asgn = null;
-  try { const r = localStorage.getItem(BRACKET_KEY); if (r) asgn = JSON.parse(r); } catch(e) {}
+  const slotsData = readSlots();
+  allSlots = [];
 
+  if (slotsData?.slots?.length > 0) {
+    // Populate allSlots with metadata + state attached as _state
+    slotsData.slots.forEach(s => allSlots.push({ id: s.id, name: s.name, updatedAt: s.updatedAt, _state: s.state }));
+    // Default to the active slot, falling back to the first
+    const activeId = slotsData.activeId;
+    currentSlotId = allSlots.find(s => s.id === activeId) ? activeId : allSlots[0].id;
+  }
+
+  const asgn = getSlotAsgn(currentSlotId);
   const hasTeams = asgn && Array.from({length:16}, (_,i) => `seed${i+1}`).some(k => (asgn[k]||[]).length > 0);
   if (!hasTeams) { renderEmpty(); return; }
 
@@ -331,13 +367,34 @@ function loadSavedScores() {
 }
 
 function reloadBracket() {
-  // Preserve entered scores, rebuild from latest The Nest: Bracketology Studio state
+  // Re-read slots from storage in case the bracket was updated in the Nest
+  const slotsData = readSlots();
+  if (slotsData?.slots?.length > 0) {
+    allSlots = slotsData.slots.map(s => ({ id: s.id, name: s.name, updatedAt: s.updatedAt, _state: s.state }));
+    if (!allSlots.find(s => s.id === currentSlotId)) currentSlotId = allSlots[0].id;
+  }
+
   const prev = {};
   teamData.forEach(t => { prev[t.id] = { a: t.actualSeed, r: t.region }; });
 
-  let asgn = null;
-  try { const r = localStorage.getItem(BRACKET_KEY); if (r) asgn = JSON.parse(r); } catch(e) {}
+  const asgn = getSlotAsgn(currentSlotId);
+  const hasTeams = asgn && Array.from({length:16}, (_,i) => `seed${i+1}`).some(k => (asgn[k]||[]).length > 0);
+  if (!hasTeams) { renderEmpty(); return; }
 
+  buildTeamData(asgn);
+  teamData.forEach(t => { if (prev[t.id]) { t.actualSeed = prev[t.id].a; t.region = prev[t.id].r; } });
+  renderApp();
+}
+
+function switchSlot(slotId) {
+  if (!slotId || slotId === currentSlotId) return;
+  currentSlotId = slotId;
+
+  // Preserve scores for teams that exist in the new slot too
+  const prev = {};
+  teamData.forEach(t => { prev[t.id] = { a: t.actualSeed, r: t.region }; });
+
+  const asgn = getSlotAsgn(currentSlotId);
   const hasTeams = asgn && Array.from({length:16}, (_,i) => `seed${i+1}`).some(k => (asgn[k]||[]).length > 0);
   if (!hasTeams) { renderEmpty(); return; }
 
@@ -375,9 +432,24 @@ function renderEmpty() {
     </div>`;
 }
 
+function buildVersionBar() {
+  if (allSlots.length <= 1) return "";
+  const opts = allSlots.map(s => {
+    const date = s.updatedAt ? new Date(s.updatedAt).toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "";
+    const label = s.name + (date ? ` · ${date}` : "");
+    const sel = s.id === currentSlotId ? " selected" : "";
+    return `<option value="${s.id}"${sel}>${label}</option>`;
+  }).join("");
+  return `<div class="version-bar">
+    <span class="version-label">Bracket Version</span>
+    <select class="version-select" onchange="switchSlot(this.value)">${opts}</select>
+  </div>`;
+}
+
 function renderApp() {
   const n = teamData.length;
   document.getElementById("app-body").innerHTML = `
+    ${buildVersionBar()}
     <div class="score-grid">
       <div class="metric"><div class="metric-label">Total Score</div><div class="metric-value" id="m-total">0</div></div>
       <div class="metric"><div class="metric-label">Max Possible</div><div class="metric-value" id="m-max">—</div></div>
