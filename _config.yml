@@ -13,6 +13,12 @@ exclude:
   - scrape_nitty_gritty.py
   - "*.bak"
   - "*.save"
+  - package.json
+  - package-lock.json
+  - build.js
+  - node_modules
+  - bracket/src
+  - bracket/view/src
 
 keep_files:
   - bracket

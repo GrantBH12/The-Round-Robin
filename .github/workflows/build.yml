@@ -1,0 +1,31 @@
+name: Build JSX
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bracket/src/**'
+      - 'bracket/view/src/**'
+      - 'build.js'
+      - 'package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install esbuild
+        run: npm ci
+
+      - name: Compile JSX
+        run: node build.js
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'build: compile JSX [skip ci]'
+          file_pattern: 'bracket/app.js bracket/view/app.js'

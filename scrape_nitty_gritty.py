@@ -362,7 +362,7 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:
-        json.dump(output, f, indent=2)
+        json.dump(output, f, separators=(',', ':'))
 
     print(f"\nWrote {len(teams)} teams to {output_path}")
 
