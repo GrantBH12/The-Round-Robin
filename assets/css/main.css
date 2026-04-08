@@ -53,6 +53,19 @@ main { flex: 1; }
   outline-offset: 2px;
 }
 
+/* Shortcut tooltips */
+[data-tooltip] { position: relative; }
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--bg-card); border: 1px solid rgba(232,135,43,0.4);
+  color: var(--text-secondary); font-size: 10px; font-family: monospace;
+  white-space: nowrap; padding: 3px 7px; border-radius: 4px;
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  z-index: 200;
+}
+[data-tooltip]:hover::after, [data-tooltip]:focus-visible::after { opacity: 1; }
+
 /* NAV */
 nav {
   background: var(--bg);
