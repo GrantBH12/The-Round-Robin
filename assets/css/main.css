@@ -81,29 +81,33 @@ nav {
 }
 
 .nav-logo img { display: block; height: 44px; width: auto; }
-.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-links { display: flex; gap: 0; align-items: stretch; height: 100%; }
 .nav-hamburger { display: none; }
 
 .nav-link {
   font-family: var(--fd);
   font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 13px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 8px 12px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
   text-decoration: none;
-  transition: all .15s;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
 }
-.nav-link:hover { color: var(--text); background: var(--surface); }
+.nav-link:hover { color: var(--text); background: transparent; }
 .nav-link.active {
-  color: #FF9D4D;
-  background: rgba(255,119,4,0.18);
-  border: 1px solid rgba(255,119,4,0.4);
+  color: var(--orange);
+  font-weight: 800;
+  border-bottom: 2px solid var(--orange);
 }
-.nav-link:focus-visible { color: var(--text); background: var(--surface); }
+.nav-link:focus-visible { color: var(--text); outline: 2px solid #E8872B; outline-offset: 2px; }
 
 @media (max-width: 760px) {
   nav {
